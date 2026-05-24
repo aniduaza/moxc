@@ -2,10 +2,10 @@
   "name": "Moxcoin",
   "short_name": "Moxcoin",
   "description": "Your personal finance, crypto and collectibles tracker",
-  "start_url": "/moxc/",
-  "scope": "/moxc/",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "background_color": "#0D0D0D",
   "theme_color": "#0D0D0D",
   "lang": "en",
@@ -15,30 +15,25 @@
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [],
-  "shortcuts": [
-    {
-      "name": "Portfolio",
-      "short_name": "Portfolio",
-      "description": "View your portfolio",
-      "url": "/moxc/?tab=portfolio",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "purpose": "any"
     },
     {
-      "name": "Add transaction",
-      "short_name": "Add",
-      "description": "Log a transaction",
-      "url": "/moxc/?tab=transactions",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
