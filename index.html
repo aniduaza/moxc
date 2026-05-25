@@ -2821,10 +2821,7 @@ function promptApiKey(){
 
 async function callClaude(userMsg){
   var apiKey = getApiKey();
-  if(!apiKey){
-    apiKey = promptApiKey();
-    if(!apiKey) throw new Error('No API key. Tap API Settings to add your key.');
-  }
+  if(!apiKey) throw new Error('No API key. Tap API Settings.');
 
   advisorHistory.push({role:'user', content:userMsg});
 
@@ -2837,59 +2834,44 @@ async function callClaude(userMsg){
 
   var workerUrl = '';
   try{ workerUrl = (localStorage.getItem('moxcoin_worker')||'').replace(/\/+$/,''); }catch(e){}
-
-  // Always use worker if set, fall back to direct
   var url = workerUrl || 'https://api.anthropic.com/v1/messages';
 
-  try{
-    var resp = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: payload
-    });
-
-    if(resp.status === 401){
-      try{ localStorage.removeItem('moxcoin_apikey'); }catch(e){}
-      throw new Error('Invalid API key. Tap API Settings and re-enter your key.');
-    }
-    if(!resp.ok){
-      var errText = await resp.text();
-      throw new Error('API error ' + resp.status + ': ' + errText.slice(0,120));
-    }
-
-    var d = await resp.json();
-    var text = (d.content && d.content[0] && d.content[0].text) || 'No response received.';
-    advisorHistory.push({role:'assistant', content:text});
-    return text;
-
-  }catch(e){
-    // If worker failed, try direct as last resort
-    if(workerUrl && e.message.indexOf('fetch') >= 0){
+  // Use XMLHttpRequest — works in Android PWA where fetch() is blocked cross-origin
+  return new Promise(function(resolve, reject){
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('x-api-key', apiKey);
+    xhr.setRequestHeader('anthropic-version', '2023-06-01');
+    xhr.timeout = 30000;
+    xhr.onreadystatechange = function(){
+      if(xhr.readyState !== 4) return;
+      if(xhr.status === 0){
+        reject(new Error('Network blocked. Try opening the app in Chrome browser (not installed PWA).'));
+        return;
+      }
+      if(xhr.status === 401){
+        try{ localStorage.removeItem('moxcoin_apikey'); }catch(e){}
+        reject(new Error('Invalid API key. Tap API Settings to re-enter.'));
+        return;
+      }
+      if(xhr.status < 200 || xhr.status >= 300){
+        reject(new Error('API error ' + xhr.status + ': ' + (xhr.responseText||'').slice(0,100)));
+        return;
+      }
       try{
-        var r2 = await fetch('https://api.anthropic.com/v1/messages', {
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            'x-api-key':apiKey,
-            'anthropic-version':'2023-06-01',
-            'anthropic-dangerous-direct-browser-access':'true'
-          },
-          body: payload
-        });
-        if(r2.ok){
-          var d2 = await r2.json();
-          var t2 = (d2.content && d2.content[0] && d2.content[0].text)||'No response.';
-          advisorHistory.push({role:'assistant',content:t2});
-          return t2;
-        }
-      }catch(e2){}
-    }
-    throw e;
-  }
+        var d = JSON.parse(xhr.responseText);
+        var text = (d.content && d.content[0] && d.content[0].text)||'No response.';
+        advisorHistory.push({role:'assistant', content:text});
+        resolve(text);
+      }catch(e){
+        reject(new Error('Bad response: ' + xhr.responseText.slice(0,100)));
+      }
+    };
+    xhr.ontimeout = function(){ reject(new Error('Request timed out after 30s.')); };
+    xhr.onerror = function(){ reject(new Error('Network error. Check your connection.')); };
+    xhr.send(payload);
+  });
 }
 
 
