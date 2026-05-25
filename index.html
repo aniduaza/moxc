@@ -4157,7 +4157,7 @@ async function sendChat(){
     appendMessage('assistant', reply);
   }catch(e){
     if(thinking) thinking.remove();
-    appendMessage('assistant', e.message||'Connection failed. Check your API key and internet, then try again.');
+    appendMessage('assistant', 'Error: ' + (e.message||'unknown') + ' | Worker: ' + (localStorage.getItem('moxcoin_worker')||'not set') + ' | Key: ' + (localStorage.getItem('moxcoin_apikey')?'set':'not set'));
   }
   if(btn) btn.disabled = false;
   var inp2 = document.getElementById('chat-input');
