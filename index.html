@@ -250,7 +250,7 @@ body{transition:background .3s,color .3s;}
 .card,.card-yellow,.card-green,.stat-pill,.holding-row,.sheet{transition:background .3s,color .3s,border-color .3s;}
 
 /* ── Advisor screen ─────────────────────────────────────────────────── */
-.advisor-header{background:linear-gradient(135deg,#131D00,#1A2800);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;overflow:hidden;}
+.advisor-header{background:linear-gradient(135deg,#131D00,#1A2800);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;}
 .advisor-header::after{content:'';position:absolute;right:-16px;top:-16px;width:100px;height:100px;border-radius:50%;background:rgba(168,230,60,.07);}
 .chat-wrap{display:flex;flex-direction:column;gap:10px;min-height:200px;}
 .chat-bubble{max-width:88%;padding:11px 14px;border-radius:16px;font-size:13px;line-height:1.55;word-break:break-word;}
@@ -636,7 +636,7 @@ body.light #more-drawer{background:#FFFFFF;}
               <div style="font-size:18px;font-weight:600;color:var(--green);">Ask me anything</div>
               <div style="font-size:12px;color:rgba(168,230,60,.45);margin-top:3px;">Powered by Claude · based on your real data</div>
             </div>
-            <div id="advisor-gear-btn" style="width:36px;height:36px;border-radius:8px;background:rgba(168,230,60,.15);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;-webkit-tap-highlight-color:rgba(168,230,60,.3);" title="API settings">⚙️</div>
+            <div onclick="openAdvisorSettings()" style="width:36px;height:36px;border-radius:8px;background:rgba(168,230,60,.15);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;z-index:10;position:relative;" title="API settings">⚙️</div>
           </div>
         </div>
 
@@ -3069,6 +3069,11 @@ function renderAdvisor(){
 load();
 initTheme();
 renderAll();
+// Wire gear button
+setTimeout(function(){
+  var g=document.getElementById('advisor-gear-btn');
+  if(g) g.onclick=openAdvisorSettings;
+},500);
 setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); }, 200);
 
 
