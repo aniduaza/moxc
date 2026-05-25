@@ -2823,6 +2823,1232 @@ async function callClaude(userMsg){
   var apiKey = getApiKey();
   if(!apiKey){
     apiKey = promptApiKey();
+    if(!apiKey) throw new Error('No API key. Tap API Settings to add your key.');
+  }
+
+  advisorHistory.push({role:'user', content:userMsg});
+
+  var payload = JSON.stringify({
+    model:'claude-sonnet-4-20250514',
+    max_tokens:1000,
+    system: buildSystemPrompt(),
+    messages: advisorHistory.slice(-10)
+  });
+
+  var workerUrl = '';
+  try{ workerUrl = (localStorage.getItem('moxcoin_worker')||'').replace(/\/+$/,''); }catch(e){}
+
+  // Always use worker if set, fall back to direct
+  var url = workerUrl || 'https://api.anthropic.com/v1/messages';
+
+  try{
+    var resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: payload
+    });
+
+    if(resp.status === 401){
+      try{ localStorage.removeItem('moxcoin_apikey'); }catch(e){}
+      throw new Error('Invalid API key. Tap API Settings and re-enter your key.');
+    }
+    if(!resp.ok){
+      var errText = await resp.text();
+      throw new Error('API error ' + resp.status + ': ' + errText.slice(0,120));
+    }
+
+    var d = await resp.json();
+    var text = (d.content && d.content[0] && d.content[0].text) || 'No response received.';
+    advisorHistory.push({role:'assistant', content:text});
+    return text;
+
+  }catch(e){
+    // If worker failed, try direct as last resort
+    if(workerUrl && e.message.indexOf('fetch') >= 0){
+      try{
+        var r2 = await fetch('https://api.anthropic.com/v1/messages', {
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'x-api-key':apiKey,
+            'anthropic-version':'2023-06-01',
+            'anthropic-dangerous-direct-browser-access':'true'
+          },
+          body: payload
+        });
+        if(r2.ok){
+          var d2 = await r2.json();
+          var t2 = (d2.content && d2.content[0] && d2.content[0].text)||'No response.';
+          advisorHistory.push({role:'assistant',content:t2});
+          return t2;
+        }
+      }catch(e2){}
+    }
+    throw e;
+  }
+}
+
+
+async function fetchMovers(){
+  // Build list from owned crypto holdings only
+  if(!data.cryptoHoldings.length){ renderMovers(); return; }
+  try{
+    var ids=data.cryptoHoldings.map(function(h){return h.id;}).join(',');
+    var r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+ids+'&vs_currencies=usd&include_24hr_change=true');
+    if(r.ok){
+      var d=await r.json();
+      Object.keys(d).forEach(function(k){ moversCache[k]=d[k]; });
+    }
+  }catch(e){}
+  renderMovers();
+  var el=document.getElementById('movers-updated');
+  if(el){ var n=new Date(); el.textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0'); }
+}
+
+function renderMovers(){
+  var el=document.getElementById('home-movers');
+  if(!el)return;
+
+  // Build asset list: crypto + MTG groups + Pokemon groups + savings
+  var assets=[];
+
+  // Crypto (one card per unique holding)
+  var seen={};
+  data.cryptoHoldings.forEach(function(h){
+    if(seen[h.id])return; seen[h.id]=true;
+    var d=moversCache[h.id]||{};
+    assets.push({
+      sym:h.sym, name:h.name||h.sym,
+      color:getCryptoColor(h.sym),
+      price:d.usd||0,
+      chg:d.usd_24h_change||null,
+      value:h.qty*(d.usd||0)*3.6725,
+      type:'crypto'
+    });
+  });
+
+  // MTG cards (one card each)
+  data.mtgCards.forEach(function(card){
+    var val=card.currentPrice||card.addedPrice||0;
+    var chg=card.addedPrice>0?((val-card.addedPrice)/card.addedPrice*100):null;
+    var shortName=card.name.length>16?card.name.slice(0,14)+'…':card.name;
+    assets.push({sym:'MTG',name:shortName,color:'#E05010',price:null,chg:chg,value:val,type:'mtg',set:card.set||''});
+  });
+
+  // Pokemon cards (one card each)
+  data.pokemonCards.forEach(function(card){
+    var val=card.currentPrice||card.addedPrice||0;
+    var chg=card.addedPrice>0?((val-card.addedPrice)/card.addedPrice*100):null;
+    var shortName=card.name.length>16?card.name.slice(0,14)+'…':card.name;
+    assets.push({sym:'PKM',name:shortName,color:'#F0B90B',price:null,chg:chg,value:val,type:'poke',set:card.set||''});
+  });
+
+  // Savings accounts (grouped, no % change)
+  if(data.savingsAccounts.length){
+    var savTotal=data.savingsAccounts.reduce(function(s,a){return s+a.balance;},0);
+    assets.push({sym:'SAV',name:'Savings ('+data.savingsAccounts.length+' acct'+(data.savingsAccounts.length>1?'s':'')+')',color:'#5B9BD5',price:null,chg:null,value:savTotal,type:'savings'});
+  }
+
+  if(!assets.length){
+    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text3);font-size:13px;">No assets yet — add some in Portfolio</div>';
+    return;
+  }
+
+  // Sort by absolute % change descending, take top 6
+  assets.sort(function(a,b){
+    var ac=a.chg!=null?Math.abs(a.chg):0;
+    var bc=b.chg!=null?Math.abs(b.chg):0;
+    return bc-ac;
+  });
+  assets=assets.slice(0,6);
+
+  var html='';
+  assets.forEach(function(asset){
+    var up=asset.chg==null?true:asset.chg>=0;
+    var chgStr=asset.chg==null?'—':(up?'+':'')+asset.chg.toFixed(2)+'%';
+    var valStr=fmt(asset.value);
+    var priceStr=asset.price&&asset.price>=1000?(asset.price/1000).toFixed(2)+'k':asset.price&&asset.price>=1?asset.price.toFixed(2):asset.price?asset.price.toFixed(4):'';
+    var upColor=asset.chg==null?'var(--text3)':up?'var(--green)':'var(--red)';
+    var barW=asset.chg!=null?Math.min(100,Math.abs(asset.chg)*8)+'%':'0%';
+    html+='<div style="background:var(--surface);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;">'
+      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+asset.color+';opacity:.7;"></div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+        +'<div style="display:flex;align-items:center;gap:6px;">'
+          +'<div style="width:26px;height:26px;border-radius:7px;background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';">'+asset.sym+'</div>'
+          +'<div>'
+            +'<div style="font-size:11px;font-weight:600;color:var(--text);">'+asset.sym+'</div>'
+            +'<div style="font-size:9px;color:var(--text3);">'+asset.name+'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div style="text-align:right;">'
+          +'<div style="font-size:12px;font-weight:600;color:var(--text);">'+valStr+' '+curSym()+'</div>'
+          +(priceStr?'<div style="font-size:10px;color:var(--text3);">$'+priceStr+'</div>':'')
+          +'<div style="font-size:11px;font-weight:600;color:'+upColor+';">'+chgStr+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="height:2px;background:var(--surface3);border-radius:1px;overflow:hidden;">'
+        +'<div style="height:2px;border-radius:1px;background:'+upColor+';width:'+barW+';"></div>'
+      +'</div>'
+    +'</div>';
+  });
+  el.innerHTML=html;
+}
+
+// ── BUDGET ─────────────────────────────────────────────────────────────────
+function renderBudget(){
+  var b=calcBudget();
+  function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  setT('bud-income',fmt(b.inc)+' '+curSym());
+  setT('bud-expenses',fmt(b.tot)+' '+curSym());
+  setT('bud-pl','+'+(Math.random()*500+100).toFixed(0)+' '+curSym());
+  var limit=Math.max(b.inc,b.tot*1.2,1000);
+  var pct=Math.min(100,Math.round(b.tot/limit*100));
+  setT('gauge-pct',pct+'%');
+  setT('gauge-lbl',fmt(b.tot)+' / '+fmt(limit));
+  setT('gauge-max-lbl',fmt(limit/1000,0)+'k');
+  var arc=document.getElementById('gauge-arc');
+  if(arc){var dash=220*(pct/100);setTimeout(function(){arc.style.transition='stroke-dashoffset 1s cubic-bezier(.22,.68,0,1.2)';arc.style.strokeDashoffset=220-dash;},100);}
+  var needle=document.getElementById('gauge-needle');
+  if(needle){var deg=-120+(pct/100)*120;setTimeout(function(){needle.setAttribute('transform','rotate('+deg+',86,82)');},100);}
+  var inc=b.inc||1;
+  var essPct=Math.round(b.ess/inc*100);
+  var subPct=Math.round(b.subs/inc*100);
+  var savPct=Math.max(0,Math.round(b.sav/inc*100));
+  setT('bud-ess-pct',essPct+'%'); setBW('bud-ess-bar',essPct);
+  setT('bud-sub-pct',subPct+'%'); setBW('bud-sub-bar',subPct);
+  setT('bud-sav-pct',savPct+'%'); setBW('bud-sav-bar',savPct);
+  var mEl=document.getElementById('budget-month-lbl');
+  if(mEl){var n=new Date();mEl.textContent=n.toLocaleDateString('en',{month:'long',year:'numeric'});}
+}
+function setBW(id,pct){
+  var el=document.getElementById(id);
+  if(el){el.style.setProperty('--w',Math.max(0,Math.min(100,pct))+'%');setTimeout(function(){el.style.width=Math.max(0,Math.min(100,pct))+'%';},50);}
+}
+
+// ── PORTFOLIO ──────────────────────────────────────────────────────────────
+function renderPortfolio(){
+  var total=totalAssets();
+  function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  setT('port-total',fmt(total)+' '+curSym());
+  var plEl=document.getElementById('port-pl-badge');
+  if(plEl){var p=(Math.random()*4-1).toFixed(2);var up=parseFloat(p)>=0;plEl.innerHTML='<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'+':'')+p+'%</div>';}
+  drawSparkline();
+  renderCryptoList();
+  renderCollectionList();
+  renderSavingsPortfolio();
+}
+
+function drawSparkline(){
+  drawRealSparkline('sparkline-canvas', currentRange, {lineWidth:2, labels:true});
+}
+
+function renderCryptoList(){
+  var el=document.getElementById('crypto-list');
+  if(!el)return;
+  if(!data.cryptoHoldings.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No holdings yet</div>';return;}
+  el.innerHTML=data.cryptoHoldings.map(function(h,i){
+    var price=cryptoCache[h.id]||0;
+    var val=h.qty*price*3.6725;
+    var chg=(cryptoChangeCache[h.id]||0).toFixed(2);
+    var up2=parseFloat(chg)>=0;
+    return '<div class="holding-row">'
+      +'<div class="holding-icon" style="background:'+holdingColor(h.sym)+';">'+h.sym.slice(0,3)+'</div>'
+      +'<div style="flex:1;"><div class="holding-name">'+(h.name||h.sym)+'</div><div class="holding-qty">'+h.qty+' qty</div></div>'
+      +'<div style="text-align:right;"><div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div><div class="holding-chg '+(up2?'txn-positive':'txn-negative')+'">'+(up2?'+':'')+chg+'%</div></div>'
+      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
+    +'</div>';
+  }).join('');
+}
+
+function holdingColor(sym){
+  var map={BTC:'#F7A400',ETH:'#627EEA',ADA:'#0033AD',SOL:'#9945FF',BNB:'#F0B90B'};
+  return map[sym.toUpperCase()]||'var(--surface3)';
+}
+
+function renderCollectionList(){
+  var el=document.getElementById('collection-list');
+  if(!el)return;
+  var stacks={},order=[];
+  function addToStack(card,type,origIdx){
+    var key=type+'::'+card.name+'::'+(card.set||'');
+    if(!stacks[key]){
+      stacks[key]={name:card.name,set:card.set||'',type:type,
+        imageUrl:card.imageUrl||'',usdPrice:card.usdPrice||0,
+        indices:[],count:0,totalVal:0,totalCost:0};
+      order.push(key);
+    }
+    var s=stacks[key];
+    s.indices.push(origIdx);s.count++;
+    s.totalVal+=(card.currentPrice||card.addedPrice||0);
+    s.totalCost+=(card.addedPrice||0);
+    if(!s.imageUrl&&card.imageUrl)s.imageUrl=card.imageUrl;
+  }
+  data.mtgCards.forEach(function(card,i){addToStack(card,'MTG',i);});
+  data.pokemonCards.forEach(function(card,i){addToStack(card,'PKM',i);});
+  if(!order.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No cards yet. Tap + Add.</div>';return;}
+  var html='';
+  order.forEach(function(key){
+    var s=stacks[key];
+    var val=s.totalVal;
+    var chg=s.totalCost>0?((val-s.totalCost)/s.totalCost*100).toFixed(1):null;
+    var isMTG=s.type==='MTG';
+    var bgCol=isMTG?'#3A2800':'#1A0028';
+    var txtCol=isMTG?'var(--yellow)':'#B57BE0';
+    var shadow=s.count>=3?'box-shadow:3px -3px 0 rgba(255,255,255,.08),6px -6px 0 rgba(255,255,255,.04);':
+               s.count===2?'box-shadow:3px -3px 0 rgba(255,255,255,.08);':'';
+    var imgHtml=s.imageUrl
+      ?'<img src="'+s.imageUrl+'" style="width:36px;height:50px;object-fit:cover;border-radius:4px;flex-shrink:0;" onerror="this.style.display="none"">'
+      :'<div style="background:'+bgCol+';color:'+txtCol+';width:36px;height:50px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;">'+s.type+'</div>';
+    var setLbl=s.set?'<div class="holding-qty">'+s.set+'</div>':'<div class="holding-qty">'+s.type+' card</div>';
+    var badge=s.count>1?'<span style="background:rgba(255,255,255,.1);color:var(--text2);font-size:9px;font-weight:600;padding:1px 6px;border-radius:10px;margin-left:4px;">x'+s.count+'</span>':'';
+    var usdLine=s.usdPrice?'<div style="font-size:10px;color:var(--text3);">$'+(s.usdPrice*s.count).toFixed(2)+'</div>':'';
+    var chgLine=chg?'<div class="holding-chg '+(parseFloat(chg)>=0?'txn-positive':'txn-negative')+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</div>':'';
+    var idxJson=JSON.stringify(s.indices);
+    var delType=s.type==='MTG'?'mtg':'poke';
+    html+='<div class="holding-row" style="align-items:flex-start;'+shadow+'">'
+      +'<div style="position:relative;flex-shrink:0;">'+imgHtml
+      +(s.count>1?'<div style="position:absolute;top:-5px;right:-5px;background:var(--green);color:var(--green-dark);font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;">'+s.count+'</div>':'')
+      +'</div>'
+      +'<div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;"><div class="holding-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+s.name+'</div>'+badge+'</div>'+setLbl+'</div>'
+      +'<div style="text-align:right;flex-shrink:0;"><div class="holding-val">'+fmt(val)+' '+curSym()+'</div>'+usdLine+chgLine+'</div>'
+      +'<div onclick="deleteStack(\''+delType+'\','+idxJson+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;">&#10005;</div>'
+    +'</div>';
+  });
+  el.innerHTML=html;
+}
+
+function deleteStack(type,indices){
+  indices.sort(function(a,b){return b-a;});
+  if(type==='mtg')indices.forEach(function(i){data.mtgCards.splice(i,1);});
+  else indices.forEach(function(i){data.pokemonCards.splice(i,1);});
+  save();renderTab(currentTab);renderHome();
+}
+
+
+function renderSavingsPortfolio(){
+  var el=document.getElementById('savings-list');
+  if(!el)return;
+  if(!data.savingsAccounts.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No accounts yet</div>';return;}
+  // replaced
+}
+
+// ── INCOME ─────────────────────────────────────────────────────────────────
+function renderIncome(){
+  var el=document.getElementById('income-list');
+  var tot=document.getElementById('income-total');
+  if(tot)tot.textContent=fmt(totalIncome())+' '+curSym();
+  if(!el)return;
+  if(!data.incomeSources.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No income added yet</div>';return;}
+  var incHtml='';
+  data.incomeSources.forEach(function(s,i){
+    incHtml+='<div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
+      +'<div class="txn-avatar" style="background:#1A2800;color:var(--green);">'+s.name.slice(0,2).toUpperCase()+'</div>'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+s.name+'</div><div style="font-size:11px;color:var(--text3);">'+(s.freq||'monthly')+'</div></div>'
+      +'<div style="font-size:14px;font-weight:600;color:var(--green);">+'+fmt(s.amt)+'</div>'
+      +'<div onclick="deleteItem("income",'+i+')" class="delete-btn">&#10005;</div>'
+    +'</div>';
+  });
+  el.innerHTML=incHtml;
+}
+
+// ── EXPENSES ───────────────────────────────────────────────────────────────
+function renderExpenses(){
+  var el=document.getElementById('expense-list');
+  var tot=document.getElementById('exp-total');
+  var ratio=document.getElementById('exp-ratio');
+  var exp=totalExpenses(),inc=totalIncome();
+  if(tot)tot.textContent=fmt(exp)+' '+curSym();
+  if(ratio)ratio.textContent=inc>0?Math.round(exp/inc*100)+'%':'—';
+  if(!el)return;
+  if(!data.expenses.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No expenses yet</div>';return;}
+  var expHtml='';
+  data.expenses.forEach(function(e,i){
+    expHtml+='<div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
+      +'<div class="txn-avatar" style="background:#2A0000;color:var(--red);">'+e.name.slice(0,2).toUpperCase()+'</div>'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+e.name+'</div><div style="font-size:11px;color:var(--text3);">'+(e.cat==='sub'?'Subscription':'Essential')+'</div></div>'
+      +'<div style="font-size:14px;font-weight:600;color:var(--red);">&#8722;'+fmt(e.amt)+'</div>'
+      +'<div onclick="deleteItem("expense",'+i+')" class="delete-btn">&#10005;</div>'
+    +'</div>';
+  });
+  el.innerHTML=expHtml;
+}
+
+// ── SAVINGS TAB ────────────────────────────────────────────────────────────
+function renderSavingsTab(){
+  var el=document.getElementById('savings-list-full');
+  var tot=document.getElementById('sav-total');
+  if(tot)tot.textContent=fmt(totalSavings())+' '+curSym();
+  if(!el)return;
+  if(!data.savingsAccounts.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No accounts yet</div>';return;}
+  var savFullHtml='';
+  data.savingsAccounts.forEach(function(a,i){
+    savFullHtml+='<div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
+      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+a.name+'</div><div style="font-size:11px;color:var(--text3);">'+(a.bank||'Account')+'</div></div>'
+      +'<div style="font-size:14px;font-weight:600;color:var(--blue);">'+fmt(a.balance)+'</div>'
+      +'<div onclick="deleteItem("savings",'+i+')" class="delete-btn">&#10005;</div>'
+    +'</div>';
+  });
+  el.innerHTML=savFullHtml;
+}
+
+// ── SHEETS ─────────────────────────────────────────────────────────────────
+var currentSheet='';
+function openSheet(type){
+  var overlay = document.getElementById('sheet-overlay');
+  var title   = document.getElementById('sheet-title');
+  var body    = document.getElementById('sheet-body');
+  overlay.classList.add('open');
+  currentSheet = type;
+
+  if(type === 'add-income'){
+    title.textContent = 'Add income source';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Name</div>' +
+      '<input class="field-input" id="sh-name" placeholder="Salary, freelance..."></div>' +
+      '<div class="field-group"><div class="field-label">Amount (AED)</div>' +
+      '<input class="field-input" id="sh-amt" type="number" placeholder="0"></div>' +
+      '<div class="field-group"><div class="field-label">Frequency</div>' +
+      '<select class="select-input" id="sh-freq">' +
+      '<option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="annual">Annual</option>' +
+      '</select></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Add income</button>';
+
+  } else if(type === 'add-expense'){
+    title.textContent = 'Add bill';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Name</div>' +
+      '<input class="field-input" id="sh-name" placeholder="Rent, Netflix..."></div>' +
+      '<div class="field-group"><div class="field-label">Amount (AED)</div>' +
+      '<input class="field-input" id="sh-amt" type="number" placeholder="0"></div>' +
+      '<div class="field-group"><div class="field-label">Category</div>' +
+      '<select class="select-input" id="sh-cat">' +
+      '<option value="ess">Essential</option><option value="sub">Subscription</option>' +
+      '</select></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Add bill</button>';
+
+  } else if(type === 'add-savings'){
+    title.textContent = 'Add savings account';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Account name</div>' +
+      '<input class="field-input" id="sh-name" placeholder="ADCB, Emirates NBD..."></div>' +
+      '<div class="field-group"><div class="field-label">Bank</div>' +
+      '<input class="field-input" id="sh-bank" placeholder="Bank name"></div>' +
+      '<div class="field-group"><div class="field-label">Balance (AED)</div>' +
+      '<input class="field-input" id="sh-bal" type="number" placeholder="0"></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Add account</button>';
+
+  } else if(type === 'add-crypto'){
+    title.textContent = 'Add crypto holding';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Symbol</div>' +
+      '<select class="select-input" id="sh-sym">' +
+      '<option value="bitcoin" data-sym="BTC">Bitcoin (BTC)</option>' +
+      '<option value="ethereum" data-sym="ETH">Ethereum (ETH)</option>' +
+      '<option value="solana" data-sym="SOL">Solana (SOL)</option>' +
+      '<option value="cardano" data-sym="ADA">Cardano (ADA)</option>' +
+      '<option value="binancecoin" data-sym="BNB">BNB (BNB)</option>' +
+      '</select></div>' +
+      '<div class="field-group"><div class="field-label">Quantity</div>' +
+      '<input class="field-input" id="sh-qty" type="number" step="any" placeholder="0.00"></div>' +
+      '<div class="field-group"><div class="field-label">Cost basis (AED)</div>' +
+      '<input class="field-input" id="sh-cost" type="number" placeholder="0"></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Add holding</button>';
+
+  } else if(type === 'add-collection'){
+    title.textContent = 'Add card';
+    body.innerHTML =
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">' +
+        '<div id="ctype-mtg" onclick="switchCardType(\'mtg\')" style="border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;border:1.5px solid var(--green);background:rgba(168,230,60,.08);">' +
+          '<div style="margin:0 auto 4px;display:flex;align-items:center;justify-content:center;">' +
+            '<i class="ss ss-planeswalker" style="font-size:26px;color:#E05010;"></i>' +
+          '</div>' +
+          '<div style="font-size:11px;font-weight:600;color:var(--green);">Magic: The Gathering</div>' +
+          '<div style="font-size:10px;color:var(--text3);margin-top:2px;">via Scryfall</div>' +
+        '</div>' +
+        '<div id="ctype-poke" onclick="switchCardType(\'poke\')" style="border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;border:1.5px solid var(--surface3);background:transparent;">' +
+          '<div style="width:26px;height:26px;margin:0 auto 4px;"><svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="14" cy="14" r="13" fill="#E8E8E8" stroke="#333" stroke-width="1.5"/><rect x="1" y="12.5" width="26" height="3" fill="#333"/><rect x="2" y="12.5" width="24" height="3" fill="#333"/><path d="M1 14 Q1 1 14 1 Q27 1 27 14Z" fill="#E24B4A"/><circle cx="14" cy="14" r="4.5" fill="white" stroke="#333" stroke-width="1.5"/><circle cx="14" cy="14" r="2" fill="#E8E8E8"/></svg></div>' +
+          '<div style="font-size:13px;font-weight:600;color:var(--text2);">Pok&#233;mon</div>' +
+          '<div style="font-size:10px;color:var(--text3);margin-top:2px;">via TCG API</div>' +
+        '</div>' +
+      '</div>' +
+      '<div id="form-mtg">' +
+        '<div class="field-group">' +
+          '<div class="field-label">Scryfall link or search</div>' +
+          '<input class="field-input" id="sh-scryfall-url" placeholder="https://scryfall.com/card/..." oninput="onScryfallUrlChange()" style="margin-bottom:8px;">' +
+          '<input class="field-input" id="sh-card-name" placeholder="Black Lotus, Mox Pearl..." oninput="debounceSearch()">' +
+        '</div>' +
+        '<div id="sh-search-results" style="display:none;background:var(--surface2);border-radius:12px;overflow:hidden;margin-bottom:12px;max-height:180px;overflow-y:auto;"></div>' +
+        '<div id="sh-scryfall-preview" style="display:none;background:var(--surface2);border-radius:12px;padding:12px;margin-bottom:12px;flex-direction:row;gap:10px;align-items:flex-start;"></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+          '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Qty</div><input class="field-input" id="sh-qty" type="number" value="1" min="1"></div>' +
+          '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Paid (AED)</div><input class="field-input" id="sh-paid" type="number" placeholder="0"></div>' +
+        '</div>' +
+        '<button class="btn-primary" onclick="submitSheet()">Add to collection</button>' +
+      '</div>' +
+      '<div id="form-poke" style="display:none;">' +
+        '<div class="field-group">' +
+          '<div class="field-label">pokemontcg.io link or search</div>' +
+          '<input class="field-input" id="sh-poke-url" placeholder="https://pokemontcg.io/... or card ID" oninput="onPokeUrlChange()" style="margin-bottom:8px;">' +
+          '<input class="field-input" id="sh-poke-name" placeholder="Charizard, Pikachu, Mewtwo..." oninput="debouncePokeSearch()">' +
+        '</div>' +
+        '<div id="sh-poke-results" style="display:none;background:var(--surface2);border-radius:12px;overflow:hidden;margin-bottom:12px;max-height:180px;overflow-y:auto;"></div>' +
+        '<div id="sh-poke-preview" style="display:none;background:var(--surface2);border-radius:12px;padding:12px;margin-bottom:12px;flex-direction:row;gap:10px;align-items:flex-start;"></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
+          '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Qty</div><input class="field-input" id="sh-poke-qty" type="number" value="1" min="1"></div>' +
+          '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Paid (AED)</div><input class="field-input" id="sh-poke-paid" type="number" placeholder="0"></div>' +
+        '</div>' +
+        '<button class="btn-primary" style="background:var(--yellow);color:var(--yellow-dark);" onclick="submitPokemon()">Add to collection</button>' +
+      '</div>';
+
+  } else if(type === 'add-goal'){
+    title.textContent = 'Add goal';
+    var iconOpts = ['🎯','🏠','✈️','🎓','💎','🚗','📱','💰','🏋️','🌍'];
+    var iconBtns = iconOpts.map(function(ic){
+      return '<div onclick="selectGoalIcon(this,\'' + ic + '\')" style="width:36px;height:36px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:1.5px solid transparent;" data-icon="' + ic + '">' + ic + '</div>';
+    }).join('');
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Goal name</div>' +
+      '<input class="field-input" id="sh-goal-name" placeholder="House deposit, Trip to Japan..."></div>' +
+      '<div class="field-group"><div class="field-label">Icon</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;" id="goal-icon-row">' + iconBtns + '</div>' +
+      '<input type="hidden" id="sh-goal-icon" value="🎯"></div>' +
+      '<div class="field-group"><div class="field-label">Target amount (AED)</div>' +
+      '<input class="field-input" id="sh-goal-target" type="number" placeholder="50000"></div>' +
+      '<div class="field-group"><div class="field-label">Track automatically</div>' +
+      '<select class="select-input" id="sh-goal-track">' +
+        '<option value="">Manual (I update it)</option>' +
+        '<option value="savings">Auto — total savings balance</option>' +
+        '<option value="assets">Auto — total assets</option>' +
+      '</select></div>' +
+      '<div class="field-group" id="sh-goal-current-group"><div class="field-label">Current saved amount (AED)</div>' +
+      '<input class="field-input" id="sh-goal-current" type="number" placeholder="0"></div>' +
+      '<div class="field-group"><div class="field-label">Description (optional)</div>' +
+      '<input class="field-input" id="sh-goal-desc" placeholder="e.g. Save for a house down payment"></div>' +
+      '<button class="btn-primary" onclick="submitGoalSheet()">Add goal</button>';
+
+    // Hide current amount if auto-tracked
+    setTimeout(function(){
+      var sel = document.getElementById('sh-goal-track');
+      var grp = document.getElementById('sh-goal-current-group');
+      if(sel && grp){
+        sel.onchange = function(){
+          grp.style.display = sel.value ? 'none' : 'block';
+        };
+      }
+      // Select first icon by default
+      var first = document.querySelector('#goal-icon-row div');
+      if(first) first.style.borderColor = 'var(--green)';
+    }, 50);
+
+  } else if(type === 'add-transaction'){
+    title.textContent = 'Add transaction';
+    body.innerHTML =
+      '<div class="toggle-row" style="margin-bottom:14px;" id="txn-type-toggle">' +
+        '<div class="toggle-btn active" id="tt-expense" onclick="setTxnType(this,\'expense\')">Expense</div>' +
+        '<div class="toggle-btn" id="tt-income" onclick="setTxnType(this,\'income\')">Income</div>' +
+      '</div>' +
+      '<div class="field-group"><div class="field-label">Name</div>' +
+      '<input class="field-input" id="sh-txn-name" placeholder="Salary, Rent, Netflix..."></div>' +
+      '<div class="field-group"><div class="field-label">Amount (AED)</div>' +
+      '<input class="field-input" id="sh-txn-amt" type="number" placeholder="0"></div>' +
+      '<div class="field-group" id="txn-cat-group"><div class="field-label">Category</div>' +
+      '<select class="select-input" id="sh-txn-cat">' +
+        '<option value="ess">Essential</option>' +
+        '<option value="sub">Subscription</option>' +
+        '<option value="other">Other</option>' +
+      '</select></div>' +
+      '<div class="field-group"><div class="field-label">Note (optional)</div>' +
+      '<input class="field-input" id="sh-txn-note" placeholder="e.g. Carrefour, Etisalat..."></div>' +
+      '<button class="btn-primary" onclick="submitTxnSheet()">Add transaction</button>';
+  }
+
+  setTimeout(function(){var fi=body.querySelector('input');if(fi)fi.focus();},200);
+}
+
+function closeSheet(e){
+  if(e&&e.target!==document.getElementById('sheet-overlay'))return;
+  document.getElementById('sheet-overlay').classList.remove('open');
+}
+
+function submitSheet(){
+  function g(id){return document.getElementById(id);}
+  function gv(id){var e=g(id);return e?e.value.trim():'';}
+  function gn(id){var e=g(id);return e?parseFloat(e.value)||0:0;}
+  if(currentSheet==='add-income'){
+    var name=gv('sh-name'),amt=gn('sh-amt'),freq=gv('sh-freq');
+    if(!name||!amt)return;
+    data.incomeSources.push({name:name,amt:amt,freq:freq});
+    logTransaction(name, amt, 'income', 'income', freq);
+  } else if(currentSheet==='add-expense'){
+    var name=gv('sh-name'),amt=gn('sh-amt'),cat=gv('sh-cat');
+    if(!name||!amt)return;
+    data.expenses.push({name:name,amt:amt,cat:cat});
+    logTransaction(name, amt, 'expense', cat, '');
+    setTimeout(checkBudgetAlerts, 200);
+  } else if(currentSheet==='add-savings'){
+    var name=gv('sh-name'),bank=gv('sh-bank'),balance=gn('sh-bal');
+    if(!name||!balance)return;
+    data.savingsAccounts.push({name:name,bank:bank,balance:balance});
+  } else if(currentSheet==='add-crypto'){
+    var sel=g('sh-sym');
+    var id=gv('sh-sym'),sym=sel?sel.options[sel.selectedIndex].dataset.sym:'BTC';
+    var qty=gn('sh-qty'),cost=gn('sh-cost');
+    if(!qty)return;
+    data.cryptoHoldings.push({id:id,sym:sym,name:sel?sel.options[sel.selectedIndex].text.split(' ')[0]:'',qty:qty,costBasis:cost});
+    fetchCryptoPrices();
+  } else if(currentSheet==='add-collection'){
+    // Use selectedScryfallCard if set
+    var card=selectedScryfallCard;
+    if(!card||!card.name){showPriceStatus('Select a card first');return;}
+    var qty=Math.max(1,parseInt(document.getElementById('sh-qty')?.value)||1);
+    var paid=parseFloat(document.getElementById('sh-paid')?.value)||0;
+    for(var i=0;i<qty;i++){
+      data.mtgCards.push({
+        name:card.name,
+        set:card.set_name||'',
+        scryfallId:card.id||'',
+        imageUrl:card.image_uris?.small||card.card_faces?.[0]?.image_uris?.small||'',
+        addedPrice:paid,
+        currentPrice:card.priceAED||0,
+        usdPrice:card.priceUSD||0,
+        scryfallUri:card.scryfall_uri||'',
+      });
+    }
+    selectedScryfallCard=null;
+  }
+  save();
+  document.getElementById('sheet-overlay').classList.remove('open');
+  renderTab(currentTab);
+  renderHome();
+}
+
+function deleteItem(type,idx){
+  if(type==='income')data.incomeSources.splice(idx,1);
+  else if(type==='expense')data.expenses.splice(idx,1);
+  else if(type==='savings')data.savingsAccounts.splice(idx,1);
+  else if(type==='crypto')data.cryptoHoldings.splice(idx,1);
+  else if(type==='mtg')data.mtgCards.splice(idx,1);
+  else if(type==='poke')data.pokemonCards.splice(idx,1);
+  save();renderTab(currentTab);renderHome();
+}
+
+// ── Currency toggle ────────────────────────────────────────────────────────
+var _ct=document.getElementById('currency-toggle');if(_ct)_ct.addEventListener('click',function(){
+  var idx=CURRENCIES.indexOf(data.currency);
+  data.currency=CURRENCIES[(idx+1)%CURRENCIES.length];
+  save();updateCurrencyToggle();renderAll();renderTab(currentTab);
+});
+
+// ── Range toggle ───────────────────────────────────────────────────────────
+function setRange(el,range){
+  currentRange=range;
+  document.querySelectorAll('#screen-portfolio .toggle-btn').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active');
+  drawSparkline();
+}
+
+
+
+// ── Pokémon TCG API (pokemontcg.io) ───────────────────────────────────────
+var selectedPokeCard=null;
+var pokeSearchTimer=null;
+var POKE_API='https://api.pokemontcg.io/v2';
+
+
+function switchCardType(type){
+  var mtgBtn=document.getElementById('ctype-mtg');
+  var pokeBtn=document.getElementById('ctype-poke');
+  var mtgForm=document.getElementById('form-mtg');
+  var pokeForm=document.getElementById('form-poke');
+  if(type==='mtg'){
+    mtgBtn.style.borderColor='var(--green)';mtgBtn.style.background='rgba(168,230,60,.08)';
+    mtgBtn.querySelector('div:nth-child(2)').style.color='var(--green)';
+    pokeBtn.style.borderColor='var(--surface3)';pokeBtn.style.background='transparent';
+    pokeBtn.querySelector('div:nth-child(2)').style.color='var(--text2)';
+    if(mtgForm)mtgForm.style.display='block';
+    if(pokeForm)pokeForm.style.display='none';
+  } else {
+    pokeBtn.style.borderColor='var(--yellow)';pokeBtn.style.background='rgba(232,216,0,.08)';
+    pokeBtn.querySelector('div:nth-child(2)').style.color='var(--yellow)';
+    mtgBtn.style.borderColor='var(--surface3)';mtgBtn.style.background='transparent';
+    mtgBtn.querySelector('div:nth-child(2)').style.color='var(--text2)';
+    if(mtgForm)mtgForm.style.display='none';
+    if(pokeForm)pokeForm.style.display='block';
+  }
+}
+
+function debouncePokeSearch(){
+  clearTimeout(pokeSearchTimer);
+  pokeSearchTimer=setTimeout(pokeSearch,500);
+}
+
+function onPokeUrlChange(){
+  var url=(document.getElementById('sh-poke-url')||{}).value||'';
+  // pokemontcg.io card URLs: https://pokemontcg.io/cards/base1-4
+  // or direct card page links like https://www.tcgplayer.com/...
+  // We extract card ID patterns like base1-4, xy7-54, swsh12-183
+  var m=url.match(/([a-z0-9]+[0-9]-[a-zA-Z0-9]+)/i);
+  if(m) fetchPokeById(m[1]);
+}
+
+async function fetchPokeById(cardId){
+  var preview=document.getElementById('sh-poke-preview');
+  if(preview){preview.style.display='flex';preview.innerHTML='<span style="color:var(--text3);font-size:12px;">Looking up card...</span>';}
+  try{
+    var r=await fetch(POKE_API+'/cards/'+cardId);
+    if(!r.ok) throw new Error('not found');
+    var d=await r.json();
+    if(d.data) displayPokeCard(d.data);
+    else throw new Error('no data');
+  }catch(e){
+    if(preview) preview.innerHTML='<span style="color:var(--red);font-size:12px;">Card not found. Check the ID.</span>';
+  }
+}
+
+async function pokeSearch(){
+  var inp=document.getElementById('sh-poke-name');
+  var q=inp?inp.value.trim():'';
+  var results=document.getElementById('sh-poke-results');
+  if(!q||q.length<2){if(results)results.style.display='none';return;}
+  if(results){results.style.display='block';results.innerHTML='<div style="padding:12px;font-size:12px;color:var(--text3);">Searching...</div>';}
+  try{
+    var r=await fetch(POKE_API+'/cards?q=name:'+encodeURIComponent(q+'*')+'&orderBy=-set.releaseDate&pageSize=8&select=id,name,set,number,images,rarity,tcgplayer');
+    var d=await r.json();
+    if(!d.data||!d.data.length){
+      if(results)results.innerHTML='<div style="padding:12px;font-size:12px;color:var(--text3);">No cards found</div>';
+      return;
+    }
+    window._pokeResults=d.data;
+    if(results){
+      results.innerHTML=d.data.map(function(card,i){
+        var price=card.tcgplayer&&card.tcgplayer.prices?getBestPokePrice(card.tcgplayer.prices):0;
+        var img=card.images?card.images.small:'';
+        return '<div onclick="selectPokeCard('+i+')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:0.5px solid rgba(255,255,255,.05);cursor:pointer;">'
+          +(img?'<img src="'+img+'" style="width:28px;height:39px;object-fit:cover;border-radius:3px;flex-shrink:0;" loading="lazy">'
+               :'<div style="width:28px;height:39px;background:var(--surface3);border-radius:3px;flex-shrink:0;"></div>')
+          +'<div style="flex:1;min-width:0;">'
+          +'<div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+card.name+'</div>'
+          +'<div style="font-size:11px;color:var(--text3);">'+(card.set?card.set.name:'')+' · #'+(card.number||'')+'</div>'
+          +'</div>'
+          +'<div style="font-size:12px;font-weight:500;color:var(--yellow);flex-shrink:0;">'+(price?'$'+price.toFixed(2):'—')+'</div>'
+          +'</div>';
+      }).join('');
+    }
+  }catch(e){
+    if(results)results.innerHTML='<div style="padding:12px;font-size:12px;color:var(--red);">Search failed. Check connection.</div>';
+  }
+}
+
+function getBestPokePrice(prices){
+  // Try prices in order of preference
+  var keys=['holofoil','reverseHolofoil','normal','1stEditionHolofoil','unlimitedHolofoil'];
+  for(var i=0;i<keys.length;i++){
+    var p=prices[keys[i]];
+    if(p&&p.market) return p.market;
+    if(p&&p.mid) return p.mid;
+  }
+  // fallback: any price type
+  var k=Object.keys(prices)[0];
+  if(k&&prices[k]){
+    return prices[k].market||prices[k].mid||0;
+  }
+  return 0;
+}
+
+function getBestPriceType(prices){
+  var keys=['holofoil','reverseHolofoil','normal','1stEditionHolofoil'];
+  for(var i=0;i<keys.length;i++){
+    if(prices[keys[i]]&&(prices[keys[i]].market||prices[keys[i]].mid)) return keys[i];
+  }
+  return Object.keys(prices)[0]||'';
+}
+
+function selectPokeCard(idx){
+  var card=(window._pokeResults||[])[idx];
+  if(!card)return;
+  var results=document.getElementById('sh-poke-results');
+  if(results)results.style.display='none';
+  // Fetch full card data with prices
+  fetchPokeFullCard(card.id);
+}
+
+async function fetchPokeFullCard(cardId){
+  var preview=document.getElementById('sh-poke-preview');
+  if(preview){preview.style.display='flex';preview.innerHTML='<span style="color:var(--text3);font-size:12px;">Loading card...</span>';}
+  try{
+    var r=await fetch(POKE_API+'/cards/'+cardId);
+    if(!r.ok) throw new Error('not found');
+    var d=await r.json();
+    if(d.data) displayPokeCard(d.data);
+  }catch(e){
+    if(preview) preview.innerHTML='<span style="color:var(--red);font-size:12px;">Failed to load card details.</span>';
+  }
+}
+
+function displayPokeCard(card){
+  var priceUSD=card.tcgplayer&&card.tcgplayer.prices?getBestPokePrice(card.tcgplayer.prices):0;
+  var priceType=card.tcgplayer&&card.tcgplayer.prices?getBestPriceType(card.tcgplayer.prices):'';
+  var priceAED=priceUSD*USD_AED;
+  card.priceUSD=priceUSD; card.priceAED=priceAED;
+  selectedPokeCard=card;
+
+  var img=card.images?card.images.small:'';
+  var imgLg=card.images?card.images.large:'';
+  var setName=card.set?card.set.name:'';
+  var preview=document.getElementById('sh-poke-preview');
+  if(preview){
+    preview.style.display='flex';
+    preview.innerHTML=(img?'<img src="'+img+'" style="width:52px;height:72px;object-fit:cover;border-radius:5px;flex-shrink:0;">'+'':'')
+      +'<div style="flex:1;">'
+      +'<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;">'+card.name+'</div>'
+      +'<div style="font-size:11px;color:var(--text3);margin-bottom:2px;">'+setName+(card.number?' · #'+card.number:'')+'</div>'
+      +(card.rarity?'<div style="font-size:10px;color:var(--text3);margin-bottom:6px;">'+card.rarity+'</div>':'')
+      +'<div style="display:flex;gap:14px;">'
+      +'<div><div style="font-size:10px;color:var(--text3);">'+(priceType||'Market')+'</div>'
+      +'<div style="font-size:15px;font-weight:600;color:var(--yellow);">'+(priceUSD?'$'+priceUSD.toFixed(2):'—')+'</div></div>'
+      +'<div><div style="font-size:10px;color:var(--text3);">AED</div>'
+      +'<div style="font-size:15px;font-weight:600;color:var(--green);">'+(priceAED?priceAED.toFixed(0):'—')+'</div></div>'
+      +'</div>'
+      +(priceAED?'<button onclick="prefillPokePrice()" style="background:rgba(168,230,60,.12);color:var(--green);border:none;border-radius:8px;padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
+      +'</div>';
+  }
+  var paidInput=document.getElementById('sh-poke-paid');
+  if(paidInput&&priceAED&&!paidInput.value) paidInput.value=priceAED.toFixed(0);
+}
+
+function prefillPokePrice(){
+  if(!selectedPokeCard)return;
+  var el=document.getElementById('sh-poke-paid');
+  if(el) el.value=(selectedPokeCard.priceAED||0).toFixed(0);
+}
+
+async function refreshPokePrices(){
+  if(!data.pokemonCards.length)return;
+  showPriceStatus('Refreshing Pokémon prices...');
+  var updated=0;
+  for(var i=0;i<data.pokemonCards.length;i++){
+    var card=data.pokemonCards[i];
+    if(!card.pokeTcgId)continue;
+    try{
+      var r=await fetch(POKE_API+'/cards/'+card.pokeTcgId+'?select=id,tcgplayer');
+      if(!r.ok)continue;
+      var d=await r.json();
+      if(!d.data||!d.data.tcgplayer||!d.data.tcgplayer.prices)continue;
+      var usd=getBestPokePrice(d.data.tcgplayer.prices);
+      card.usdPrice=usd;
+      card.currentPrice=usd*USD_AED;
+      updated++;
+      await new Promise(function(res){setTimeout(res,120);});
+    }catch(e){}
+  }
+  if(updated>0){save();if(currentTab==='portfolio')renderPortfolio();}
+  showPriceStatus(updated>0?(updated+' Pokémon prices updated'):'No TCG IDs found');
+  setTimeout(function(){showPriceStatus('');},3000);
+}
+
+
+// ── Scryfall MTG card search ───────────────────────────────────────────────
+var selectedScryfallCard=null;
+var searchDebounceTimer=null;
+var USD_AED=3.6725;
+
+function debounceSearch(){
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer=setTimeout(scryfallSearch,500);
+}
+
+function onScryfallUrlChange(){
+  var url=(document.getElementById('sh-scryfall-url')||{}).value||'';
+  if(!url.includes('scryfall.com/card/'))return;
+  fetchScryfallByUrl(url.trim());
+}
+
+async function fetchScryfallByUrl(url){
+  var preview=document.getElementById('sh-scryfall-preview');
+  if(preview){preview.style.display='flex';preview.innerHTML='<span style="color:var(--text3);font-size:12px;">Looking up card...</span>';}
+  try{
+    var m=url.match(/scryfall\.com\/card\/([a-zA-Z0-9]+)\/([^/?#]+)/);
+    var apiUrl;
+    if(m){apiUrl='https://api.scryfall.com/cards/'+m[1]+'/'+m[2];}
+    else{
+      var uid=url.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
+      if(uid)apiUrl='https://api.scryfall.com/cards/'+uid[0];
+    }
+    if(!apiUrl)throw new Error('bad url');
+    var r=await fetch(apiUrl);
+    if(!r.ok)throw new Error('not found');
+    var card=await r.json();
+    displayScryfallCard(card);
+  }catch(e){
+    if(preview)preview.innerHTML='<span style="color:var(--red);font-size:12px;">Card not found. Check the URL.</span>';
+  }
+}
+
+async function scryfallSearch(){
+  var inp=document.getElementById('sh-card-name');
+  var q=inp?inp.value.trim():'';
+  var results=document.getElementById('sh-search-results');
+  if(!q||q.length<2){if(results)results.style.display='none';return;}
+  if(results){results.style.display='block';results.innerHTML='<div style="padding:12px;font-size:12px;color:var(--text3);">Searching...</div>';}
+  try{
+    var r=await fetch('https://api.scryfall.com/cards/search?q='+encodeURIComponent(q)+'&order=usd&dir=desc&unique=prints');
+    var d=await r.json();
+    if(!d.data||!d.data.length){if(results)results.innerHTML='<div style="padding:12px;font-size:12px;color:var(--text3);">No cards found</div>';return;}
+    window._scryfallResults=d.data.slice(0,8);
+    if(results){
+      results.innerHTML=d.data.slice(0,8).map(function(card,i){
+        var price=card.prices&&card.prices.usd?parseFloat(card.prices.usd):0;
+        var img=card.image_uris?card.image_uris.small:(card.card_faces&&card.card_faces[0].image_uris?card.card_faces[0].image_uris.small:'');
+        return '<div onclick="selectScryfallCard('+i+')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:0.5px solid rgba(255,255,255,.05);cursor:pointer;">'
+          +(img?'<img src="'+img+'" style="width:28px;height:39px;object-fit:cover;border-radius:3px;flex-shrink:0;" loading="lazy">'
+               :'<div style="width:28px;height:39px;background:var(--surface3);border-radius:3px;flex-shrink:0;"></div>')
+          +'<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+card.name+'</div>'
+          +'<div style="font-size:11px;color:var(--text3);">'+(card.set_name||'')+' · '+(card.collector_number||'')+'</div></div>'
+          +'<div style="font-size:12px;font-weight:500;color:var(--yellow);flex-shrink:0;">'+(price?'$'+price.toFixed(2):'—')+'</div></div>';
+      }).join('');
+    }
+  }catch(e){
+    if(results)results.innerHTML='<div style="padding:12px;font-size:12px;color:var(--red);">Search failed. Check connection.</div>';
+  }
+}
+
+function selectScryfallCard(idx){
+  var card=(window._scryfallResults||[])[idx];
+  if(!card)return;
+  var results=document.getElementById('sh-search-results');
+  if(results)results.style.display='none';
+  displayScryfallCard(card);
+}
+
+function displayScryfallCard(card){
+  var priceUSD=card.prices&&card.prices.usd?parseFloat(card.prices.usd):(card.prices&&card.prices.usd_foil?parseFloat(card.prices.usd_foil):0);
+  var priceAED=priceUSD*USD_AED;
+  card.priceUSD=priceUSD;card.priceAED=priceAED;
+  selectedScryfallCard=card;
+  var img=card.image_uris?card.image_uris.small:(card.card_faces&&card.card_faces[0].image_uris?card.card_faces[0].image_uris.small:'');
+  var preview=document.getElementById('sh-scryfall-preview');
+  if(preview){
+    preview.style.display='flex';
+    preview.innerHTML=(img?'<img src="'+img+'" style="width:52px;height:72px;object-fit:cover;border-radius:5px;flex-shrink:0;">':'')
+      +'<div style="flex:1;">'
+      +'<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;">'+card.name+'</div>'
+      +'<div style="font-size:11px;color:var(--text3);margin-bottom:8px;">'+(card.set_name||'')+'</div>'
+      +'<div style="display:flex;gap:14px;">'
+      +'<div><div style="font-size:10px;color:var(--text3);">Market</div><div style="font-size:15px;font-weight:600;color:var(--yellow);">'+(priceUSD?'$'+priceUSD.toFixed(2):'—')+'</div></div>'
+      +'<div><div style="font-size:10px;color:var(--text3);">AED</div><div style="font-size:15px;font-weight:600;color:var(--green);">'+(priceAED?priceAED.toFixed(0):'—')+'</div></div>'
+      +'</div>'
+      +(priceAED?'<button onclick="prefillPrice()" style="background:rgba(168,230,60,.12);color:var(--green);border:none;border-radius:8px;padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
+      +'</div>';
+  }
+  var paidInput=document.getElementById('sh-paid');
+  if(paidInput&&priceAED&&!paidInput.value)paidInput.value=priceAED.toFixed(0);
+}
+
+function prefillPrice(){
+  if(!selectedScryfallCard)return;
+  var el=document.getElementById('sh-paid');
+  if(el)el.value=(selectedScryfallCard.priceAED||0).toFixed(0);
+}
+
+function submitPokemon(){
+  var card=selectedPokeCard;
+  if(!card||!card.name){
+    // fallback: manual entry
+    var name=(document.getElementById('sh-poke-name')||{}).value||'';
+    if(!name.trim())return;
+    var paid=parseFloat((document.getElementById('sh-poke-paid')||{}).value)||0;
+    data.pokemonCards.push({name:name.trim(),addedPrice:paid,currentPrice:paid});
+  } else {
+    var qty=Math.max(1,parseInt((document.getElementById('sh-poke-qty')||{}).value)||1);
+    var paid=parseFloat((document.getElementById('sh-poke-paid')||{}).value)||0;
+    for(var i=0;i<qty;i++){
+      data.pokemonCards.push({
+        name:card.name,
+        set:card.set?card.set.name:'',
+        number:card.number||'',
+        pokeTcgId:card.id||'',
+        imageUrl:card.images?card.images.small:'',
+        imageUrlLarge:card.images?card.images.large:'',
+        addedPrice:paid,
+        currentPrice:card.priceAED||0,
+        usdPrice:card.priceUSD||0,
+        rarity:card.rarity||'',
+      });
+    }
+    selectedPokeCard=null;
+  }
+  save();
+  document.getElementById('sheet-overlay').classList.remove('open');
+  renderTab(currentTab);renderHome();
+}
+
+async function refreshAllCardPrices(){
+  await refreshMTGPrices();
+  await refreshPokePrices();
+}
+
+async function refreshMTGPrices(){
+  if(!data.mtgCards.length)return;
+  showPriceStatus('Refreshing MTG prices...');
+  var updated=0;
+  for(var i=0;i<data.mtgCards.length;i++){
+    var card=data.mtgCards[i];
+    if(!card.scryfallId)continue;
+    try{
+      var r=await fetch('https://api.scryfall.com/cards/'+card.scryfallId);
+      if(!r.ok)continue;
+      var d=await r.json();
+      var usd=d.prices&&d.prices.usd?parseFloat(d.prices.usd):(card.usdPrice||0);
+      card.usdPrice=usd;card.currentPrice=usd*USD_AED;
+      updated++;
+      await new Promise(function(res){setTimeout(res,100);});
+    }catch(e){}
+  }
+  if(updated>0){save();if(currentTab==='portfolio')renderPortfolio();}
+  showPriceStatus(updated>0?(updated+' MTG prices updated'):'No Scryfall IDs found');
+  setTimeout(function(){showPriceStatus('');},3000);
+}
+
+
+// ── Crypto prices ──────────────────────────────────────────────────────────
+async function fetchCryptoPrices(){
+  if(!data.cryptoHoldings.length)return;
+  showPriceStatus('Fetching prices…');
+  var ids=data.cryptoHoldings.map(function(h){return h.id;}).join(',');
+  // Try multiple endpoints in order
+  var endpoints=[
+    'https://api.coingecko.com/api/v3/simple/price?ids='+ids+'&vs_currencies=usd&include_24hr_change=true',
+    'https://api.coincap.io/v2/assets?ids='+ids,
+  ];
+  for(var i=0;i<endpoints.length;i++){
+    try{
+      var headers=i===0?{'x-cg-demo-api-key':'CG-demo'}:{};
+      var r=await fetch(endpoints[i],{headers});
+      if(!r.ok)continue;
+      var d=await r.json();
+      if(i===0){
+        // CoinGecko format: {bitcoin:{usd:60000,usd_24h_change:2.5}}
+        if(!d||typeof d!=='object'||Object.keys(d).length===0)continue;
+        var found=0;
+        Object.keys(d).forEach(function(k){
+          if(d[k]&&d[k].usd){
+            cryptoCache[k]=d[k].usd;
+            cryptoChangeCache[k]=d[k].usd_24h_change||0;
+            found++;
+          }
+        });
+        if(found===0)continue;
+      } else {
+        // CoinCap format: {data:[{id:'bitcoin',priceUsd:'60000'}]}
+        if(!d.data)continue;
+        d.data.forEach(function(a){
+          cryptoCache[a.id]=parseFloat(a.priceUsd)||0;
+          cryptoChangeCache[a.id]=parseFloat(a.changePercent24Hr)||0;
+        });
+      }
+      showPriceStatus('Prices updated');
+      setTimeout(function(){showPriceStatus('');},3000);
+      if(currentTab==='portfolio')renderPortfolio();
+      renderHome();
+      return;
+    }catch(e){}
+  }
+  // Final fallback: use hardcoded recent approximate prices
+  var fallback={bitcoin:98000,ethereum:3400,solana:180,cardano:0.45,binancecoin:620};
+  var usedFallback=false;
+  data.cryptoHoldings.forEach(function(h){
+    if(!cryptoCache[h.id]&&fallback[h.id]){cryptoCache[h.id]=fallback[h.id];usedFallback=true;}
+  });
+  if(usedFallback){
+    showPriceStatus('Using cached prices');
+    setTimeout(function(){showPriceStatus('');},4000);
+    if(currentTab==='portfolio')renderPortfolio();
+    renderHome();
+  } else {
+    showPriceStatus('Price fetch failed');
+    setTimeout(function(){showPriceStatus('');},4000);
+  }
+}
+
+function showPriceStatus(msg){
+  var el=document.getElementById('price-status');
+  if(!el){
+    el=document.createElement('div');
+    el.id='price-status';
+    el.style.cssText='position:absolute;bottom:72px;left:50%;transform:translateX(-50%);background:var(--surface2);color:var(--text2);font-size:11px;padding:6px 14px;border-radius:20px;white-space:nowrap;transition:opacity .3s;z-index:40;';
+    document.getElementById('app').appendChild(el);
+  }
+  el.textContent=msg;
+  el.style.opacity=msg?'1':'0';
+}
+
+// ── Clock ──────────────────────────────────────────────────────────────────
+
+setInterval(fetchCryptoPrices,60000);
+fetchMovers();
+setInterval(fetchMovers,60000);
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+
+// ── Financial Advisor (Claude API) ────────────────────────────────────────
+var advisorHistory = [];
+var advisorBriefingDone = false;
+
+function buildFinancialContext(){
+  var b = calcBudget();
+  var assets = totalAssets();
+  var ctx = '## User financial snapshot\n\n';
+  ctx += 'Currency: ' + data.currency + '\n';
+  ctx += 'Monthly income: ' + totalIncome().toFixed(0) + ' AED\n';
+  ctx += 'Monthly expenses: ' + totalExpenses().toFixed(0) + ' AED\n';
+  ctx += 'Net savings/month: ' + b.sav.toFixed(0) + ' AED\n';
+  ctx += 'Savings rate: ' + b.rate + '%\n';
+  ctx += 'Essential expenses: ' + b.ess.toFixed(0) + ' AED\n';
+  ctx += 'Subscription expenses: ' + b.subs.toFixed(0) + ' AED\n\n';
+
+  if(data.incomeSources.length){
+    ctx += '### Income sources\n';
+    data.incomeSources.forEach(function(s){ ctx += '- ' + s.name + ': ' + s.amt.toFixed(0) + ' AED/' + (s.freq||'month') + '\n'; });
+    ctx += '\n';
+  }
+  if(data.expenses.length){
+    ctx += '### Expenses\n';
+    data.expenses.forEach(function(e){ ctx += '- ' + e.name + ': ' + e.amt.toFixed(0) + ' AED (' + (e.cat==='sub'?'subscription':'essential') + ')\n'; });
+    ctx += '\n';
+  }
+  if(data.cryptoHoldings.length){
+    ctx += '### Crypto holdings\n';
+    data.cryptoHoldings.forEach(function(h){
+      var price = cryptoCache[h.id]||0;
+      var val = h.qty * price * 3.6725;
+      var chg = cryptoChangeCache[h.id]||0;
+      ctx += '- ' + h.sym + ': ' + h.qty + ' units, price $' + price.toFixed(2) + ', value ' + val.toFixed(0) + ' AED, 24h change ' + chg.toFixed(2) + '%\n';
+    });
+    ctx += '\n';
+  }
+  if(data.mtgCards.length){
+    ctx += '### MTG cards (' + data.mtgCards.length + ' cards)\n';
+    data.mtgCards.forEach(function(card){
+      var val = card.currentPrice||card.addedPrice||0;
+      var chg = card.addedPrice>0?((val-card.addedPrice)/card.addedPrice*100):0;
+      ctx += '- ' + card.name + ' (' + (card.set||'') + '): value ' + val.toFixed(0) + ' AED, ' + (chg>=0?'+':'') + chg.toFixed(1) + '% since purchase\n';
+    });
+    ctx += '\n';
+  }
+  if(data.pokemonCards.length){
+    ctx += '### Pokemon cards (' + data.pokemonCards.length + ' cards)\n';
+    data.pokemonCards.forEach(function(card){
+      var val = card.currentPrice||card.addedPrice||0;
+      var chg = card.addedPrice>0?((val-card.addedPrice)/card.addedPrice*100):0;
+      ctx += '- ' + card.name + ': value ' + val.toFixed(0) + ' AED, ' + (chg>=0?'+':'') + chg.toFixed(1) + '% since purchase\n';
+    });
+    ctx += '\n';
+  }
+  if(data.savingsAccounts.length){
+    ctx += '### Savings accounts\n';
+    data.savingsAccounts.forEach(function(a){ ctx += '- ' + a.name + ' (' + (a.bank||'') + '): ' + a.balance.toFixed(0) + ' AED\n'; });
+    ctx += '\n';
+  }
+  ctx += 'Total assets: ' + assets.toFixed(0) + ' AED\n';
+  return ctx;
+}
+
+function buildSystemPrompt(){
+  return 'You are a sharp, friendly personal financial advisor built into Moxcoin — a finance app that also tracks MTG and Pokemon card collections alongside crypto, savings, and expenses. '
+    + 'You have access to the user\'s complete financial data shown below. '
+    + 'Give concise, actionable advice. Be direct and specific — use their actual numbers. '
+    + 'Keep responses under 200 words unless asked for detail. Use plain text, no markdown headers. '
+    + 'Occasionally reference their collectibles (MTG/Pokemon) when relevant to net worth or risk. '
+    + 'Be encouraging but honest about problems.\n\n'
+    + buildFinancialContext();
+}
+
+
+function openAdvisorSettings(){
+  var currentKey = getApiKey()||'';
+  var currentWorker = '';
+  try{ currentWorker = localStorage.getItem('moxcoin_worker')||''; }catch(e){}
+
+  // Remove existing settings panel if open
+  var existing = document.getElementById('advisor-settings-panel');
+  if(existing){ existing.remove(); return; }
+
+  // Create inline settings panel inside advisor screen
+  var panel = document.createElement('div');
+  panel.id  = 'advisor-settings-panel';
+  panel.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:100;background:rgba(0,0,0,.85);display:flex;align-items:flex-end;';
+  panel.innerHTML =
+    '<div style="background:var(--surface);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;">' +
+      '<div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px;"></div>' +
+      '<div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:16px;">Advisor settings</div>' +
+      '<div class="field-group">' +
+        '<div class="field-label">Cloudflare Worker URL</div>' +
+        '<input class="field-input" id="set-worker" placeholder="https://moxcoin-worker.aniduaza.workers.dev" value="' + currentWorker + '">' +
+      '</div>' +
+      '<div class="field-group">' +
+        '<div class="field-label">Anthropic API key</div>' +
+        '<input class="field-input" id="set-apikey" type="password" placeholder="sk-ant-..." value="' + currentKey + '">' +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--text3);margin-bottom:16px;">Get a free API key at console.anthropic.com</div>' +
+      '<button class="btn-primary" onclick="saveAdvisorSettings()">Save settings</button>' +
+      '<button class="btn-secondary" onclick="closeAdvisorSettings()" style="margin-top:8px;">Cancel</button>' +
+    '</div>';
+  panel.addEventListener('click', function(e){ if(e.target===panel) panel.remove(); });
+  document.body.appendChild(panel);
+  setTimeout(function(){ var f=document.getElementById('set-worker'); if(f)f.focus(); }, 200);
+}
+
+function closeAdvisorSettings(){
+  var p=document.getElementById('advisor-settings-panel');
+  if(p)p.remove();
+}
+
+function saveAdvisorSettings(){
+  var worker = (document.getElementById('set-worker')||{}).value||'';
+  var key    = (document.getElementById('set-apikey')||{}).value||'';
+  worker = worker.trim(); key = key.trim();
+  if(worker.startsWith('https://')){
+    try{ localStorage.setItem('moxcoin_worker', worker); }catch(e){}
+  }
+  if(key.startsWith('sk-')){
+    try{ localStorage.setItem('moxcoin_apikey', key); }catch(e){}
+  }
+  document.getElementById('sheet-overlay').classList.remove('open');
+  appendMessage('assistant', 'Settings saved! Try asking a question now.');
+}
+
+function clearAdvisorSettings(){
+  try{ localStorage.removeItem('moxcoin_apikey'); localStorage.removeItem('moxcoin_worker'); }catch(e){}
+  document.getElementById('sheet-overlay').classList.remove('open');
+  appendMessage('assistant', 'Settings cleared.');
+}
+
+function getApiKey(){
+  try{
+    var k = localStorage.getItem('moxcoin_apikey');
+    if(k) return k;
+  }catch(e){}
+  return null;
+}
+
+function promptApiKey(){
+  var k = window.prompt('Enter your Anthropic API key (starts with sk-ant-):\n\nGet one free at console.anthropic.com');
+  if(k && k.trim().startsWith('sk-')){
+    try{ localStorage.setItem('moxcoin_apikey', k.trim()); }catch(e){}
+    return k.trim();
+  }
+  return null;
+}
+
+async function callClaude(userMsg){
+  var apiKey = getApiKey();
+  if(!apiKey){
+    apiKey = promptApiKey();
     if(!apiKey) throw new Error('No API key provided.');
   }
 
