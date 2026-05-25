@@ -904,13 +904,42 @@ function initTheme(){
 
 // ── Persistence ────────────────────────────────────────────────────────────
 function save(){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch(e){}
+  try{
+    var json = JSON.stringify(data);
+    localStorage.setItem(STORAGE_KEY, json);
+  }catch(e){
+    console.error('Save error:', e);
+    // If storage is full, try clearing snapshots first
+    if(e.name === 'QuotaExceededError'){
+      data.snapshots = data.snapshots ? data.snapshots.slice(-30) : [];
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e2){}
+    }
+  }
 }
+
+// Auto-save every 30 seconds as backup
+setInterval(function(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+}, 30000);
 function load(){
   try{
     var raw=localStorage.getItem(STORAGE_KEY);
-    if(raw){var d=JSON.parse(raw);Object.assign(data,d);}
-  }catch(e){}
+    if(raw){
+      var d=JSON.parse(raw);
+      // Merge each key individually to avoid wiping defaults
+      if(d.currency)   data.currency   = d.currency;
+      if(d.hidden!==undefined) data.hidden = d.hidden;
+      if(d.incomeSources)  data.incomeSources  = d.incomeSources;
+      if(d.expenses)       data.expenses       = d.expenses;
+      if(d.cryptoHoldings) data.cryptoHoldings = d.cryptoHoldings;
+      if(d.mtgCards)       data.mtgCards       = d.mtgCards;
+      if(d.pokemonCards)   data.pokemonCards   = d.pokemonCards;
+      if(d.savingsAccounts)data.savingsAccounts= d.savingsAccounts;
+      if(d.transactions)   data.transactions   = d.transactions;
+      if(d.goals)          data.goals          = d.goals;
+      if(d.snapshots)      data.snapshots      = d.snapshots;
+    }
+  }catch(e){ console.error('Load error:', e); }
 }
 
 // ── Formatting ─────────────────────────────────────────────────────────────
