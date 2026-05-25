@@ -2725,32 +2725,47 @@ function openAdvisorSettings(){
   var currentKey = getApiKey()||'';
   var currentWorker = '';
   try{ currentWorker = localStorage.getItem('moxcoin_worker')||''; }catch(e){}
-
   var masked = currentKey ? currentKey.slice(0,8)+'...' : '(not set)';
-  var choice = window.prompt(
-    'Advisor settings\n\n' +
-    '1) API key: ' + masked + '\n' +
-    '2) Cloudflare Worker URL: ' + (currentWorker||'(not set)') + '\n\n' +
-    'Type NEW KEY to enter a new API key\n' +
-    'Type a https:// URL to set your Worker URL\n' +
-    'Type CLEAR to remove API key\n' +
-    'Or cancel to close'
-  );
-  if(!choice) return;
-  choice = choice.trim();
-  if(choice === 'NEW KEY' || choice.startsWith('sk-')){
-    var k = choice.startsWith('sk-') ? choice : window.prompt('Paste your Anthropic API key (sk-ant-...):');
-    if(k && k.trim().startsWith('sk-')){
-      try{ localStorage.setItem('moxcoin_apikey', k.trim()); }catch(e){}
-      appendMessage('assistant', 'API key saved. Try asking a question now!');
-    }
-  } else if(choice.startsWith('https://')){
-    try{ localStorage.setItem('moxcoin_worker', choice); }catch(e){}
-    appendMessage('assistant', 'Worker URL saved: ' + choice);
-  } else if(choice === 'CLEAR'){
-    try{ localStorage.removeItem('moxcoin_apikey'); localStorage.removeItem('moxcoin_worker'); }catch(e){}
-    appendMessage('assistant', 'Settings cleared.');
+
+  // Use sheet instead of prompt (prompt is blocked in PWA mode)
+  var overlay = document.getElementById('sheet-overlay');
+  var title   = document.getElementById('sheet-title');
+  var body    = document.getElementById('sheet-body');
+  if(!overlay) return;
+  overlay.classList.add('open');
+  title.textContent = 'Advisor settings';
+  body.innerHTML =
+    '<div class="field-group">' +
+      '<div class="field-label">Cloudflare Worker URL</div>' +
+      '<input class="field-input" id="set-worker" placeholder="https://moxcoin-worker.aniduaza.workers.dev" value="' + currentWorker + '">' +
+    '</div>' +
+    '<div class="field-group">' +
+      '<div class="field-label">Anthropic API key</div>' +
+      '<input class="field-input" id="set-apikey" type="password" placeholder="sk-ant-..." value="' + (currentKey||'') + '">' +
+    '</div>' +
+    '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Get a free API key at console.anthropic.com</div>' +
+    '<button class="btn-primary" onclick="saveAdvisorSettings()">Save settings</button>' +
+    '<button class="btn-secondary" onclick="clearAdvisorSettings()" style="margin-top:8px;">Clear all settings</button>';
+}
+
+function saveAdvisorSettings(){
+  var worker = (document.getElementById('set-worker')||{}).value||'';
+  var key    = (document.getElementById('set-apikey')||{}).value||'';
+  worker = worker.trim(); key = key.trim();
+  if(worker.startsWith('https://')){
+    try{ localStorage.setItem('moxcoin_worker', worker); }catch(e){}
   }
+  if(key.startsWith('sk-')){
+    try{ localStorage.setItem('moxcoin_apikey', key); }catch(e){}
+  }
+  document.getElementById('sheet-overlay').classList.remove('open');
+  appendMessage('assistant', 'Settings saved! Try asking a question now.');
+}
+
+function clearAdvisorSettings(){
+  try{ localStorage.removeItem('moxcoin_apikey'); localStorage.removeItem('moxcoin_worker'); }catch(e){}
+  document.getElementById('sheet-overlay').classList.remove('open');
+  appendMessage('assistant', 'Settings cleared.');
 }
 
 function getApiKey(){
@@ -3043,6 +3058,8 @@ load();
 initTheme();
 renderAll();
 setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); }, 200);
+
+
 </script>
 
 <script>
