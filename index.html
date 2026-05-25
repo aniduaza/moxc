@@ -646,6 +646,22 @@ body.light #more-drawer{background:#FFFFFF;}
           </div>
         </div>
 
+        <!-- setup form shown when not configured -->
+        <div id="advisor-setup-form" style="display:none;background:var(--surface);border-radius:var(--r-lg);padding:18px;margin-bottom:0;">
+          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Connect the AI Advisor</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:16px;">Enter your Cloudflare Worker URL and Anthropic API key to get started.</div>
+          <div class="field-group">
+            <div class="field-label">Cloudflare Worker URL</div>
+            <input class="field-input" id="setup-worker-input" placeholder="https://moxcoin-worker.aniduaza.workers.dev" type="url">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Anthropic API key</div>
+            <input class="field-input" id="setup-key-input" placeholder="sk-ant-..." type="password">
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Get a free key at console.anthropic.com</div>
+          <button class="btn-primary" onclick="saveAdvisorSetup()">Save &amp; connect</button>
+        </div>
+
         <!-- daily briefing -->
         <div id="advisor-briefing" class="slide-up d2"></div>
 
@@ -2943,145 +2959,32 @@ async function generateBriefing(){
 }
 
 function renderAdvisor(){
+  var key    = getApiKey();
+  var worker = '';
+  try{ worker = localStorage.getItem('moxcoin_worker')||''; }catch(e){}
+
+  // Show setup form inline if not configured
+  var setupEl = document.getElementById('advisor-setup-form');
+  if(!key || !worker){
+    if(setupEl) setupEl.style.display = 'block';
+    return;
+  }
+  if(setupEl) setupEl.style.display = 'none';
   generateBriefing();
   var msgs = document.getElementById('chat-messages');
   if(msgs && msgs.children.length === 0){
-    appendMessage('assistant', 'Hi! I\'m your Moxcoin financial advisor. I can see your full financial picture — income, expenses, crypto, MTG & Pokemon cards, and savings. What would you like to know?');
+    appendMessage('assistant', 'Hi! I am your Moxcoin financial advisor. I can see your full financial picture including income, expenses, crypto, MTG and Pokemon cards, and savings. What would you like to know?');
   }
 }
 
-
-// ── Background M-coin particles ───────────────────────────────────────────
-(function(){
-  var canvas, ctx, W, H, coins = [];
-  var coinImg = null;
-  var coinImgLoaded = false;
-
-  // Coin size range
-  var MIN_SIZE = 8, MAX_SIZE = 18;
-
-  function Coin(){
-    this.reset();
-    this.y = Math.random() * H;
-    this.x = Math.random() * W;
-    this.spin = Math.random() * Math.PI * 2; // start at random spin angle
-  }
-
-  Coin.prototype.reset = function(){
-    this.x  = Math.random() * W;
-    this.y  = H + MAX_SIZE;
-    this.size = Math.random() * (MAX_SIZE - MIN_SIZE) + MIN_SIZE;
-    this.vx = (Math.random() - 0.5) * 0.4;
-    this.vy = -(Math.random() * 0.5 + 0.2);
-    this.alpha = Math.random() * 0.45 + 0.2;
-    this.life  = 1;
-    this.decay = Math.random() * 0.0012 + 0.0006;
-    this.spin  = 0;
-    this.spinSpeed = (Math.random() - 0.5) * 0.06; // rotation per frame
-  };
-
-  Coin.prototype.update = function(){
-    this.x    += this.vx;
-    this.y    += this.vy;
-    this.spin += this.spinSpeed;
-    this.life -= this.decay;
-    if(this.life <= 0 || this.y < -MAX_SIZE) this.reset();
-  };
-
-  Coin.prototype.draw = function(){
-    var s = this.size;
-    var a = this.alpha * this.life;
-    ctx.save();
-    ctx.globalAlpha = a;
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.spin);
-
-    if(coinImgLoaded){
-      // Draw the generated coin image, squash x-axis to simulate spinning coin
-      var scaleX = Math.abs(Math.cos(this.spin * 2));
-      ctx.scale(scaleX, 1);
-      ctx.drawImage(coinImg, -s/2, -s/2, s, s);
-    } else {
-      // Fallback: draw an M coin on canvas
-      var isLight = document.body.classList.contains('light');
-      var scaleX = Math.abs(Math.cos(this.spin * 2));
-      ctx.scale(scaleX, 1);
-
-      // Coin body
-      ctx.beginPath();
-      ctx.arc(0, 0, s/2, 0, Math.PI * 2);
-      ctx.fillStyle = isLight ? '#1A2800' : '#1C2A00';
-      ctx.fill();
-
-      // Coin border glow
-      ctx.beginPath();
-      ctx.arc(0, 0, s/2, 0, Math.PI * 2);
-      ctx.strokeStyle = '#A8E63C';
-      ctx.lineWidth = s * 0.1;
-      ctx.stroke();
-
-      // M letterform
-      ctx.fillStyle = '#A8E63C';
-      ctx.font = 'bold ' + Math.round(s * 0.55) + 'px DM Sans,sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('M', 0, 0);
-    }
-
-    ctx.restore();
-  };
-
-  function resize(){
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-
-  function loop(){
-    ctx.clearRect(0, 0, W, H);
-    for(var i = 0; i < coins.length; i++){
-      coins[i].update();
-      coins[i].draw();
-    }
-    requestAnimationFrame(loop);
-  }
-
-  function loadCoinImage(src){
-    var img = new Image();
-    img.onload = function(){ coinImg = img; coinImgLoaded = true; };
-    img.onerror = function(){ coinImgLoaded = false; };
-    img.src = src;
-  }
-
-  function init(){
-    canvas = document.getElementById('bg-canvas');
-    if(!canvas) return;
-    ctx = canvas.getContext('2d');
-    resize();
-    window.addEventListener('resize', resize);
-    for(var i = 0; i < 55; i++) coins.push(new Coin());
-    loop();
-  }
-
-  // Expose so we can load coin image once Higgsfield URL is known
-  window.loadMoxCoinImg = loadCoinImage;
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
-
-load();
-initTheme();
-renderAll();
-// Wire gear button
-setTimeout(function(){
-  var g=document.getElementById('advisor-gear-btn');
-  if(g) g.onclick=openAdvisorSettings;
-},500);
-setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); }, 200);
-
+function saveAdvisorSetup(){
+  var w = (document.getElementById('setup-worker-input')||{}).value||'';
+  var k = (document.getElementById('setup-key-input')||{}).value||'';
+  w = w.trim(); k = k.trim();
+  if(w) try{ localStorage.setItem('moxcoin_worker', w); }catch(e){}
+  if(k) try{ localStorage.setItem('moxcoin_apikey', k); }catch(e){}
+  renderAdvisor();
+}
 
 </script>
 
