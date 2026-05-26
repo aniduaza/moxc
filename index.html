@@ -49,7 +49,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 
 
 /* ── Scrollable content ── */
-.page{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.page{flex:1;overflow:hidden;display:flex;flex-direction:row;position:relative;}
 .page::-webkit-scrollbar{display:none;}
 
 /* ── Bottom nav ── */
@@ -71,7 +71,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .sec-link{font-size:13px;font-weight:500;color:var(--green);}
 
 /* ── Screen pages ── */
-.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;}
+.screen{display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:0;}.screen.swipeable{display:flex!important;position:absolute;top:0;width:100%;height:100%;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;}.screen.active{display:flex;}
 .screen.active{display:flex;}
 
 /* ── Animations ── */
@@ -344,6 +344,11 @@ body.light .more-screen-item{background:#FFFFFF;}
 .more-item-title{font-size:14px;font-weight:500;color:var(--text);}
 .more-item-sub{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 body.light .more-item{background:#FFFFFF;}
+
+/* ── Swipe transitions ───────────────────────────────────────────────── */
+#swipe-container{position:relative;flex:1;overflow:hidden;}
+.swipeable-screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.swipeable-screen::-webkit-scrollbar{display:none;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -357,9 +362,11 @@ body.light .more-item{background:#FFFFFF;}
 
 
   <div class="page" id="page-content">
+  <div id="swipe-container">
+
 
     <!-- ═══ HOME SCREEN ═══ -->
-    <div class="screen active" id="screen-home">
+    <div class="screen active" id="screen-home" data-swipe-index="0">
       <div class="pg">
 
         <!-- top row: greeting + controls -->
@@ -428,7 +435,9 @@ body.light .more-item{background:#FFFFFF;}
       </div>
     </div>
 
-<!-- ═══ BUDGET SCREEN ═══ -->
+  </div><!-- end swipe-container -->
+
+  <!-- ═══ BUDGET SCREEN ═══ -->
     <div class="screen" id="screen-budget">
       <div class="pg">
 
@@ -513,7 +522,7 @@ body.light .more-item{background:#FFFFFF;}
     </div>
 
     <!-- ═══ PORTFOLIO SCREEN ═══ -->
-    <div class="screen" id="screen-portfolio">
+    <div class="screen" id="screen-portfolio" data-swipe-index="1">
       <div class="pg">
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;" class="slide-up d1">
@@ -776,7 +785,7 @@ body.light .more-item{background:#FFFFFF;}
 
 
     <!-- ═══ ACTIVITY SCREEN ═══ -->
-    <div class="screen" id="screen-activity">
+    <div class="screen" id="screen-activity" data-swipe-index="2">
       <div class="pg">
 
         <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
@@ -845,7 +854,7 @@ body.light .more-item{background:#FFFFFF;}
     </div>
 
 <!-- ═══ MORE SCREEN ═══ -->
-    <div class="screen" id="screen-more">
+    <div class="screen" id="screen-more" data-swipe-index="3">
       <div class="pg">
         <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
 
@@ -4691,9 +4700,231 @@ function saveAdvisorSetup(){
 
 
 // ── Boot ─────────────────────────────────────────────────────────────────
+
+// ── Swipe navigation engine ───────────────────────────────────────────────
+var SWIPE_TABS   = ['home', 'portfolio', 'activity', 'more'];
+var swipeIndex   = 0;       // current tab index (0=home)
+var swipeW       = 0;       // container width
+var touchStartX  = 0;
+var touchStartY  = 0;
+var touchCurX    = 0;
+var isDragging   = false;
+var isVertical   = false;   // locked to vertical scroll this gesture
+var dirLocked    = false;   // direction determined yet?
+var swipeAnimRAF = null;
+var swipeVelocity= 0;
+var lastTouchX   = 0;
+var lastTouchT   = 0;
+
+function initSwipe(){
+  var container = document.getElementById('swipe-container');
+  if(!container) return;
+
+  swipeW = container.offsetWidth;
+  window.addEventListener('resize', function(){ swipeW = container.offsetWidth; positionScreens(swipeIndex, false); });
+
+  // Position all 4 screens side by side
+  SWIPE_TABS.forEach(function(tab, i){
+    var el = document.getElementById('screen-'+tab);
+    if(!el) return;
+    el.classList.add('swipeable-screen');
+    el.classList.remove('active');
+    el.style.transform = 'translateX('+(i * 100)+'%)';
+    el.style.display   = 'flex';
+  });
+
+  // Set initial screen
+  positionScreens(0, false);
+  updateNavActive(0);
+  renderTab(SWIPE_TABS[0]);
+
+  // Touch events on container
+  container.addEventListener('touchstart', onTouchStart, {passive:true});
+  container.addEventListener('touchmove',  onTouchMove,  {passive:false});
+  container.addEventListener('touchend',   onTouchEnd,   {passive:true});
+  container.addEventListener('touchcancel',onTouchEnd,   {passive:true});
+}
+
+function positionScreens(targetIdx, animate, overshoot){
+  if(swipeAnimRAF){ cancelAnimationFrame(swipeAnimRAF); swipeAnimRAF=null; }
+  var over = overshoot || 0;
+  SWIPE_TABS.forEach(function(tab, i){
+    var el = document.getElementById('screen-'+tab);
+    if(!el) return;
+    var offset = (i - targetIdx) * 100 + over;
+    if(animate){
+      el.style.transition = 'transform .35s cubic-bezier(.22,.68,0,1.2)';
+    } else {
+      el.style.transition = 'none';
+    }
+    el.style.transform = 'translateX('+offset+'%)';
+  });
+}
+
+function springToIndex(idx){
+  // Spring with slight overshoot
+  swipeIndex = Math.max(0, Math.min(SWIPE_TABS.length-1, idx));
+  positionScreens(swipeIndex, true);
+  updateNavActive(swipeIndex);
+  renderTab(SWIPE_TABS[swipeIndex]);
+}
+
+function updateNavActive(idx){
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var navEl = document.getElementById('nav-'+SWIPE_TABS[idx]);
+  if(navEl) navEl.classList.add('active');
+}
+
+function onTouchStart(e){
+  var t       = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+  touchCurX   = t.clientX;
+  lastTouchX  = t.clientX;
+  lastTouchT  = Date.now();
+  swipeVelocity = 0;
+  isDragging  = false;
+  isVertical  = false;
+  dirLocked   = false;
+  // Pause transitions
+  SWIPE_TABS.forEach(function(tab){
+    var el = document.getElementById('screen-'+tab);
+    if(el) el.style.transition = 'none';
+  });
+}
+
+function onTouchMove(e){
+  if(!e.touches.length) return;
+  var t    = e.touches[0];
+  var dx   = t.clientX - touchStartX;
+  var dy   = t.clientY - touchStartY;
+
+  // Determine direction on first significant move
+  if(!dirLocked && (Math.abs(dx)>6 || Math.abs(dy)>6)){
+    dirLocked = true;
+    isVertical = Math.abs(dy) > Math.abs(dx);
+  }
+
+  if(isVertical) return; // Let native scroll handle it
+
+  // Prevent vertical scroll while swiping horizontally
+  e.preventDefault();
+  isDragging = true;
+  touchCurX  = t.clientX;
+
+  // Calculate velocity
+  var now = Date.now();
+  var dt  = now - lastTouchT;
+  if(dt > 0) swipeVelocity = (t.clientX - lastTouchX) / dt;
+  lastTouchX = t.clientX;
+  lastTouchT = now;
+
+  // Move screens
+  var pct = (dx / swipeW) * 100;
+  // Add resistance at edges
+  if((swipeIndex===0 && dx>0) || (swipeIndex===SWIPE_TABS.length-1 && dx<0)){
+    pct = pct * 0.25;
+  }
+
+  SWIPE_TABS.forEach(function(tab, i){
+    var el = document.getElementById('screen-'+tab);
+    if(!el) return;
+    var base = (i - swipeIndex) * 100;
+    el.style.transform = 'translateX('+(base + pct)+'%)';
+  });
+}
+
+function onTouchEnd(e){
+  if(!isDragging && dirLocked && !isVertical){
+    isDragging = true;
+  }
+  if(!isDragging || isVertical){
+    // Snap back if no drag
+    positionScreens(swipeIndex, true);
+    return;
+  }
+
+  var dx      = touchCurX - touchStartX;
+  var pct     = dx / swipeW;
+  var vel     = swipeVelocity; // px/ms
+
+  var newIdx  = swipeIndex;
+
+  // Flick detection (fast swipe regardless of distance)
+  if(Math.abs(vel) > 0.3){
+    if(vel < 0) newIdx = swipeIndex + 1;
+    else        newIdx = swipeIndex - 1;
+  } else if(Math.abs(pct) > 0.35){
+    // Dragged more than 35% of screen width
+    if(pct < 0) newIdx = swipeIndex + 1;
+    else        newIdx = swipeIndex - 1;
+  }
+
+  newIdx = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
+  springToIndex(newIdx);
+  isDragging = false;
+}
+
+// Override switchTab to work with swipe system
+function switchTab(tab){
+  var swipeIdx = SWIPE_TABS.indexOf(tab);
+
+  if(swipeIdx >= 0){
+    // Swipeable tab — animate to it
+    springToIndex(swipeIdx);
+  } else {
+    // Non-swipeable tab (budget, income, etc.) — show as overlay
+    document.querySelectorAll('.screen').forEach(function(sc){
+      if(!sc.classList.contains('swipeable-screen')) sc.style.display = 'none';
+    });
+    var el = document.getElementById('screen-'+tab);
+    if(el){
+      el.style.display   = 'flex';
+      el.style.position  = 'fixed';
+      el.style.inset     = '0';
+      el.style.zIndex    = '50';
+      el.style.background= 'var(--bg)';
+      el.style.paddingBottom = '80px';
+      // Add back button
+      addBackButton(el, tab);
+    }
+    document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+    var navMore = document.getElementById('nav-more');
+    if(navMore) navMore.classList.add('active');
+    currentTab = tab;
+    renderTab(tab);
+  }
+}
+
+function addBackButton(el, tab){
+  // Remove existing back button
+  var existing = el.querySelector('.back-btn');
+  if(existing) existing.remove();
+
+  var pg = el.querySelector('.pg');
+  if(!pg) return;
+
+  var btn = document.createElement('div');
+  btn.className = 'back-btn';
+  btn.style.cssText = 'display:flex;align-items:center;gap:6px;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:12px;-webkit-tap-highlight-color:transparent;';
+  btn.innerHTML = '&#8592; Back';
+  btn.addEventListener('click', function(){
+    el.style.display  = 'none';
+    el.style.position = '';
+    el.style.inset    = '';
+    el.style.zIndex   = '';
+    springToIndex(swipeIndex);
+    renderTab(SWIPE_TABS[swipeIndex]);
+  });
+
+  pg.insertBefore(btn, pg.firstChild);
+}
+
+
 load();
 initTheme();
-renderAll();
+// Swipe engine takes over rendering
+initSwipe();
 setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); }, 200);
 
 // ── Persistent save triggers for Android PWA ─────────────────────────────
