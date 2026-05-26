@@ -779,54 +779,59 @@ body.light .more-item{background:#FFFFFF;}
     <div class="screen" id="screen-activity">
       <div class="pg">
 
-        <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">Activity</div>
+        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
 
-        <!-- Budget summary card -->
-        <div class="card slide-up d1" style="margin-bottom:14px;">
-          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;font-weight:600;">This month</div>
-          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;">
-            <div>
-              <div style="font-size:12px;color:var(--text3);margin-bottom:2px;">Spent</div>
-              <div style="font-size:24px;font-weight:600;color:var(--text);" id="act-spent">—</div>
+        <!-- month summary card -->
+        <div style="background:#131D00;border-radius:20px;padding:16px;" class="slide-up d2">
+          <div id="act-month-label" style="font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;"></div>
+
+          <!-- 3 stats -->
+          <div style="display:flex;gap:6px;margin-bottom:12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Income</div>
+              <div style="font-size:18px;font-weight:600;color:#A8E63C;letter-spacing:-.5px;" id="act-income">—</div>
             </div>
-            <div style="text-align:right;">
-              <div style="font-size:12px;color:var(--text3);margin-bottom:2px;">Budget</div>
-              <div style="font-size:24px;font-weight:600;color:var(--text);" id="act-budget">—</div>
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Spent</div>
+              <div style="font-size:18px;font-weight:600;color:#fff;letter-spacing:-.5px;" id="act-spent">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Saved</div>
+              <div style="font-size:18px;font-weight:600;color:#5B9BD5;letter-spacing:-.5px;" id="act-saved">—</div>
             </div>
           </div>
-          <div style="height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;margin-bottom:8px;">
-            <div id="act-bar" style="height:6px;border-radius:3px;background:var(--green);width:0%;transition:width .8s cubic-bezier(.22,.68,0,1.2);"></div>
+
+          <!-- budget progress -->
+          <div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:7px;">
+            <div id="act-bar" style="height:5px;border-radius:3px;background:#A8E63C;width:0%;transition:width .8s cubic-bezier(.22,.68,0,1.2);"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;">
-            <span id="act-pct" style="color:var(--green);font-weight:600;">0% used</span>
-            <span id="act-remaining" style="color:var(--text3);">— remaining</span>
+          <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px;">
+            <span id="act-pct" style="color:#A8E63C;font-weight:600;"></span>
+            <span id="act-remaining" style="color:rgba(255,255,255,.35);"></span>
           </div>
+
           <!-- breakdown pills -->
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
-              <div style="font-size:10px;color:var(--text3);">Essentials</div>
-              <div style="font-size:13px;font-weight:600;color:var(--text);" id="act-ess">—</div>
+          <div style="display:flex;gap:6px;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Essentials</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-ess">—</div>
             </div>
-            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
-              <div style="font-size:10px;color:var(--text3);">Subscriptions</div>
-              <div style="font-size:13px;font-weight:600;color:var(--text);" id="act-subs">—</div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Subscriptions</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-subs">—</div>
             </div>
-            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
-              <div style="font-size:10px;color:var(--text3);">Saved</div>
-              <div style="font-size:13px;font-weight:600;color:var(--green);" id="act-saved">—</div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Saved</div>
+              <div style="font-size:13px;font-weight:600;color:#A8E63C;" id="act-saved2">—</div>
             </div>
           </div>
         </div>
 
-        <!-- Transactions -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;" class="slide-up d2">
-          <div style="font-size:13px;font-weight:600;color:var(--text);">Transactions</div>
-          <div id="act-add-btn" style="font-size:12px;color:var(--green);cursor:pointer;padding:4px 0;" onclick="openFABSheet('add-transaction')">+ Add</div>
-        </div>
+        <!-- search -->
+        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:12px;">
 
-        <!-- search + filters -->
-        <input class="txn-search slide-up d2" id="act-search" placeholder="Search transactions..." oninput="renderActivity()" style="margin-bottom:8px;">
-        <div class="txn-filter-row slide-up d2" style="margin-bottom:10px;">
+        <!-- filter pills -->
+        <div class="txn-filter-row slide-up d3">
           <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
           <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
           <button class="txn-filter-btn" onclick="setActFilter(this,'expense')">Expenses</button>
@@ -834,12 +839,12 @@ body.light .more-item{background:#FFFFFF;}
           <button class="txn-filter-btn" onclick="setActFilter(this,'sub')">Subscriptions</button>
         </div>
 
-        <div id="act-txn-list" class="slide-up d3"></div>
+        <div id="act-txn-list" class="slide-up d4"></div>
 
       </div>
     </div>
 
-    <!-- ═══ MORE SCREEN ═══ -->
+<!-- ═══ MORE SCREEN ═══ -->
     <div class="screen" id="screen-more">
       <div class="pg">
         <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
@@ -1786,9 +1791,116 @@ function setActFilter(btn, filter){
 }
 
 function renderActivity(){
-  renderActivityBudget();
-  renderActivityTxns();
+  var b   = calcBudget();
+  var inc = totalIncome();
+  var sav = b.sav;
+
+  // Month label
+  var ml = document.getElementById('act-month-label');
+  if(ml){ var now=new Date(); ml.textContent=now.toLocaleDateString('en',{month:'long',year:'numeric'}); }
+
+  // Stats
+  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  set('act-income',  fmt(inc)+' '+curSym());
+  set('act-spent',   fmt(b.tot)+' '+curSym());
+  set('act-saved',   fmt(sav > 0 ? sav : 0)+' '+curSym());
+  set('act-saved2',  fmt(sav > 0 ? sav : 0));
+  set('act-ess',     fmt(b.ess));
+  set('act-subs',    fmt(b.subs));
+
+  // Progress bar
+  var limit  = Math.max(inc, b.tot*1.2, 1000);
+  var pct    = Math.min(100, Math.round(b.tot/limit*100));
+  var barEl  = document.getElementById('act-bar');
+  var pctEl  = document.getElementById('act-pct');
+  var remEl  = document.getElementById('act-remaining');
+  if(barEl){
+    setTimeout(function(){ barEl.style.width = pct+'%'; barEl.style.background = pct>=90?'#E05555':pct>=75?'#E0A030':'#A8E63C'; },80);
+  }
+  if(pctEl) pctEl.textContent = pct+'% of budget used';
+  if(remEl) remEl.textContent = fmt(Math.max(0,limit-b.tot))+' '+curSym()+' remaining';
+
+  // Transactions list
+  var el = document.getElementById('act-txn-list');
+  if(!el) return;
+
+  var q      = (document.getElementById('act-search')||{}).value||'';
+  q          = q.toLowerCase();
+  var filter = actFilter||'all';
+
+  var txns = (data.transactions||[]).slice().reverse();
+  txns = txns.filter(function(t){
+    if(filter==='income'  && t.type!=='income')  return false;
+    if(filter==='expense' && t.type!=='expense') return false;
+    if(filter==='ess'     && t.cat!=='ess')      return false;
+    if(filter==='sub'     && t.cat!=='sub')      return false;
+    if(q && t.name.toLowerCase().indexOf(q)<0 && (t.note||'').toLowerCase().indexOf(q)<0) return false;
+    return true;
+  });
+
+  if(!txns.length){
+    el.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;">'
+      +(data.transactions.length?'No results for this filter':'No transactions yet — tap + to add one')
+      +'</div>';
+    return;
+  }
+
+  // Group by day
+  var groups={}, groupOrder=[];
+  txns.forEach(function(t){
+    var d   = new Date(t.date);
+    var today = new Date(); today.setHours(0,0,0,0);
+    var yesterday = new Date(today); yesterday.setDate(yesterday.getDate()-1);
+    var tDay = new Date(d); tDay.setHours(0,0,0,0);
+    var key, lbl;
+    if(tDay.getTime()===today.getTime()){
+      key='today'; lbl='Today';
+    } else if(tDay.getTime()===yesterday.getTime()){
+      key='yesterday'; lbl='Yesterday';
+    } else {
+      key = d.toISOString().slice(0,10);
+      lbl = d.toLocaleDateString('en',{weekday:'long',day:'numeric',month:'short'});
+    }
+    if(!groups[key]){ groups[key]={label:lbl,items:[]}; groupOrder.push(key); }
+    groups[key].items.push(t);
+  });
+
+  var TXN_CATS = {
+    income: {icon:'&#128176;',bg:'rgba(168,230,60,.1)'},
+    ess:    {icon:'&#127968;',bg:'rgba(224,85,85,.1)'},
+    sub:    {icon:'&#128249;',bg:'rgba(0,16,32,.8)'},
+    saving: {icon:'&#128201;',bg:'rgba(91,155,213,.1)'},
+    other:  {icon:'&#128203;',bg:'rgba(255,255,255,.07)'},
+  };
+
+  var html='';
+  groupOrder.forEach(function(key){
+    var g = groups[key];
+    html+='<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 5px;">'+g.label+'</div>';
+    g.items.forEach(function(t){
+      var isIncome = t.type==='income';
+      var cat      = TXN_CATS[t.cat]||TXN_CATS.other;
+      var d        = new Date(t.date);
+      var time     = d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false});
+      var amtColor = isIncome?'#A8E63C':'#E05555';
+      var amtSign  = isIncome?'+':'&#8722;';
+      html+='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border-radius:12px;margin-bottom:6px;border:0.5px solid rgba(255,255,255,.05);">'
+        +'<div style="width:36px;height:36px;border-radius:10px;background:'+cat.bg+';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">'+cat.icon+'</div>'
+        +'<div style="flex:1;min-width:0;">'
+          +'<div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+t.name+'</div>'
+          +'<div style="font-size:10px;color:var(--text3);margin-top:1px;">'+(t.note||t.cat||'')+'</div>'
+        +'</div>'
+        +'<div style="text-align:right;flex-shrink:0;">'
+          +'<div style="font-size:13px;font-weight:600;color:'+amtColor+';">'+amtSign+fmt(t.amt)+'</div>'
+          +'<div style="font-size:9px;color:rgba(255,255,255,.25);margin-top:2px;">'+time+'</div>'
+        +'</div>'
+        +'<div onclick="deleteTxn('+t.id+')" style="margin-left:6px;cursor:pointer;color:var(--text3);font-size:14px;padding:4px;">&#10005;</div>'
+      +'</div>';
+    });
+  });
+  el.innerHTML = html;
 }
+
 
 function renderActivityBudget(){
   var b    = calcBudget();
