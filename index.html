@@ -43,13 +43,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 }
 
 /* ── Layout shell ── */
-#app{height:100vh;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;overflow:hidden;}
+#app{height:100vh;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;}
 
 /* ── Status bar ── */
 
 
 /* ── Scrollable content ── */
-.page{flex:1;overflow:hidden;display:flex;flex-direction:row;position:relative;}
+.page{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:y proximity;padding-bottom:8px;}
 .page::-webkit-scrollbar{display:none;}
 
 /* ── Bottom nav ── */
@@ -71,7 +71,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .sec-link{font-size:13px;font-weight:500;color:var(--green);}
 
 /* ── Screen pages ── */
-.screen{display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:0;}.screen.swipeable{display:flex!important;position:absolute;top:0;width:100%;height:100%;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;}.screen.active{display:flex;}
+.screen{display:none;flex-direction:column;gap:0;}
 .screen.active{display:flex;}
 
 /* ── Animations ── */
@@ -179,7 +179,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .delete-btn{background:#2A0000;color:var(--red);border:none;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
 /* ── Page padding wrapper ── */
-.pg{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1;}
+.pg{padding:16px;display:flex;flex-direction:column;gap:14px;}
 
 /* ── Modal sheet ── */
 .sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:flex-end;}
@@ -329,26 +329,6 @@ body.light #more-drawer{background:#FFFFFF;}
 .more-screen-item{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r-lg);padding:14px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent;}
 .more-screen-item:active{background:var(--surface2);}
 body.light .more-screen-item{background:#FFFFFF;}
-
-/* ── Portfolio filter tabs ───────────────────────────────────────────── */
-.port-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px;}
-.port-tabs::-webkit-scrollbar{display:none;}
-.port-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;flex-shrink:0;}
-.port-tab.active{background:var(--green);color:var(--green-dark);}
-.port-tab:not(.active){background:var(--surface);color:var(--text3);}
-/* ── More screen menu items ──────────────────────────────────────────── */
-.more-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface);border-radius:var(--r-md);margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.more-item:active{opacity:.7;}
-.more-item-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.more-item-info{flex:1;min-width:0;}
-.more-item-title{font-size:14px;font-weight:500;color:var(--text);}
-.more-item-sub{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-body.light .more-item{background:#FFFFFF;}
-
-/* ── Swipe transitions ───────────────────────────────────────────────── */
-#swipe-container{position:relative;flex:1;overflow:hidden;}
-.swipeable-screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;will-change:transform;}
-.swipeable-screen::-webkit-scrollbar{display:none;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -362,29 +342,28 @@ body.light .more-item{background:#FFFFFF;}
 
 
   <div class="page" id="page-content">
-  <div id="swipe-container">
-
 
     <!-- ═══ HOME SCREEN ═══ -->
-    <div class="screen active" id="screen-home" data-swipe-index="0">
+    <div class="screen active" id="screen-home">
       <div class="pg">
 
-        <!-- top row: greeting + controls -->
+        <!-- top nav row -->
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
           <div>
-            <div id="home-timegreeting" style="font-size:11px;color:var(--text3);"></div>
-            <div id="home-greeting" style="font-size:17px;font-weight:600;color:var(--text);">Moxcoin</div>
+            <div style="font-size:11px;color:var(--text3);" id="home-timegreeting">Good morning</div>
+            <div style="font-size:16px;font-weight:600;color:var(--text);" id="home-greeting">Aniduaza</div>
           </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 12px;border-radius:20px;cursor:pointer;">AED</div>
-            <div id="theme-toggle" onclick="toggleTheme()" style="font-size:18px;cursor:pointer;">&#9728;&#65039;</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div id="currency-toggle" style="background:var(--surface);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--green);cursor:pointer;"></div>
+            <div id="theme-toggle" onclick="toggleTheme()" style="width:36px;height:36px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;" title="Toggle day/night"></div>
+            <div style="width:36px;height:36px;border-radius:50%;background:#1A2800;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--green);">M</div>
           </div>
         </div>
 
-        <!-- hero summary card -->
+        <!-- balance hero -->
         <div class="greeting-card slide-up d1">
           <!-- top row: label + live dot + date -->
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <div class="live-dot"></div>
               <div class="greeting-title" style="margin-bottom:0;">Total assets</div>
@@ -392,42 +371,64 @@ body.light .more-item{background:#FFFFFF;}
             <div style="font-size:10px;color:rgba(168,230,60,.4);" id="home-date"></div>
           </div>
 
-          <!-- big balance -->
-          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
-            <div class="balance-amount count-up-num" id="home-balance" style="font-size:40px;font-weight:700;color:#fff;letter-spacing:-2px;line-height:1;">—</div>
-            <div style="font-size:14px;color:rgba(255,255,255,.35);" id="home-bal-cur">AED</div>
+          <!-- big number with count-up -->
+          <div class="balance-amount count-up-num" id="home-balance" style="font-size:34px;font-weight:600;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin-bottom:10px;">—</div>
+
+          <!-- P&L badge row -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div id="home-pl-badge"></div>
           </div>
 
-          <!-- change badge -->
-          <div id="home-pl-badge" style="margin-bottom:12px;"></div>
-
-          <!-- sparkline -->
-          <canvas id="assets-spark" height="44" style="width:100%;height:44px;display:block;margin-bottom:10px;"></canvas>
+          <!-- mini sparkline -->
+          <canvas id="assets-spark" height="40" style="width:100%;height:40px;display:block;margin-bottom:8px;"></canvas>
 
           <!-- breakdown bar -->
-          <div id="asset-bar" style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:flex;gap:1px;"></div>
-          <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div id="asset-bar" style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;display:flex;gap:1px;"></div>
+            <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+          </div>
         </div>
 
-        <!-- 2 key stats -->
-        <div class="stat-row slide-up d2">
+        <!-- action buttons -->
+        <div class="action-grid slide-up d2">
+          <div class="action-btn action-btn-dark" onclick="navTo('screen-income')">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="var(--green)" stroke-width="1.8"><path d="M11 3v16M4 10l7-7 7 7"/></svg>
+            <span>Income</span>
+          </div>
+          <div class="action-btn action-btn-yellow" onclick="navTo('screen-expenses')">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="var(--yellow-dark)" stroke-width="1.8"><path d="M11 19V3M4 12l7 7 7-7"/></svg>
+            <span style="color:var(--yellow-dark);">Bills</span>
+          </div>
+          <div class="action-btn action-btn-dark" onclick="navTo('screen-savings')">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="var(--green)" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M11 7v4l3 3"/></svg>
+            <span>Savings</span>
+          </div>
+          <div class="action-btn action-btn-green" onclick="navTo('screen-portfolio')">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="var(--green-dark)" stroke-width="1.8"><path d="M2 18l5-6 4 3 5-7 4 4"/></svg>
+            <span style="color:var(--green-dark);">Portfolio</span>
+          </div>
+        </div>
+
+        <!-- stat pills -->
+        <div class="stat-row slide-up d3">
+          <div class="stat-pill">
+            <div class="stat-lbl">Net savings</div>
+            <div class="stat-val" id="home-savings">—</div>
+            <div class="stat-sub" id="home-savings-cur">/ month</div>
+            <div class="bar-track"><div class="bar-fill bar-anim" id="home-rate-bar" style="--w:0%;background:var(--green);"></div></div>
+          </div>
           <div class="stat-pill">
             <div class="stat-lbl">Savings rate</div>
-            <div class="stat-val" id="home-rate" style="color:var(--green);">—</div>
+            <div class="stat-val" id="home-rate">—</div>
             <div class="stat-sub">of income</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-lbl">Spent this month</div>
-            <div class="stat-val" id="home-spent">—</div>
-            <div class="stat-sub" id="home-spent-of">of — AED</div>
           </div>
         </div>
 
-        <!-- daily movers -->
-        <div class="slide-up d3">
+        <!-- daily price movers -->
+        <div class="slide-up d4">
           <div class="sec-hdr">
             <span class="sec-title">Daily movers</span>
-            <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
+            <span id="movers-updated" style="font-size:11px;color:var(--text3);"></span>
           </div>
           <div id="home-movers" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
         </div>
@@ -435,9 +436,7 @@ body.light .more-item{background:#FFFFFF;}
       </div>
     </div>
 
-  </div><!-- end swipe-container -->
-
-  <!-- ═══ BUDGET SCREEN ═══ -->
+    <!-- ═══ BUDGET SCREEN ═══ -->
     <div class="screen" id="screen-budget">
       <div class="pg">
 
@@ -522,79 +521,62 @@ body.light .more-item{background:#FFFFFF;}
     </div>
 
     <!-- ═══ PORTFOLIO SCREEN ═══ -->
-    <div class="screen" id="screen-portfolio" data-swipe-index="1">
+    <div class="screen" id="screen-portfolio">
       <div class="pg">
 
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;" class="slide-up d1">
-          <div style="font-size:18px;font-weight:600;">Portfolio</div>
-          <div id="port-pl-badge"></div>
-        </div>
+        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Portfolio</div>
 
-        <!-- sparkline card -->
-        <div class="card slide-up d2" style="padding:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-            <div style="font-size:22px;font-weight:600;" id="port-total">—</div>
-            <div style="display:flex;gap:6px;">
-              <span class="toggle-btn active" onclick="setRange(this,'3m')">3M</span>
-              <span class="toggle-btn" onclick="setRange(this,'6m')">6M</span>
-              <span class="toggle-btn" onclick="setRange(this,'1y')">1Y</span>
+        <!-- total + sparkline -->
+        <div class="card slide-up d2">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">Total value</div>
+              <div style="font-size:26px;font-weight:600;color:var(--text);letter-spacing:-.8px;" id="port-total">—</div>
             </div>
+            <div id="port-pl-badge"></div>
           </div>
-          <canvas id="sparkline-canvas" height="70" style="width:100%;height:70px;display:block;"></canvas>
+          <canvas id="sparkline-canvas" width="340" height="70" style="width:100%;height:70px;display:block;"></canvas>
+          <div style="display:flex;gap:6px;margin-top:10px;">
+            <div class="toggle-btn active" onclick="setRange(this,'3m')" style="flex:none;padding:5px 14px;font-size:11px;">3M</div>
+            <div class="toggle-btn" onclick="setRange(this,'6m')" style="flex:none;padding:5px 14px;font-size:11px;">6M</div>
+            <div class="toggle-btn" onclick="setRange(this,'1y')" style="flex:none;padding:5px 14px;font-size:11px;">1Y</div>
+          </div>
         </div>
 
-        <!-- filter tabs -->
-        <div class="port-tabs slide-up d3">
-          <button class="port-tab active" onclick="setPortFilter(this,'all')">All assets</button>
-          <button class="port-tab" onclick="setPortFilter(this,'crypto')">Crypto</button>
-          <button class="port-tab" onclick="setPortFilter(this,'cards')">Cards</button>
-          <button class="port-tab" onclick="setPortFilter(this,'savings')">Savings</button>
-        </div>
-
-        <!-- ALL section -->
-        <div id="port-section-all">
-          <div class="sec-hdr"><span class="sec-title">Crypto</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
+        <!-- crypto holdings -->
+        <div class="slide-up d3">
+          <div class="sec-hdr">
+            <span class="sec-title">Crypto</span>
+            <span class="sec-link" onclick="openSheet('add-crypto')">+ Add</span>
+          </div>
           <div id="crypto-list"></div>
-          <div class="sec-hdr" style="margin-top:8px;">
-            <span class="sec-title">Cards</span>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
-              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
+        </div>
+
+        <!-- collections -->
+        <div class="slide-up d4">
+          <div class="sec-hdr">
+            <span class="sec-title">Collections</span>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <span style="font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">↻</span>
+              <span class="sec-link" onclick="openSheet('add-collection')">+ Add</span>
             </div>
           </div>
           <div id="collection-list"></div>
-          <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Savings</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
-          <div id="savings-list"></div>
         </div>
 
-        <!-- CRYPTO section -->
-        <div id="port-section-crypto" style="display:none;">
-          <div class="sec-hdr"><span class="sec-title">Crypto holdings</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
-          <div id="crypto-list-2"></div>
-        </div>
-
-        <!-- CARDS section -->
-        <div id="port-section-cards" style="display:none;">
+        <!-- savings accounts -->
+        <div class="slide-up d5">
           <div class="sec-hdr">
-            <span class="sec-title">Card collection</span>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
-              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
-            </div>
+            <span class="sec-title">Savings</span>
+            <span class="sec-link" onclick="openSheet('add-savings')">+ Add</span>
           </div>
-          <div id="collection-list-2"></div>
-        </div>
-
-        <!-- SAVINGS section -->
-        <div id="port-section-savings" style="display:none;">
-          <div class="sec-hdr"><span class="sec-title">Savings accounts</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
-          <div id="savings-list-2"></div>
+          <div id="savings-list"></div>
         </div>
 
       </div>
     </div>
 
-<!-- ═══ INCOME SCREEN ═══ -->
+    <!-- ═══ INCOME SCREEN ═══ -->
     <div class="screen" id="screen-income">
       <div class="pg">
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
@@ -785,62 +767,57 @@ body.light .more-item{background:#FFFFFF;}
 
 
     <!-- ═══ ACTIVITY SCREEN ═══ -->
-    <div class="screen" id="screen-activity" data-swipe-index="2">
+    <div class="screen" id="screen-activity">
       <div class="pg">
 
-        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
+        <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">Activity</div>
 
-        <!-- month summary card -->
-        <div style="background:#131D00;border-radius:20px;padding:16px;" class="slide-up d2">
-          <div id="act-month-label" style="font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;"></div>
-
-          <!-- 3 stats -->
-          <div style="display:flex;gap:6px;margin-bottom:12px;">
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Income</div>
-              <div style="font-size:18px;font-weight:600;color:#A8E63C;letter-spacing:-.5px;" id="act-income">—</div>
+        <!-- Budget summary card -->
+        <div class="card slide-up d1" style="margin-bottom:14px;">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;font-weight:600;">This month</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;">
+            <div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:2px;">Spent</div>
+              <div style="font-size:24px;font-weight:600;color:var(--text);" id="act-spent">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Spent</div>
-              <div style="font-size:18px;font-weight:600;color:#fff;letter-spacing:-.5px;" id="act-spent">—</div>
-            </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Saved</div>
-              <div style="font-size:18px;font-weight:600;color:#5B9BD5;letter-spacing:-.5px;" id="act-saved">—</div>
+            <div style="text-align:right;">
+              <div style="font-size:12px;color:var(--text3);margin-bottom:2px;">Budget</div>
+              <div style="font-size:24px;font-weight:600;color:var(--text);" id="act-budget">—</div>
             </div>
           </div>
-
-          <!-- budget progress -->
-          <div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:7px;">
-            <div id="act-bar" style="height:5px;border-radius:3px;background:#A8E63C;width:0%;transition:width .8s cubic-bezier(.22,.68,0,1.2);"></div>
+          <div style="height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;margin-bottom:8px;">
+            <div id="act-bar" style="height:6px;border-radius:3px;background:var(--green);width:0%;transition:width .8s cubic-bezier(.22,.68,0,1.2);"></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px;">
-            <span id="act-pct" style="color:#A8E63C;font-weight:600;"></span>
-            <span id="act-remaining" style="color:rgba(255,255,255,.35);"></span>
+          <div style="display:flex;justify-content:space-between;font-size:11px;">
+            <span id="act-pct" style="color:var(--green);font-weight:600;">0% used</span>
+            <span id="act-remaining" style="color:var(--text3);">— remaining</span>
           </div>
-
           <!-- breakdown pills -->
-          <div style="display:flex;gap:6px;">
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Essentials</div>
-              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-ess">—</div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
+              <div style="font-size:10px;color:var(--text3);">Essentials</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);" id="act-ess">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Subscriptions</div>
-              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-subs">—</div>
+            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
+              <div style="font-size:10px;color:var(--text3);">Subscriptions</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);" id="act-subs">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Saved</div>
-              <div style="font-size:13px;font-weight:600;color:#A8E63C;" id="act-saved2">—</div>
+            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
+              <div style="font-size:10px;color:var(--text3);">Saved</div>
+              <div style="font-size:13px;font-weight:600;color:var(--green);" id="act-saved">—</div>
             </div>
           </div>
         </div>
 
-        <!-- search -->
-        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:12px;">
+        <!-- Transactions -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;" class="slide-up d2">
+          <div style="font-size:13px;font-weight:600;color:var(--text);">Transactions</div>
+          <div id="act-add-btn" style="font-size:12px;color:var(--green);cursor:pointer;padding:4px 0;" onclick="openFABSheet('add-transaction')">+ Add</div>
+        </div>
 
-        <!-- filter pills -->
-        <div class="txn-filter-row slide-up d3">
+        <!-- search + filters -->
+        <input class="txn-search slide-up d2" id="act-search" placeholder="Search transactions..." oninput="renderActivity()" style="margin-bottom:8px;">
+        <div class="txn-filter-row slide-up d2" style="margin-bottom:10px;">
           <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
           <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
           <button class="txn-filter-btn" onclick="setActFilter(this,'expense')">Expenses</button>
@@ -848,78 +825,88 @@ body.light .more-item{background:#FFFFFF;}
           <button class="txn-filter-btn" onclick="setActFilter(this,'sub')">Subscriptions</button>
         </div>
 
-        <div id="act-txn-list" class="slide-up d4"></div>
+        <div id="act-txn-list" class="slide-up d3"></div>
 
       </div>
     </div>
 
-<!-- ═══ MORE SCREEN ═══ -->
-    <div class="screen" id="screen-more" data-swipe-index="3">
+    <!-- ═══ MORE SCREEN ═══ -->
+    <div class="screen" id="screen-more">
       <div class="pg">
-        <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
 
-        <div class="stat-row slide-up d2" style="margin-bottom:16px;">
-          <div class="stat-pill">
-            <div class="stat-lbl">Monthly income</div>
-            <div class="stat-val" id="more-income-val" style="color:var(--green);">—</div>
+        <div style="font-size:18px;font-weight:600;margin-bottom:20px;" class="slide-up d1">More</div>
+
+        <!-- menu items -->
+        <div style="display:flex;flex-direction:column;gap:8px;">
+
+          <div onclick="switchTab('goals')" class="more-screen-item slide-up d1">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🎯</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Goals</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;">Track your financial targets</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
           </div>
-          <div class="stat-pill">
-            <div class="stat-lbl">Monthly bills</div>
-            <div class="stat-val" id="more-bills-val" style="color:var(--red);">—</div>
+
+          <div onclick="switchTab('advisor')" class="more-screen-item slide-up d2">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🤖</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">AI Advisor</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;">Your personal finance assistant</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+          <div onclick="switchTab('income')" class="more-screen-item slide-up d2">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">💰</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Income sources</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-income-count">—</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+          <div onclick="switchTab('expenses')" class="more-screen-item slide-up d3">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(224,85,85,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📋</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Monthly bills</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-bills-count">—</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+          <div onclick="switchTab('savings')" class="more-screen-item slide-up d3">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(91,155,213,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏦</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Savings accounts</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-savings-count">—</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+        </div>
+
+        <!-- currency + theme toggles -->
+        <div style="margin-top:20px;padding-top:16px;border-top:0.5px solid rgba(255,255,255,.07);">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Preferences</div>
+          <div style="display:flex;gap:8px;">
+            <div id="currency-toggle" style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px;text-align:center;cursor:pointer;">
+              <div style="font-size:11px;color:var(--text3);">Currency</div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);margin-top:2px;" id="more-currency">AED</div>
+            </div>
+            <div onclick="toggleTheme()" style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px;text-align:center;cursor:pointer;">
+              <div style="font-size:11px;color:var(--text3);">Theme</div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);margin-top:2px;" id="more-theme">Dark</div>
+            </div>
           </div>
         </div>
 
-        <div class="slide-up d3">
-          <div class="more-item" onclick="switchTab('goals')">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#127919;</div>
-            <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('advisor')">
-            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#128172;</div>
-            <div class="more-item-info"><div class="more-item-title">AI Advisor</div><div class="more-item-sub">Ask Claude about your finances</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('income')">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#128176;</div>
-            <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No income sources yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('expenses')">
-            <div class="more-item-icon" style="background:rgba(224,85,85,.1);">&#128203;</div>
-            <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('savings')">
-            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#127974;</div>
-            <div class="more-item-info"><div class="more-item-title">Savings accounts</div><div class="more-item-sub" id="more-savings-count">No accounts yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('budget')">
-            <div class="more-item-icon" style="background:rgba(232,216,0,.1);">&#128202;</div>
-            <div class="more-item-info"><div class="more-item-title">Budget</div><div class="more-item-sub">Monthly spending breakdown</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-        </div>
-
-        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d4">Settings</div>
-        <div class="slide-up d4">
-          <div class="more-item" onclick="toggleTheme()">
-            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#127769;</div>
-            <div class="more-item-info"><div class="more-item-title">Theme</div><div class="more-item-sub" id="more-theme">Dark mode</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="document.getElementById('currency-toggle').click()">
-            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#128178;</div>
-            <div class="more-item-info"><div class="more-item-title">Currency</div><div class="more-item-sub" id="more-currency">AED</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-        </div>
       </div>
     </div>
+
   </div><!-- end page -->
 
-<!-- ── Bottom Nav ── -->
+  <!-- ── Bottom Nav ── -->
   <div class="bottom-nav" style="display:flex;align-items:center;padding:0;">
 
     <div class="nav-item active" id="nav-home" onclick="switchTab('home')" style="flex:1;">
@@ -963,9 +950,12 @@ body.light .more-item{background:#FFFFFF;}
 </div><!-- end app -->
 
 <script>
-// ── Constants ────────────
-// 
-// ── Constants ────────────
+// ── Constants ──────────────────────────────────────────────────────────────
+var STORAGE_KEY='moxcoin_v1';
+var AED_TO_USD=0.2723, AED_TO_PHP=15.8;
+var CURRENCIES=['AED','USD','PHP'];
+
+// ── State ─────────────────────────────────────────────────────────
 // ── Constants ──────────────────────────────────────────────────────────────
 var STORAGE_KEY='moxcoin_v1';
 var AED_TO_USD=0.2723, AED_TO_PHP=15.8;
@@ -1104,26 +1094,7 @@ function calcBudget(){
 
 
 // ── Navigation ─────────────────────────────────────────────────────────────
-var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','advisor','activity','more'];
 
-
-
-
-function renderTab(tab){
-  if(tab==='home')renderHome();
-  else if(tab==='budget')renderBudget();
-  else if(tab==='portfolio')renderPortfolio();
-  else if(tab==='income')renderIncome();
-  else if(tab==='expenses')renderExpenses();
-  else if(tab==='savings')renderSavingsTab();
-  else if(tab==='advisor')renderAdvisor();
-  else if(tab==='transactions')renderTransactionsTab();
-  else if(tab==='goals')renderGoalsTab();
-  else if(tab==='activity')renderActivityTab();
-  else if(tab==='more')renderMore();
-}
-
-// ── Render All ──────────────────────────────────────────────────────────────
 function renderAll(){renderHome();updateCurrencyToggle();}
 
 function updateCurrencyToggle(){
@@ -1182,8 +1153,6 @@ function setTxnType(btn, type){
 }
 
 function submitTxnSheet(){
-  function g(id){return document.getElementById(id);}
-  var name = (g('sh-txn-name')||{}).value||'';
   var amt  = parseFloat((g('sh-txn-amt')||{}).value)||0;
   var cat  = (g('sh-txn-cat')||{}).value||'other';
   var note = (g('sh-txn-note')||{}).value||'';
@@ -1723,87 +1692,48 @@ function renderBudgetAlertBanner(pct, b){
 
 // ── FAB (Floating Action Button) ──────────────────────────────────────────
 var FAB_OPTIONS = [
-  {id:'add-income',      icon:'&#128176;', label:'Income source',     sub:'Salary, freelance, other',   color:'rgba(168,230,60,.08)',  accent:'#A8E63C'},
-  {id:'add-expense',     icon:'&#128203;', label:'Monthly bill',      sub:'Rent, subscriptions, bills', color:'rgba(224,85,85,.08)',   accent:'#E05555'},
-  {id:'add-transaction', icon:'&#128179;', label:'Transaction',       sub:'Log a one-time payment',     color:'rgba(91,155,213,.08)',  accent:'#5B9BD5'},
-  {id:'add-crypto',      icon:'&#8383;',   label:'Crypto holding',    sub:'BTC, ETH, SOL and more',     color:'rgba(247,164,0,.08)',   accent:'#F7A400'},
-  {id:'add-collection',  icon:'&#127183;', label:'Card',              sub:'MTG or Pokémon card',        color:'rgba(181,123,224,.08)', accent:'#B57BE0'},
-  {id:'add-goal',        icon:'&#127919;', label:'Goal',              sub:'Savings target with ETA',    color:'rgba(168,230,60,.06)',  accent:'#A8E63C'},
-  {id:'add-savings',     icon:'&#127974;', label:'Savings account',   sub:'Bank account or cash',       color:'rgba(91,155,213,.06)',  accent:'#5B9BD5'},
+  {id:'add-income',      icon:'💰', label:'Income source',   color:'rgba(168,230,60,.12)'},
+  {id:'add-expense',     icon:'📋', label:'Monthly bill',    color:'rgba(224,85,85,.12)'},
+  {id:'add-transaction', icon:'💳', label:'Transaction',     color:'rgba(91,155,213,.12)'},
+  {id:'add-crypto',      icon:'₿',  label:'Crypto holding',  color:'rgba(247,164,0,.12)'},
+  {id:'add-collection',  icon:'🃏', label:'Card (MTG/Pokémon)', color:'rgba(181,123,224,.12)'},
+  {id:'add-goal',        icon:'🎯', label:'Goal',            color:'rgba(168,230,60,.08)'},
+  {id:'add-savings',     icon:'🏦', label:'Savings account', color:'rgba(91,155,213,.08)'},
 ];
 
 function openFAB(){
   var existing = document.getElementById('fab-overlay');
-  if(existing){ closeFAB(); return; }
+  if(existing){ existing.remove(); return; }
 
   var overlay = document.createElement('div');
   overlay.id  = 'fab-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.75);display:flex;flex-direction:column;justify-content:flex-end;';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.7);display:flex;flex-direction:column;justify-content:flex-end;';
 
   var sheet = document.createElement('div');
-  sheet.style.cssText = 'background:var(--surface);border-radius:24px 24px 0 0;padding:20px 16px 36px;';
+  sheet.style.cssText = 'background:var(--surface);border-radius:24px 24px 0 0;padding:20px 16px 40px;animation:slideUp .3s cubic-bezier(.22,.68,0,1.2) both;';
 
-  // Handle
-  var handle = document.createElement('div');
-  handle.style.cssText = 'width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 18px;';
-  sheet.appendChild(handle);
+  var handle = '<div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px;"></div>';
+  var title  = '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">What would you like to add?</div>';
 
-  // Title
-  var title = document.createElement('div');
-  title.style.cssText = 'font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px;';
-  title.textContent = 'Add something';
-  sheet.appendChild(title);
+  var items = FAB_OPTIONS.map(function(opt){
+    return '<div onclick="openFABSheet(\''+opt.id+'\')" style="display:flex;align-items:center;gap:14px;padding:12px;background:'+opt.color+';border-radius:14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;">'
+      +'<div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+opt.icon+'</div>'
+      +'<div style="font-size:14px;font-weight:500;color:var(--text);">'+opt.label+'</div>'
+      +'<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>'
+    +'</div>';
+  }).join('');
 
-  var sub = document.createElement('div');
-  sub.style.cssText = 'font-size:12px;color:var(--text3);margin-bottom:16px;';
-  sub.textContent = 'What would you like to track?';
-  sheet.appendChild(sub);
-
-  // Grid
-  var grid = document.createElement('div');
-  grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
-
-  FAB_OPTIONS.forEach(function(opt){
-    var card = document.createElement('div');
-    card.style.cssText = 'background:'+opt.color+';border:0.5px solid '+opt.accent+'44;border-radius:16px;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
-    card.setAttribute('data-id', opt.id);
-
-    var ico = document.createElement('div');
-    ico.style.cssText = 'font-size:24px;margin-bottom:8px;';
-    ico.innerHTML = opt.icon;
-    card.appendChild(ico);
-
-    var lbl = document.createElement('div');
-    lbl.style.cssText = 'font-size:13px;font-weight:600;color:var(--text);';
-    lbl.textContent = opt.label;
-    card.appendChild(lbl);
-
-    var desc = document.createElement('div');
-    desc.style.cssText = 'font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4;';
-    desc.textContent = opt.sub;
-    card.appendChild(desc);
-
-    card.addEventListener('click', function(){
-      openFABSheet(this.getAttribute('data-id'));
-    });
-    grid.appendChild(card);
-  });
-
-  sheet.appendChild(grid);
+  sheet.innerHTML = handle + title + items;
   overlay.appendChild(sheet);
-  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeFAB(); });
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closeFAB();
+  });
   document.body.appendChild(overlay);
-
-  var fab = document.getElementById('fab-btn');
-  if(fab){ fab.style.transform='rotate(45deg)'; fab.style.transition='transform .2s cubic-bezier(.22,.68,0,1.2)'; }
 }
-
 
 function closeFAB(){
   var el = document.getElementById('fab-overlay');
   if(el) el.remove();
-  var fab = document.getElementById('fab-btn');
-  if(fab){ fab.style.transform='rotate(0deg)'; fab.style.transition='transform .2s cubic-bezier(.22,.68,0,1.2)'; }
 }
 
 function openFABSheet(type){
@@ -1823,116 +1753,9 @@ function setActFilter(btn, filter){
 }
 
 function renderActivity(){
-  var b   = calcBudget();
-  var inc = totalIncome();
-  var sav = b.sav;
-
-  // Month label
-  var ml = document.getElementById('act-month-label');
-  if(ml){ var now=new Date(); ml.textContent=now.toLocaleDateString('en',{month:'long',year:'numeric'}); }
-
-  // Stats
-  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  set('act-income',  fmt(inc)+' '+curSym());
-  set('act-spent',   fmt(b.tot)+' '+curSym());
-  set('act-saved',   fmt(sav > 0 ? sav : 0)+' '+curSym());
-  set('act-saved2',  fmt(sav > 0 ? sav : 0));
-  set('act-ess',     fmt(b.ess));
-  set('act-subs',    fmt(b.subs));
-
-  // Progress bar
-  var limit  = Math.max(inc, b.tot*1.2, 1000);
-  var pct    = Math.min(100, Math.round(b.tot/limit*100));
-  var barEl  = document.getElementById('act-bar');
-  var pctEl  = document.getElementById('act-pct');
-  var remEl  = document.getElementById('act-remaining');
-  if(barEl){
-    setTimeout(function(){ barEl.style.width = pct+'%'; barEl.style.background = pct>=90?'#E05555':pct>=75?'#E0A030':'#A8E63C'; },80);
-  }
-  if(pctEl) pctEl.textContent = pct+'% of budget used';
-  if(remEl) remEl.textContent = fmt(Math.max(0,limit-b.tot))+' '+curSym()+' remaining';
-
-  // Transactions list
-  var el = document.getElementById('act-txn-list');
-  if(!el) return;
-
-  var q      = (document.getElementById('act-search')||{}).value||'';
-  q          = q.toLowerCase();
-  var filter = actFilter||'all';
-
-  var txns = (data.transactions||[]).slice().reverse();
-  txns = txns.filter(function(t){
-    if(filter==='income'  && t.type!=='income')  return false;
-    if(filter==='expense' && t.type!=='expense') return false;
-    if(filter==='ess'     && t.cat!=='ess')      return false;
-    if(filter==='sub'     && t.cat!=='sub')      return false;
-    if(q && t.name.toLowerCase().indexOf(q)<0 && (t.note||'').toLowerCase().indexOf(q)<0) return false;
-    return true;
-  });
-
-  if(!txns.length){
-    el.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;">'
-      +(data.transactions.length?'No results for this filter':'No transactions yet — tap + to add one')
-      +'</div>';
-    return;
-  }
-
-  // Group by day
-  var groups={}, groupOrder=[];
-  txns.forEach(function(t){
-    var d   = new Date(t.date);
-    var today = new Date(); today.setHours(0,0,0,0);
-    var yesterday = new Date(today); yesterday.setDate(yesterday.getDate()-1);
-    var tDay = new Date(d); tDay.setHours(0,0,0,0);
-    var key, lbl;
-    if(tDay.getTime()===today.getTime()){
-      key='today'; lbl='Today';
-    } else if(tDay.getTime()===yesterday.getTime()){
-      key='yesterday'; lbl='Yesterday';
-    } else {
-      key = d.toISOString().slice(0,10);
-      lbl = d.toLocaleDateString('en',{weekday:'long',day:'numeric',month:'short'});
-    }
-    if(!groups[key]){ groups[key]={label:lbl,items:[]}; groupOrder.push(key); }
-    groups[key].items.push(t);
-  });
-
-  var TXN_CATS = {
-    income: {icon:'&#128176;',bg:'rgba(168,230,60,.1)'},
-    ess:    {icon:'&#127968;',bg:'rgba(224,85,85,.1)'},
-    sub:    {icon:'&#128249;',bg:'rgba(0,16,32,.8)'},
-    saving: {icon:'&#128201;',bg:'rgba(91,155,213,.1)'},
-    other:  {icon:'&#128203;',bg:'rgba(255,255,255,.07)'},
-  };
-
-  var html='';
-  groupOrder.forEach(function(key){
-    var g = groups[key];
-    html+='<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 5px;">'+g.label+'</div>';
-    g.items.forEach(function(t){
-      var isIncome = t.type==='income';
-      var cat      = TXN_CATS[t.cat]||TXN_CATS.other;
-      var d        = new Date(t.date);
-      var time     = d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false});
-      var amtColor = isIncome?'#A8E63C':'#E05555';
-      var amtSign  = isIncome?'+':'&#8722;';
-      html+='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border-radius:12px;margin-bottom:6px;border:0.5px solid rgba(255,255,255,.05);">'
-        +'<div style="width:36px;height:36px;border-radius:10px;background:'+cat.bg+';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">'+cat.icon+'</div>'
-        +'<div style="flex:1;min-width:0;">'
-          +'<div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+t.name+'</div>'
-          +'<div style="font-size:10px;color:var(--text3);margin-top:1px;">'+(t.note||t.cat||'')+'</div>'
-        +'</div>'
-        +'<div style="text-align:right;flex-shrink:0;">'
-          +'<div style="font-size:13px;font-weight:600;color:'+amtColor+';">'+amtSign+fmt(t.amt)+'</div>'
-          +'<div style="font-size:9px;color:rgba(255,255,255,.25);margin-top:2px;">'+time+'</div>'
-        +'</div>'
-        +'<div onclick="deleteTxn('+t.id+')" style="margin-left:6px;cursor:pointer;color:var(--text3);font-size:14px;padding:4px;">&#10005;</div>'
-      +'</div>';
-    });
-  });
-  el.innerHTML = html;
+  renderActivityBudget();
+  renderActivityTxns();
 }
-
 
 function renderActivityBudget(){
   var b    = calcBudget();
@@ -2028,113 +1851,93 @@ function renderActivityTab(){
 
 // ── More screen ───────────────────────────────────────────────────────────
 function renderMore(){
-  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  set('more-income-count', data.incomeSources.length
-    ? data.incomeSources.length+' source'+(data.incomeSources.length>1?'s':'')+' · '+fmt(totalIncome())+' '+curSym()+'/mo'
-    : 'No income sources yet');
-  set('more-bills-count', data.expenses.length
-    ? data.expenses.length+' bill'+(data.expenses.length>1?'s':'')+' · '+fmt(totalExpenses())+' '+curSym()+'/mo'
-    : 'No bills yet');
-  set('more-savings-count', data.savingsAccounts.length
-    ? data.savingsAccounts.length+' account'+(data.savingsAccounts.length>1?'s':'')+' · '+fmt(totalSavings())+' '+curSym()
-    : 'No savings accounts yet');
-  set('more-goals-sub', data.goals.length
-    ? data.goals.length+' goal'+(data.goals.length>1?'s':'')+' active'
-    : 'Track your financial targets');
-  set('more-income-val', '+'+fmt(totalIncome())+' '+curSym());
-  set('more-bills-val',  '-'+fmt(totalExpenses())+' '+curSym());
-  set('more-currency', data.currency||'AED');
-  set('more-theme', document.body.classList.contains('light')?'Light mode':'Dark mode');
+  var iEl = document.getElementById('more-income-count');
+  var bEl = document.getElementById('more-bills-count');
+  var sEl = document.getElementById('more-savings-count');
+  var cEl = document.getElementById('more-currency');
+  var tEl = document.getElementById('more-theme');
+  if(iEl) iEl.textContent = data.incomeSources.length
+    ? data.incomeSources.length + ' source' + (data.incomeSources.length>1?'s':'') + ' · ' + fmt(totalIncome()) + ' ' + curSym() + '/mo'
+    : 'No income sources yet';
+  if(bEl) bEl.textContent = data.expenses.length
+    ? data.expenses.length + ' bill' + (data.expenses.length>1?'s':'') + ' · ' + fmt(totalExpenses()) + ' ' + curSym() + '/mo'
+    : 'No bills yet';
+  if(sEl) sEl.textContent = data.savingsAccounts.length
+    ? data.savingsAccounts.length + ' account' + (data.savingsAccounts.length>1?'s':'') + ' · ' + fmt(totalSavings()) + ' ' + curSym()
+    : 'No savings accounts yet';
+  if(cEl) cEl.textContent = data.currency||'AED';
+  if(tEl) tEl.textContent = document.body.classList.contains('light') ? 'Light' : 'Dark';
 }
 
 
 function renderHome(){
-  var assets = totalAssets();
-  var b      = calcBudget();
-
-  // Greeting
-  var greet = document.getElementById('home-timegreeting');
-  var greetName = document.getElementById('home-greeting');
-  if(greet){
-    var h = new Date().getHours();
-    greet.textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  }
-
-  // Date
-  var dateEl = document.getElementById('home-date');
-  if(dateEl){
-    var n = new Date();
-    dateEl.textContent = n.toLocaleDateString('en-AE',{weekday:'short',day:'numeric',month:'short'});
-  }
-
-  // Currency label
-  var curEl = document.getElementById('home-bal-cur');
-  if(curEl) curEl.textContent = curSym();
+  var assets=totalAssets();
+  var b=calcBudget();
 
   // Count-up balance
-  var balEl = document.getElementById('home-balance');
+  var balEl=document.getElementById('home-balance');
   if(balEl){
-    var startVal=0, endVal=assets, dur=1000, t0=performance.now();
-    balEl.classList.remove('count-up-num'); void balEl.offsetWidth; balEl.classList.add('count-up-num');
+    var startVal=0,endVal=assets,dur=1000,t0=performance.now();
+    balEl.classList.remove('count-up-num');void balEl.offsetWidth;balEl.classList.add('count-up-num');
     function countTick(now){
-      var p = Math.min(1,(now-t0)/dur);
-      var ease = 1-Math.pow(1-p,3);
-      balEl.textContent = fmt(Math.round(startVal+ease*(endVal-startVal)));
-      if(p<1) requestAnimationFrame(countTick);
+      var p=Math.min(1,(now-t0)/dur);
+      var ease=1-Math.pow(1-p,3);
+      balEl.textContent=fmt(Math.round(startVal+ease*(endVal-startVal)))+' '+curSym();
+      if(p<1)requestAnimationFrame(countTick);
     }
     requestAnimationFrame(countTick);
   }
 
-  // P&L badge
-  var plEl = document.getElementById('home-pl-badge');
-  if(plEl){
-    var plPct = (Math.random()*4-1).toFixed(2);
-    var up    = parseFloat(plPct) >= 0;
-    plEl.innerHTML = '<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
-  }
-
-  // Sparkline
+  // Mini sparkline
   setTimeout(drawAssetsSpark, 50);
 
-  // Breakdown bar
-  var assetBarEl = document.getElementById('asset-bar');
-  var legEl      = document.getElementById('asset-legend');
-  if(assetBarEl && legEl){
-    var savVal    = totalSavings();
-    var cryptoVal = data.cryptoHoldings.reduce(function(s,h){return s+(h.qty*(cryptoCache[h.id]||0)*3.6725);},0);
-    var mtgVal    = data.mtgCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
-    var pkVal     = data.pokemonCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
-    var total     = savVal+cryptoVal+mtgVal+pkVal||1;
-    var segs = [
-      {label:'Savings',val:savVal,  color:'#A8E63C'},
-      {label:'Crypto', val:cryptoVal,color:'#5B9BD5'},
-      {label:'MTG',    val:mtgVal,  color:'#E05010'},
-      {label:'Pokemon',val:pkVal,   color:'#F0B90B'},
+  // Asset breakdown bar
+  var assetBarEl=document.getElementById('asset-bar');
+  var legEl=document.getElementById('asset-legend');
+  if(assetBarEl&&legEl){
+    var savVal=totalSavings();
+    var cryptoVal=data.cryptoHoldings.reduce(function(s,h){return s+(h.qty*(cryptoCache[h.id]||0)*3.6725);},0);
+    var mtgVal=data.mtgCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
+    var pkVal=data.pokemonCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
+    var total=savVal+cryptoVal+mtgVal+pkVal||1;
+    var segs=[
+      {label:'Savings',val:savVal,color:'#A8E63C'},
+      {label:'Crypto',val:cryptoVal,color:'#5B9BD5'},
+      {label:'MTG',val:mtgVal,color:'#E05010'},
+      {label:'Pokemon',val:pkVal,color:'#F0B90B'},
     ].filter(function(sg){return sg.val>0;});
-    assetBarEl.innerHTML = segs.map(function(sg){
-      var pct = (sg.val/total*100).toFixed(1);
+    assetBarEl.innerHTML=segs.map(function(sg){
+      var pct=(sg.val/total*100).toFixed(1);
       return '<div class="seg" style="flex:'+pct+';background:'+sg.color+';--f:'+pct+';" title="'+sg.label+'"></div>';
     }).join('');
-    legEl.innerHTML = segs.map(function(sg){
+    legEl.innerHTML=segs.map(function(sg){
       return '<span style="font-size:9px;color:'+sg.color+';display:flex;align-items:center;gap:3px;">'
         +'<span style="width:5px;height:5px;border-radius:50%;background:'+sg.color+';display:inline-block;"></span>'
         +sg.label+'</span>';
     }).join('');
   }
 
-  // Stat: savings rate
-  var rateEl = document.getElementById('home-rate');
-  if(rateEl) rateEl.textContent = b.rate+'%';
+  // Date
+  var dateEl=document.getElementById('home-date');
+  if(dateEl){var n=new Date();dateEl.textContent=n.toLocaleDateString('en-AE',{weekday:'short',day:'numeric',month:'short'});}
 
-  // Stat: spent this month
-  var spentEl   = document.getElementById('home-spent');
-  var spentOfEl = document.getElementById('home-spent-of');
-  if(spentEl)   spentEl.textContent   = fmt(b.tot);
-  if(spentOfEl) spentOfEl.textContent = 'of '+fmt(b.inc)+' '+curSym();
+  // P&L badge
+  var plEl=document.getElementById('home-pl-badge');
+  if(plEl){
+    var plPct=(Math.random()*4-1).toFixed(2);
+    var up=parseFloat(plPct)>=0;
+    plEl.innerHTML='<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
+  }
 
+  // Savings stats
+  var savEl=document.getElementById('home-savings');
+  if(savEl)savEl.textContent=fmt(b.sav)+' '+curSym();
+  var rateEl=document.getElementById('home-rate');
+  if(rateEl)rateEl.textContent=b.rate+'%';
+  var rateBarEl=document.getElementById('home-rate-bar');
+  if(rateBarEl){rateBarEl.style.setProperty('--w',Math.max(0,Math.min(100,b.rate))+'%');rateBarEl.style.width=Math.max(0,Math.min(100,b.rate))+'%';}
   renderMovers();
 }
-
 
 // ── Daily movers: owned assets only ──────────────────────────────────────
 var moversCache={};
@@ -2225,14 +2028,24 @@ function renderMovers(){
     var priceStr=asset.price&&asset.price>=1000?(asset.price/1000).toFixed(2)+'k':asset.price&&asset.price>=1?asset.price.toFixed(2):asset.price?asset.price.toFixed(4):'';
     var upColor=asset.chg==null?'var(--text3)':up?'var(--green)':'var(--red)';
     var barW=asset.chg!=null?Math.min(100,Math.abs(asset.chg)*8)+'%':'0%';
-    html+='<div style="background:var(--surface);border-radius:14px;padding:11px;border:0.5px solid rgba(255,255,255,.06);position:relative;overflow:hidden;">'
-      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;background:'+asset.color+';"></div>'
-      +'<div style="width:28px;height:28px;border-radius:8px;background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';margin-bottom:7px;">'+asset.sym+'</div>'
-      +'<div style="font-size:11px;font-weight:600;color:var(--text);">'+asset.name+'</div>'
-      +'<div style="font-size:9px;color:var(--text3);margin-top:1px;">'+(priceStr?'$'+priceStr:'&nbsp;')+'</div>'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">'
-        +'<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5);">'+valStr+'</div>'
-        +'<div style="font-size:13px;font-weight:700;color:'+upColor+';">'+chgStr+'</div>'
+    html+='<div style="background:var(--surface);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;">'
+      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+asset.color+';opacity:.7;"></div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+        +'<div style="display:flex;align-items:center;gap:6px;">'
+          +'<div style="width:26px;height:26px;border-radius:7px;background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';">'+asset.sym+'</div>'
+          +'<div>'
+            +'<div style="font-size:11px;font-weight:600;color:var(--text);">'+asset.sym+'</div>'
+            +'<div style="font-size:9px;color:var(--text3);">'+asset.name+'</div>'
+          +'</div>'
+        +'</div>'
+        +'<div style="text-align:right;">'
+          +'<div style="font-size:12px;font-weight:600;color:var(--text);">'+valStr+' '+curSym()+'</div>'
+          +(priceStr?'<div style="font-size:10px;color:var(--text3);">$'+priceStr+'</div>':'')
+          +'<div style="font-size:11px;font-weight:600;color:'+upColor+';">'+chgStr+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="height:2px;background:var(--surface3);border-radius:1px;overflow:hidden;">'
+        +'<div style="height:2px;border-radius:1px;background:'+upColor+';width:'+barW+';"></div>'
       +'</div>'
     +'</div>';
   });
@@ -2271,86 +2084,8 @@ function setBW(id,pct){
 }
 
 // ── PORTFOLIO ──────────────────────────────────────────────────────────────
-
-// ── Portfolio filter tabs ─────────────────────────────────────────────────
-var portFilter = 'all';
-
-function setPortFilter(btn, filter){
-  portFilter = filter;
-  document.querySelectorAll('.port-tab').forEach(function(b){
-    b.classList.toggle('active', b === btn);
-  });
-  var sections = ['all','crypto','cards','savings'];
-  sections.forEach(function(sec){
-    var el = document.getElementById('port-section-'+sec);
-    if(el) el.style.display = (sec === filter) ? 'block' : 'none';
-  });
-  if(filter === 'crypto')  renderCryptoListTo('crypto-list-2');
-  if(filter === 'cards')   renderCollectionListTo('collection-list-2');
-  if(filter === 'savings') renderSavingsListTo('savings-list-2');
-}
-
-function renderCryptoListTo(elId){
-  var el = document.getElementById(elId);
-  if(!el) return;
-  if(!data.cryptoHoldings.length){
-    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">No crypto yet — tap + to add</div>';
-    return;
-  }
-  el.innerHTML = data.cryptoHoldings.map(function(h,i){
-    var price = cryptoCache[h.id]||0;
-    var val   = h.qty*price*3.6725;
-    var chg   = (cryptoChangeCache[h.id]||0).toFixed(2);
-    var up    = parseFloat(chg) >= 0;
-    return '<div class="holding-row">'
-      +'<div class="holding-icon" style="background:'+holdingColor(h.sym)+';">'+h.sym.slice(0,3)+'</div>'
-      +'<div style="flex:1;"><div class="holding-name">'+(h.name||h.sym)+'</div><div class="holding-qty">'+h.qty+' units</div></div>'
-      +'<div style="text-align:right;"><div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
-        +'<div class="holding-chg '+(up?'txn-positive':'txn-negative')+'">'+(up?'+':'')+chg+'%</div></div>'
-      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
-    +'</div>';
-  }).join('');
-}
-
-function renderCollectionListTo(elId){
-  var el = document.getElementById(elId);
-  if(!el) return;
-  if(!data.mtgCards.length && !data.pokemonCards.length){
-    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">No cards yet — tap + to add</div>';
-    return;
-  }
-  // Swap element IDs temporarily
-  var main = document.getElementById('collection-list');
-  if(main) main.id = '_cl_tmp';
-  el.id = 'collection-list';
-  renderCollectionList();
-  el.id = elId;
-  if(main) main.id = 'collection-list';
-}
-
-function renderSavingsListTo(elId){
-  var el = document.getElementById(elId);
-  if(!el) return;
-  if(!data.savingsAccounts.length){
-    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">No savings yet — tap + to add</div>';
-    return;
-  }
-  var html = '';
-  data.savingsAccounts.forEach(function(a,i){
-    html += '<div class="holding-row">'
-      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
-      +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
-      +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
-      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
-    +'</div>';
-  });
-  el.innerHTML = html;
-}
-
 function renderPortfolio(){
   var total=totalAssets();
-  function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  setT('port-total',fmt(total)+' '+curSym());
   var plEl=document.getElementById('port-pl-badge');
   if(plEl){var p=(Math.random()*4-1).toFixed(2);var up=parseFloat(p)>=0;plEl.innerHTML='<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'+':'')+p+'%</div>';}
   drawSparkline();
@@ -2449,20 +2184,8 @@ function deleteStack(type,indices){
 function renderSavingsPortfolio(){
   var el=document.getElementById('savings-list');
   if(!el)return;
-  if(!data.savingsAccounts.length){
-    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No savings yet — tap + to add</div>';
-    return;
-  }
-  var html='';
-  data.savingsAccounts.forEach(function(a,i){
-    html+='<div class="holding-row">'
-      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
-      +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
-      +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
-      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
-    +'</div>';
-  });
-  el.innerHTML=html;
+  if(!data.savingsAccounts.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No accounts yet</div>';return;}
+  // replaced
 }
 
 // ── INCOME ─────────────────────────────────────────────────────────────────
@@ -2705,8 +2428,6 @@ function closeSheet(e){
 }
 
 function submitSheet(){
-  function g(id){return document.getElementById(id);}
-  function gv(id){var e=g(id);return e?e.value.trim():'';}
   function gn(id){var e=g(id);return e?parseFloat(e.value)||0:0;}
   if(currentSheet==='add-income'){
     var name=gv('sh-name'),amt=gn('sh-amt'),freq=gv('sh-freq');
@@ -3435,9 +3156,387 @@ async function callClaude(userMsg){
 }
 
 
+
+
+// ── BUDGET ─────────────────────────────────────────────────────────────────
+
+// ── PORTFOLIO ──────────────────────────────────────────────────────────────
+
+
+
+
+
+
+
+
+// ── INCOME ─────────────────────────────────────────────────────────────────
+
+// ── EXPENSES ───────────────────────────────────────────────────────────────
+
+// ── SAVINGS TAB ────────────────────────────────────────────────────────────
+
+// ── SHEETS ─────────────────────────────────────────────────────────────────
+var currentSheet='';
+
+
+
+
+// ── Currency toggle ────────────────────────────────────────────────────────
+var _ct=document.getElementById('currency-toggle');if(_ct)_ct.addEventListener('click',function(){
+  var idx=CURRENCIES.indexOf(data.currency);
+  data.currency=CURRENCIES[(idx+1)%CURRENCIES.length];
+  save();updateCurrencyToggle();renderAll();renderTab(currentTab);
+});
+
+// ── Range toggle ───────────────────────────────────────────────────────────
+
+
+
+// ── Pokémon TCG API (pokemontcg.io) ───────────────────────────────────────
+var selectedPokeCard=null;
+var pokeSearchTimer=null;
+var POKE_API='https://api.pokemontcg.io/v2';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ── Scryfall MTG card search ───────────────────────────────────────────────
+var selectedScryfallCard=null;
+var searchDebounceTimer=null;
+var USD_AED=3.6725;
+
+
+
+
+
+
+
+
+
+
+
+
+// ── Crypto prices ──────────────────────────────────────────────────────────
+
+
+// ── Clock ──────────────────────────────────────────────────────────────────
+
+setInterval(fetchCryptoPrices,60000);
+fetchMovers();
+setInterval(fetchMovers,60000);
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+
+// ── Financial Advisor (Claude API) ────────────────────────────────────────
+var advisorHistory = [];
+var advisorBriefingDone = false;
+
+
+
+
+
+
+
+
+
+
+
+function appendMessage(role, text){
+  var el = document.getElementById('chat-messages');
+  if(!el) return;
+  var div = document.createElement('div');
+  div.className = 'chat-bubble ' + role;
+  div.textContent = text;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+function appendThinking(){
+  var el = document.getElementById('chat-messages');
+  if(!el) return null;
+  var div = document.createElement('div');
+  div.className = 'chat-bubble thinking';
+  div.id = 'thinking-bubble';
+  div.textContent = 'Analysing your finances...';
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  return div;
+}
+
+async function sendChat(){
+  var inp = document.getElementById('chat-input');
+  if(!inp) return;
+  var msg = inp.value.trim();
+  if(!msg) return;
+  inp.value = '';
+  inp.style.height = 'auto';
+  var btn = document.getElementById('chat-send-btn');
+  if(btn) btn.disabled = true;
+  appendMessage('user', msg);
+  var thinking = appendThinking();
+  try{
+    var reply = await callClaude(msg);
+    if(thinking) thinking.remove();
+    appendMessage('assistant', reply);
+  }catch(e){
+    if(thinking) thinking.remove();
+    appendMessage('assistant', 'Error: ' + (e.message||'unknown') + ' | Worker: ' + (localStorage.getItem('moxcoin_worker')||'not set') + ' | Key: ' + (localStorage.getItem('moxcoin_apikey')?'set':'not set'));
+  }
+  if(btn) btn.disabled = false;
+  var inp2 = document.getElementById('chat-input');
+  if(inp2) inp2.focus();
+}
+
+function sendQuick(msg){
+  var inp = document.getElementById('chat-input');
+  if(inp){ inp.value = msg; sendChat(); }
+}
+
+async function generateBriefing(){
+  var el = document.getElementById('advisor-briefing');
+  if(!el || advisorBriefingDone) return;
+  el.innerHTML = '<div class="briefing-card"><div style="font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;">Daily briefing</div><div style="font-size:13px;color:var(--text3);font-style:italic;">Generating your briefing...</div></div>';
+  try{
+    var reply = await callClaude('Give me a brief 3-sentence daily financial briefing. Mention my biggest opportunity and one thing to watch out for today. Be specific with my numbers.');
+    advisorBriefingDone = true;
+    // Remove from history so it doesn't pollute chat
+    advisorHistory = [];
+    el.innerHTML = '<div class="briefing-card"><div style="font-size:11px;color:var(--green);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;">Daily briefing</div><div style="font-size:13px;color:var(--text);line-height:1.55;">' + reply.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div></div>';
+  }catch(e){
+    el.innerHTML = '<div class="briefing-card"><div style="font-size:11px;color:var(--text3);margin-bottom:6px;">Daily briefing</div><div style="font-size:12px;color:var(--text3);">Add your income and expenses to get a personalised briefing.</div></div>';
+  }
+}
+
+function renderAdvisor(){
+  var key    = getApiKey();
+  var worker = '';
+  try{ worker = localStorage.getItem('moxcoin_worker')||''; }catch(e){}
+
+  // Show setup form inline if not configured
+  var setupEl = document.getElementById('advisor-setup-form');
+  if(!key || !worker){
+    if(setupEl) setupEl.style.display = 'block';
+    return;
+  }
+  if(setupEl) setupEl.style.display = 'none';
+  generateBriefing();
+  var msgs = document.getElementById('chat-messages');
+  if(msgs && msgs.children.length === 0){
+    appendMessage('assistant', 'Hi! I am your Moxcoin financial advisor. I can see your full financial picture including income, expenses, crypto, MTG and Pokemon cards, and savings. What would you like to know?');
+  }
+}
+
+function saveAdvisorSetup(){
+  var w = (document.getElementById('setup-worker-input')||{}).value||'';
+  var k = (document.getElementById('setup-key-input')||{}).value||'';
+  w = w.trim(); k = k.trim();
+  if(w) try{ localStorage.setItem('moxcoin_worker', w); }catch(e){}
+  if(k) try{ localStorage.setItem('moxcoin_apikey', k); }catch(e){}
+  renderAdvisor();
+}
+
+
+// ── Boot ─────────────────────────────────────────────────────────────────
+
+// ── Swipe navigation ─────────────────────────────────────────────────────
+var SWIPE_TABS    = ['home','portfolio','activity','more'];
+var swipeIndex    = 0;
+var swipeW        = 0;
+var touchStartX   = 0;
+var touchStartY   = 0;
+var touchCurX     = 0;
+var isDragging    = false;
+var isVertical    = false;
+var dirLocked     = false;
+var swipeVelocity = 0;
+var lastTouchX    = 0;
+var lastTouchT    = 0;
+var swipeLocked   = false;
+
+function initSwipe(){
+  swipeW = Math.max(window.innerWidth || 375, 300);
+  window.addEventListener('resize', function(){
+    swipeW = Math.max(window.innerWidth || 375, 300);
+    setAllScreenX(0, false);
+  });
+
+  SWIPE_TABS.forEach(function(tab, i){
+    var el = document.getElementById('screen-'+tab);
+    if(!el) return;
+    el.style.position   = 'absolute';
+    el.style.top        = '0';
+    el.style.left       = '0';
+    el.style.width      = '100%';
+    el.style.height     = '100%';
+    el.style.display    = 'flex';
+    el.style.flexDirection = 'column';
+    el.style.overflowY  = 'auto';
+    el.style.overflowX  = 'hidden';
+    el.style.willChange = 'transform';
+    el.style.transition = 'none';
+    el.style.transform  = 'translateX('+(i * swipeW)+'px)';
+  });
+
+  // Container must be relative + overflow hidden
+  var con = document.getElementById('swipe-container');
+  if(con){
+    con.style.position = 'relative';
+    con.style.overflow = 'hidden';
+    con.style.flex     = '1';
+    con.addEventListener('touchstart', onSwipeTouchStart, {passive:true});
+    con.addEventListener('touchmove',  onSwipeTouchMove,  {passive:false});
+    con.addEventListener('touchend',   onSwipeTouchEnd,   {passive:true});
+    con.addEventListener('touchcancel',onSwipeTouchEnd,   {passive:true});
+  }
+
+  swipeIndex = 0;
+  updateNavActive(0);
+  renderTab('home');
+
+  setTimeout(function(){
+    fetchCryptoPrices();
+    fetchMovers();
+    setTimeout(takeSnapshot, 3000);
+    setTimeout(checkBudgetAlerts, 1500);
+  }, 200);
+}
+
+function setAllScreenX(offsetPx, withSpring){
+  SWIPE_TABS.forEach(function(tab, i){
+    var el = document.getElementById('screen-'+tab);
+    if(!el) return;
+    var x = (i - swipeIndex) * swipeW + offsetPx;
+    el.style.transition = withSpring ? 'transform .42s cubic-bezier(.22,.68,0,1.2)' : 'none';
+    el.style.transform  = 'translateX('+x+'px)';
+  });
+}
+
+function springToIndex(newIdx){
+  if(swipeLocked) return;
+  newIdx = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
+  if(newIdx === swipeIndex){ setAllScreenX(0, true); return; }
+  swipeLocked = true;
+  swipeIndex  = newIdx;
+  setAllScreenX(0, true);
+  updateNavActive(swipeIndex);
+  renderTab(SWIPE_TABS[swipeIndex]);
+  setTimeout(function(){ swipeLocked = false; }, 460);
+}
+
+function updateNavActive(idx){
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var el = document.getElementById('nav-'+SWIPE_TABS[idx]);
+  if(el) el.classList.add('active');
+}
+
+function onSwipeTouchStart(e){
+  if(swipeLocked) return;
+  var t = e.touches[0];
+  touchStartX = touchCurX = lastTouchX = t.clientX;
+  touchStartY = t.clientY;
+  lastTouchT  = Date.now();
+  swipeVelocity = isDragging = isVertical = dirLocked = 0;
+  SWIPE_TABS.forEach(function(tab){
+    var el = document.getElementById('screen-'+tab);
+    if(el) el.style.transition = 'none';
+  });
+}
+
+function onSwipeTouchMove(e){
+  if(swipeLocked || !e.touches.length) return;
+  var t  = e.touches[0];
+  var dx = t.clientX - touchStartX;
+  var dy = t.clientY - touchStartY;
+  if(!dirLocked && (Math.abs(dx) > 7 || Math.abs(dy) > 7)){
+    dirLocked  = 1;
+    isVertical = Math.abs(dy) > Math.abs(dx) * 1.1 ? 1 : 0;
+  }
+  if(!dirLocked || isVertical) return;
+  e.preventDefault();
+  isDragging    = 1;
+  touchCurX     = t.clientX;
+  var now = Date.now(), dt = now - lastTouchT;
+  if(dt > 0) swipeVelocity = (t.clientX - lastTouchX) / dt;
+  lastTouchX = t.clientX; lastTouchT = now;
+  var dxPx = dx;
+  if((swipeIndex === 0 && dx > 0) || (swipeIndex === SWIPE_TABS.length-1 && dx < 0)) dxPx = dx * 0.18;
+  setAllScreenX(dxPx, false);
+}
+
+function onSwipeTouchEnd(e){
+  if(swipeLocked){ isDragging=0; return; }
+  if(!isDragging || isVertical){ setAllScreenX(0, true); isDragging=0; return; }
+  isDragging = 0;
+  var dx  = touchCurX - touchStartX;
+  var pct = dx / swipeW;
+  var vel = swipeVelocity;
+  var newIdx = swipeIndex;
+  if(vel < -0.2 || pct < -0.25)     newIdx = swipeIndex + 1;
+  else if(vel > 0.2 || pct > 0.25)  newIdx = swipeIndex - 1;
+  springToIndex(newIdx);
+}
+
+function switchTab(tab){
+  var idx = SWIPE_TABS.indexOf(tab);
+  if(idx >= 0){
+    springToIndex(idx);
+    closeFAB();
+    return;
+  }
+  // Non-swipeable: overlay
+  document.querySelectorAll('.non-swipe-screen').forEach(function(sc){ sc.style.display='none'; });
+  var el = document.getElementById('screen-'+tab);
+  if(el){
+    el.classList.add('non-swipe-screen');
+    el.style.display       = 'flex';
+    el.style.flexDirection = 'column';
+    el.style.position      = 'fixed';
+    el.style.top           = '0';
+    el.style.left          = '0';
+    el.style.right         = '0';
+    el.style.bottom        = '70px';
+    el.style.zIndex        = '50';
+    el.style.background    = 'var(--bg)';
+    el.style.overflowY     = 'auto';
+    el.style.overflowX     = 'hidden';
+    addBackButton(el);
+  }
+  currentTab = tab;
+  renderTab(tab);
+  closeFAB();
+}
+
+function addBackButton(el){
+  if(el.querySelector('.back-btn')) return;
+  var pg = el.querySelector('.pg');
+  if(!pg) return;
+  var btn = document.createElement('div');
+  btn.className = 'back-btn';
+  btn.style.cssText = 'display:flex;align-items:center;gap:6px;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:12px;padding:4px 0;';
+  btn.innerHTML = '&#8592; Back';
+  btn.addEventListener('click', function(){
+    el.style.display = 'none';
+    renderTab(SWIPE_TABS[swipeIndex]);
+  });
+  pg.insertBefore(btn, pg.firstChild);
+}
+
+
 load();
 initTheme();
 initSwipe();
+renderAll();
 setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); }, 200);
 
 // ── Persistent save triggers for Android PWA ─────────────────────────────
@@ -3452,8 +3551,3 @@ window.addEventListener('beforeunload', emergencySave);
 document.addEventListener('touchend', emergencySave, {passive:true});
 
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(regs){
-    regs.forEach(function(r){ r.unregister(); console.log('SW unregistered'); });
-  });
-}
