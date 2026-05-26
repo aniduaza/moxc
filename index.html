@@ -359,6 +359,22 @@ body.light .more-item{background:#FFFFFF;}
 .insight-text strong{color:var(--text);font-weight:600;}
 body.light .insights-card{background:#FFFFFF;}
 body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
+
+/* ── Insight ticker ──────────────────────────────────────────────────── */
+.insight-ticker{overflow:hidden;height:22px;position:relative;margin-top:10px;cursor:pointer;}
+.insight-ticker-inner{display:flex;flex-direction:column;transition:transform .5s cubic-bezier(.22,.68,0,1.2);}
+.insight-ticker-item{height:22px;display:flex;align-items:center;gap:6px;}
+.insight-ticker-icon{font-size:12px;flex-shrink:0;}
+.insight-ticker-text{font-size:12px;color:rgba(168,230,60,.75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.insight-ticker-text b{color:#A8E63C;font-weight:600;}
+/* Expanded overlay */
+.insight-expanded{position:absolute;left:0;right:0;top:0;background:#131D00;border:0.5px solid rgba(168,230,60,.25);border-radius:12px;padding:10px 12px;z-index:10;display:none;flex-direction:column;gap:8px;}
+.insight-expanded.open{display:flex;}
+.insight-exp-row{display:flex;align-items:flex-start;gap:8px;}
+.insight-exp-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.insight-exp-text{font-size:12px;color:rgba(168,230,60,.8);line-height:1.5;}
+.insight-exp-text b{color:#A8E63C;font-weight:600;}
+.insight-exp-close{font-size:10px;color:rgba(168,230,60,.4);text-align:right;margin-top:4px;cursor:pointer;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -417,6 +433,15 @@ body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
           <!-- breakdown bar -->
           <div id="asset-bar" style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:flex;gap:1px;"></div>
           <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
+
+          <!-- insight ticker -->
+          <div class="insight-ticker" id="insight-ticker" onclick="toggleInsightExpand()">
+            <div class="insight-ticker-inner" id="insight-ticker-inner"></div>
+          </div>
+          <div class="insight-expanded" id="insight-expanded">
+            <div id="insight-expanded-rows"></div>
+            <div class="insight-exp-close" onclick="toggleInsightExpand(event)">Tap to close &#8593;</div>
+          </div>
         </div>
 
         <!-- 2 key stats -->
@@ -433,16 +458,8 @@ body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
           </div>
         </div>
 
-        <!-- smart insights -->
-        <div class="slide-up d3">
-          <div class="sec-hdr">
-            <span class="sec-title">Insights</span>
-          </div>
-          <div class="insights-card" id="home-insights"></div>
-        </div>
-
         <!-- daily movers -->
-        <div class="slide-up d4">
+        <div class="slide-up d3">
           <div class="sec-hdr">
             <span class="sec-title">Daily movers</span>
             <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
@@ -2182,16 +2199,67 @@ function generateInsights(){
   return insights.slice(0, 3); // max 3 insights
 }
 
+var tickerIndex    = 0;
+var tickerTimer    = null;
+var tickerInsights = [];
+var tickerPaused   = false;
+
+function formatTickerLine(ins){
+  // Keep bold tags but strip other HTML for the one-liner
+  return ins.text.replace(/<(?!\/?(b|strong))[^>]+>/g, '').replace(/<strong>/g,'<b>').replace(/<\/strong>/g,'</b>');
+}
+
 function renderInsights(){
-  var el = document.getElementById('home-insights');
-  if(!el) return;
-  var insights = generateInsights();
-  el.innerHTML = insights.map(function(ins){
-    return '<div class="insight-row">'
-      +'<div class="insight-icon" style="background:'+ins.bg+';">'+ins.icon+'</div>'
-      +'<div class="insight-text">'+ins.text+'</div>'
+  var inner = document.getElementById('insight-ticker-inner');
+  if(!inner) return;
+
+  tickerInsights = generateInsights();
+  if(!tickerInsights.length) return;
+
+  inner.innerHTML = tickerInsights.map(function(ins){
+    var line = formatTickerLine(ins);
+    return '<div class="insight-ticker-item">'
+      +'<span class="insight-ticker-icon">'+ins.icon+'</span>'
+      +'<span class="insight-ticker-text">'+line+'</span>'
     +'</div>';
   }).join('');
+
+  tickerIndex = 0;
+  inner.style.transition = 'none';
+  inner.style.transform  = 'translateY(0)';
+
+  if(tickerTimer) clearInterval(tickerTimer);
+  if(tickerInsights.length > 1){
+    tickerTimer = setInterval(function(){
+      if(tickerPaused) return;
+      tickerIndex = (tickerIndex + 1) % tickerInsights.length;
+      inner.style.transition = 'transform .5s cubic-bezier(.22,.68,0,1.2)';
+      inner.style.transform  = 'translateY(-'+(tickerIndex * 22)+'px)';
+    }, 5000);
+  }
+}
+
+function toggleInsightExpand(e){
+  if(e) e.stopPropagation();
+  var panel = document.getElementById('insight-expanded');
+  var rows  = document.getElementById('insight-expanded-rows');
+  if(!panel || !rows) return;
+
+  var isOpen = panel.classList.contains('open');
+  if(isOpen){
+    panel.classList.remove('open');
+    tickerPaused = false;
+  } else {
+    // Build full insight rows with bold numbers
+    rows.innerHTML = tickerInsights.map(function(ins){
+      return '<div class="insight-exp-row">'
+        +'<span class="insight-exp-icon">'+ins.icon+'</span>'
+        +'<span class="insight-exp-text">'+ins.text+'</span>'
+      +'</div>';
+    }).join('');
+    panel.classList.add('open');
+    tickerPaused = true;
+  }
 }
 
 function renderHome(){
