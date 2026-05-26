@@ -3648,9 +3648,39 @@ function springToIndex(newIdx){
   if(swipeLocked) return;
   newIdx = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
   if(newIdx === swipeIndex){ setAllScreenX(0, true); return; }
-  swipeLocked = true;
-  swipeIndex  = newIdx;
-  setAllScreenX(0, true);
+
+  var goingHome = (newIdx === 0 && swipeIndex > 0);
+  swipeLocked   = true;
+
+  if(goingHome){
+    // Fade home in — reset all other screens first
+    SWIPE_TABS.forEach(function(tab, i){
+      var el = document.getElementById('screen-'+tab);
+      if(!el) return;
+      if(i === 0){
+        // Home screen: already at correct X, just fade in
+        el.style.transform  = 'translateX(0px)';
+        el.style.opacity    = '0';
+        el.style.transition = 'none';
+        setTimeout(function(){
+          el.style.transition = 'opacity .35s ease';
+          el.style.opacity    = '1';
+        }, 20);
+      } else {
+        // Other screens: slide them out to the right quickly
+        el.style.transition = 'transform .3s ease, opacity .3s ease';
+        el.style.transform  = 'translateX('+(i * swipeW)+'px)';
+        el.style.opacity    = '0.3';
+        setTimeout(function(){ el.style.opacity = '1'; }, 350);
+      }
+    });
+    swipeIndex = 0;
+  } else {
+    // Normal spring slide
+    swipeIndex = newIdx;
+    setAllScreenX(0, true);
+  }
+
   updateNavActive(swipeIndex);
   renderTab(SWIPE_TABS[swipeIndex]);
   setTimeout(function(){ swipeLocked = false; }, 460);
