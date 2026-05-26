@@ -347,7 +347,7 @@ body.light .more-item{background:#FFFFFF;}
 
 /* ── Swipe transitions ───────────────────────────────────────────────── */
 #swipe-container{position:relative;flex:1;overflow:hidden;}
-.swipeable-screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.swipeable-screen{position:absolute;top:0;left:0;width:100vw;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;will-change:transform;-webkit-transform:translateZ(0);}
 .swipeable-screen::-webkit-scrollbar{display:none;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
@@ -963,6 +963,7 @@ body.light .more-item{background:#FFFFFF;}
 </div><!-- end app -->
 
 <script>
+// ── Constants ────────────
 // ── Constants ──────────────────────────────────────────────────────────────
 var STORAGE_KEY='moxcoin_v1';
 var AED_TO_USD=0.2723, AED_TO_PHP=15.8;
@@ -4690,7 +4691,6 @@ var swipeW        = 0;
 var touchStartX   = 0;
 var touchStartY   = 0;
 var touchCurX     = 0;
-var touchCurY     = 0;
 var isDragging    = false;
 var isVertical    = false;
 var dirLocked     = false;
@@ -4698,28 +4698,37 @@ var swipeVelocity = 0;
 var lastTouchX    = 0;
 var lastTouchT    = 0;
 var swipeLocked   = false;
+var SPRING        = 'transform .42s cubic-bezier(.22,.68,0,1.2)';
+
+function getScreen(tab){
+  return document.getElementById('screen-'+tab);
+}
 
 function initSwipe(){
   swipeW = window.innerWidth;
-  window.addEventListener('resize', function(){ swipeW = window.innerWidth; });
+  window.addEventListener('resize', function(){
+    swipeW = window.innerWidth;
+    snapToIndex(swipeIndex, false);
+  });
 
-  // Show only home screen, hide rest
+  // All swipeable screens: position side by side, all visible in DOM
   SWIPE_TABS.forEach(function(tab, i){
-    var el = document.getElementById('screen-'+tab);
+    var el = getScreen(tab);
     if(!el) return;
     el.classList.add('swipeable-screen');
-    el.style.display   = i === 0 ? 'flex' : 'none';
-    el.style.transform = 'none';
-    el.style.transition= 'none';
+    el.style.display    = 'flex';
+    el.style.transition = 'none';
+    el.style.transform  = 'translateX('+(i * 100)+'vw)';
   });
 
   swipeIndex = 0;
   updateNavActive(0);
   renderTab('home');
-  animateScreenIn('home', true);
 
   var container = document.getElementById('swipe-container');
   if(container){
+    container.style.position = 'relative';
+    container.style.overflow = 'hidden';
     container.addEventListener('touchstart', onSwipeTouchStart, {passive:true});
     container.addEventListener('touchmove',  onSwipeTouchMove,  {passive:false});
     container.addEventListener('touchend',   onSwipeTouchEnd,   {passive:true});
@@ -4734,59 +4743,34 @@ function initSwipe(){
   }, 200);
 }
 
-function animateScreenIn(tab, fromRight){
-  var el = document.getElementById('screen-'+tab);
-  if(!el) return;
-  var pg = el.querySelector('.pg');
-  if(!pg) return;
-
-  // fromRight=true  → rows arrive from right (swiped left  → moving forward)
-  // fromRight=false → rows arrive from left  (swiped right → moving backward)
-  var startX = (fromRight ? 1 : -1) * 56;
-
-  var children = Array.prototype.slice.call(pg.children);
-  children.forEach(function(child, i){
-    child.style.opacity    = '0';
-    child.style.transform  = 'translateX('+startX+'px)';
-    child.style.transition = 'none';
-    // force reflow
-    void child.offsetWidth;
-    setTimeout(function(){
-      child.style.transition = 'opacity .28s ease, transform .38s cubic-bezier(.22,.68,0,1.2)';
-      child.style.opacity    = '1';
-      child.style.transform  = 'translateX(0)';
-    }, 25 + i * 48);
+function setAllScreenX(offsetVw, withSpring){
+  SWIPE_TABS.forEach(function(tab, i){
+    var el = getScreen(tab);
+    if(!el) return;
+    var x = (i - swipeIndex) * 100 + offsetVw;
+    el.style.transition = withSpring ? SPRING : 'none';
+    el.style.transform  = 'translateX('+x+'vw)';
   });
+}
+
+function snapToIndex(idx, animate){
+  swipeIndex = Math.max(0, Math.min(SWIPE_TABS.length-1, idx));
+  setAllScreenX(0, animate !== false);
+  updateNavActive(swipeIndex);
 }
 
 function springToIndex(newIdx){
   if(swipeLocked) return;
-  var prev   = swipeIndex;
-  newIdx     = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
-  if(newIdx === prev){ swipeLocked=false; return; }
-
-  swipeLocked = true;
-
-  var fromRight = newIdx > prev;
-
-  // Hide current screen
-  var curEl = document.getElementById('screen-'+SWIPE_TABS[prev]);
-  if(curEl) curEl.style.display = 'none';
-
-  // Show and animate new screen
-  swipeIndex = newIdx;
-  var newEl = document.getElementById('screen-'+SWIPE_TABS[newIdx]);
-  if(newEl){
-    newEl.style.display    = 'flex';
-    newEl.style.transform  = 'none';
-    newEl.style.transition = 'none';
+  var prev = swipeIndex;
+  if(newIdx === prev){
+    setAllScreenX(0, true);
+    return;
   }
-
-  updateNavActive(newIdx);
+  swipeLocked = true;
+  snapToIndex(newIdx, true);
   renderTab(SWIPE_TABS[newIdx]);
-  animateScreenIn(SWIPE_TABS[newIdx], fromRight);
-
-  setTimeout(function(){ swipeLocked = false; }, 120);
+  // Unlock after spring settles
+  setTimeout(function(){ swipeLocked = false; }, 460);
 }
 
 function updateNavActive(idx){
@@ -4801,13 +4785,17 @@ function onSwipeTouchStart(e){
   touchStartX = t.clientX;
   touchStartY = t.clientY;
   touchCurX   = t.clientX;
-  touchCurY   = t.clientY;
   lastTouchX  = t.clientX;
   lastTouchT  = Date.now();
   swipeVelocity = 0;
   isDragging  = false;
   isVertical  = false;
   dirLocked   = false;
+  // Pause spring so screen follows finger exactly
+  SWIPE_TABS.forEach(function(tab){
+    var el = getScreen(tab);
+    if(el) el.style.transition = 'none';
+  });
 }
 
 function onSwipeTouchMove(e){
@@ -4816,7 +4804,7 @@ function onSwipeTouchMove(e){
   var dx = t.clientX - touchStartX;
   var dy = t.clientY - touchStartY;
 
-  if(!dirLocked && (Math.abs(dx) > 8 || Math.abs(dy) > 8)){
+  if(!dirLocked && (Math.abs(dx) > 7 || Math.abs(dy) > 7)){
     dirLocked  = true;
     isVertical = Math.abs(dy) > Math.abs(dx) * 1.1;
   }
@@ -4826,37 +4814,41 @@ function onSwipeTouchMove(e){
   isDragging = true;
   touchCurX  = t.clientX;
 
-  // Velocity tracking
   var now = Date.now();
   var dt  = now - lastTouchT;
   if(dt > 0) swipeVelocity = (t.clientX - lastTouchX) / dt;
   lastTouchX = t.clientX;
   lastTouchT = now;
+
+  // Convert pixel drag to vw offset and move ALL screens together
+  var dxVw = (dx / swipeW) * 100;
+  // Edge resistance at first/last tab
+  if((swipeIndex === 0 && dx > 0) || (swipeIndex === SWIPE_TABS.length-1 && dx < 0)){
+    dxVw = dxVw * 0.18;
+  }
+  setAllScreenX(dxVw, false);
 }
 
 function onSwipeTouchEnd(e){
   if(swipeLocked){ isDragging=false; return; }
-  if(!isDragging || isVertical){ isDragging=false; return; }
-
+  if(!isDragging || isVertical){
+    setAllScreenX(0, true); // snap back
+    isDragging=false;
+    return;
+  }
   isDragging = false;
 
   var dx  = touchCurX - touchStartX;
   var pct = dx / swipeW;
-  var vel = swipeVelocity;
+  var vel = swipeVelocity; // px/ms
   var newIdx = swipeIndex;
 
-  // Flick (fast) or drag (slow but far enough)
-  if(vel < -0.25 || (vel > -0.25 && vel < 0 && pct < -0.28)){
-    newIdx = swipeIndex + 1; // go right (next tab)
-  } else if(vel > 0.25 || (vel < 0.25 && vel > 0 && pct > 0.28)){
-    newIdx = swipeIndex - 1; // go left (prev tab)
-  }
+  if(vel < -0.2 || pct < -0.25)      newIdx = swipeIndex + 1;
+  else if(vel > 0.2 || pct > 0.25)   newIdx = swipeIndex - 1;
 
   newIdx = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
   springToIndex(newIdx);
 }
-
-function positionAllScreens(){}  // no-op, kept for compatibility
 
 
 // Override switchTab to use swipe system for main tabs
@@ -4926,11 +4918,7 @@ window.addEventListener('beforeunload', emergencySave);
 document.addEventListener('touchend', emergencySave, {passive:true});
 
 
-</script>
-
-
-<script>
-if('serviceWorker' in navigator){
+iceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(function(regs){
     regs.forEach(function(r){ r.unregister(); console.log('SW unregistered'); });
   });
