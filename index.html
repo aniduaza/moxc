@@ -1103,26 +1103,7 @@ function calcBudget(){
 // ── Navigation ─────────────────────────────────────────────────────────────
 var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','advisor','activity','more'];
 
-function switchTab(tab){
-  document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active');});
-  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
-  var screen = document.getElementById('screen-'+tab);
-  if(screen) screen.classList.add('active');
-  // Map tabs to nav items
-  var navMap = {
-    home:'nav-home', portfolio:'nav-portfolio',
-    activity:'nav-activity', more:'nav-more',
-    // secondary screens highlight their parent
-    budget:'nav-activity', transactions:'nav-activity',
-    income:'nav-more', expenses:'nav-more', savings:'nav-more',
-    goals:'nav-more', advisor:'nav-more'
-  };
-  var navId = navMap[tab] || ('nav-'+tab);
-  var navEl = document.getElementById(navId);
-  if(navEl) navEl.classList.add('active');
-  currentTab = tab;
-  renderTab(tab);
-}
+
 
 
 function renderTab(tab){
@@ -4701,72 +4682,111 @@ function saveAdvisorSetup(){
 
 // ── Boot ─────────────────────────────────────────────────────────────────
 
+
 // ── Swipe navigation engine ───────────────────────────────────────────────
-var SWIPE_TABS   = ['home', 'portfolio', 'activity', 'more'];
-var swipeIndex   = 0;       // current tab index (0=home)
-var swipeW       = 0;       // container width
-var touchStartX  = 0;
-var touchStartY  = 0;
-var touchCurX    = 0;
-var isDragging   = false;
-var isVertical   = false;   // locked to vertical scroll this gesture
-var dirLocked    = false;   // direction determined yet?
-var swipeAnimRAF = null;
-var swipeVelocity= 0;
-var lastTouchX   = 0;
-var lastTouchT   = 0;
+var SWIPE_TABS    = ['home','portfolio','activity','more'];
+var swipeIndex    = 0;
+var swipeW        = 0;
+var touchStartX   = 0;
+var touchStartY   = 0;
+var touchCurX     = 0;
+var isDragging    = false;
+var isVertical    = false;
+var dirLocked     = false;
+var swipeVelocity = 0;
+var lastTouchX    = 0;
+var lastTouchT    = 0;
+var swipeLocked   = false; // prevent double-swipe during animation
+
+function getSwipeContainer(){
+  return document.getElementById('swipe-container');
+}
 
 function initSwipe(){
-  var container = document.getElementById('swipe-container');
-  if(!container) return;
+  swipeW = window.innerWidth;
+  window.addEventListener('resize', function(){ swipeW = window.innerWidth; });
 
-  swipeW = container.offsetWidth;
-  window.addEventListener('resize', function(){ swipeW = container.offsetWidth; positionScreens(swipeIndex, false); });
-
-  // Position all 4 screens side by side
+  // Position all swipeable screens
   SWIPE_TABS.forEach(function(tab, i){
     var el = document.getElementById('screen-'+tab);
     if(!el) return;
     el.classList.add('swipeable-screen');
-    el.classList.remove('active');
-    el.style.transform = 'translateX('+(i * 100)+'%)';
-    el.style.display   = 'flex';
+    el.style.transform  = 'translateX('+(i*100)+'%)';
+    el.style.display    = 'flex';
+    el.style.transition = 'none';
   });
 
-  // Set initial screen
-  positionScreens(0, false);
+  // Set home as active
+  swipeIndex = 0;
   updateNavActive(0);
-  renderTab(SWIPE_TABS[0]);
+  animateScreenIn('home');
 
-  // Touch events on container
-  container.addEventListener('touchstart', onTouchStart, {passive:true});
-  container.addEventListener('touchmove',  onTouchMove,  {passive:false});
-  container.addEventListener('touchend',   onTouchEnd,   {passive:true});
-  container.addEventListener('touchcancel',onTouchEnd,   {passive:true});
+  // Attach touch to the WHOLE container (not individual screens)
+  // so swipe works even when over scrollable content
+  var container = getSwipeContainer();
+  if(container){
+    container.addEventListener('touchstart', onSwipeTouchStart, {passive:true});
+    container.addEventListener('touchmove',  onSwipeTouchMove,  {passive:false});
+    container.addEventListener('touchend',   onSwipeTouchEnd,   {passive:true});
+    container.addEventListener('touchcancel',onSwipeTouchEnd,   {passive:true});
+  }
+
+  // Also trigger initial data load
+  setTimeout(function(){
+    fetchCryptoPrices();
+    fetchMovers();
+    setTimeout(takeSnapshot, 3000);
+    setTimeout(checkBudgetAlerts, 1500);
+  }, 200);
 }
 
-function positionScreens(targetIdx, animate, overshoot){
-  if(swipeAnimRAF){ cancelAnimationFrame(swipeAnimRAF); swipeAnimRAF=null; }
-  var over = overshoot || 0;
+function positionAllScreens(targetIdx, withTransition, dragOffsetPct){
+  var off = dragOffsetPct || 0;
   SWIPE_TABS.forEach(function(tab, i){
     var el = document.getElementById('screen-'+tab);
     if(!el) return;
-    var offset = (i - targetIdx) * 100 + over;
-    if(animate){
-      el.style.transition = 'transform .35s cubic-bezier(.22,.68,0,1.2)';
-    } else {
-      el.style.transition = 'none';
-    }
-    el.style.transform = 'translateX('+offset+'%)';
+    el.style.transition = withTransition ? 'transform .38s cubic-bezier(.22,.68,0,1.2)' : 'none';
+    el.style.transform  = 'translateX('+((i - targetIdx)*100 + off)+'%)';
   });
 }
 
-function springToIndex(idx){
-  // Spring with slight overshoot
-  swipeIndex = Math.max(0, Math.min(SWIPE_TABS.length-1, idx));
-  positionScreens(swipeIndex, true);
+function springToIndex(newIdx){
+  if(swipeLocked) return;
+  var prev = swipeIndex;
+  swipeIndex = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
+  swipeLocked = true;
+
+  // Just snap screens — no full-page slide animation
+  // Each screen's content animates in element by element instead
+  positionAllScreens(swipeIndex, false);
   updateNavActive(swipeIndex);
+
+  // Animate the new screen's elements in
+  animateScreenIn(SWIPE_TABS[swipeIndex]);
   renderTab(SWIPE_TABS[swipeIndex]);
+
+  setTimeout(function(){ swipeLocked = false; }, 50);
+}
+
+function animateScreenIn(tab){
+  var el = document.getElementById('screen-'+tab);
+  if(!el) return;
+
+  // Get all direct children of .pg
+  var pg = el.querySelector('.pg');
+  if(!pg) return;
+
+  var children = Array.prototype.slice.call(pg.children);
+  children.forEach(function(child, i){
+    child.style.opacity   = '0';
+    child.style.transform = 'translateY(18px)';
+    child.style.transition = 'none';
+    setTimeout(function(){
+      child.style.transition = 'opacity .28s ease, transform .32s cubic-bezier(.22,.68,0,1.2)';
+      child.style.opacity    = '1';
+      child.style.transform  = 'translateY(0)';
+    }, 40 + i * 55);
+  });
 }
 
 function updateNavActive(idx){
@@ -4775,7 +4795,8 @@ function updateNavActive(idx){
   if(navEl) navEl.classList.add('active');
 }
 
-function onTouchStart(e){
+function onSwipeTouchStart(e){
+  if(swipeLocked) return;
   var t       = e.touches[0];
   touchStartX = t.clientX;
   touchStartY = t.clientY;
@@ -4786,144 +4807,156 @@ function onTouchStart(e){
   isDragging  = false;
   isVertical  = false;
   dirLocked   = false;
-  // Pause transitions
-  SWIPE_TABS.forEach(function(tab){
-    var el = document.getElementById('screen-'+tab);
-    if(el) el.style.transition = 'none';
-  });
 }
 
-function onTouchMove(e){
-  if(!e.touches.length) return;
-  var t    = e.touches[0];
-  var dx   = t.clientX - touchStartX;
-  var dy   = t.clientY - touchStartY;
+function onSwipeTouchMove(e){
+  if(swipeLocked || !e.touches.length) return;
+  var t  = e.touches[0];
+  var dx = t.clientX - touchStartX;
+  var dy = t.clientY - touchStartY;
 
-  // Determine direction on first significant move
-  if(!dirLocked && (Math.abs(dx)>6 || Math.abs(dy)>6)){
-    dirLocked = true;
-    isVertical = Math.abs(dy) > Math.abs(dx);
+  if(!dirLocked && (Math.abs(dx) > 8 || Math.abs(dy) > 8)){
+    dirLocked  = true;
+    isVertical = Math.abs(dy) > Math.abs(dx) * 1.2;
   }
+  if(!dirLocked || isVertical) return;
 
-  if(isVertical) return; // Let native scroll handle it
-
-  // Prevent vertical scroll while swiping horizontally
   e.preventDefault();
   isDragging = true;
   touchCurX  = t.clientX;
 
-  // Calculate velocity
   var now = Date.now();
   var dt  = now - lastTouchT;
   if(dt > 0) swipeVelocity = (t.clientX - lastTouchX) / dt;
   lastTouchX = t.clientX;
   lastTouchT = now;
 
-  // Move screens
   var pct = (dx / swipeW) * 100;
-  // Add resistance at edges
-  if((swipeIndex===0 && dx>0) || (swipeIndex===SWIPE_TABS.length-1 && dx<0)){
-    pct = pct * 0.25;
+  // Edge resistance
+  if((swipeIndex === 0 && dx > 0) || (swipeIndex === SWIPE_TABS.length-1 && dx < 0)){
+    pct = pct * 0.2;
   }
 
-  SWIPE_TABS.forEach(function(tab, i){
-    var el = document.getElementById('screen-'+tab);
-    if(!el) return;
-    var base = (i - swipeIndex) * 100;
-    el.style.transform = 'translateX('+(base + pct)+'%)';
-  });
+  // Just show a subtle parallax hint — screens don't fully slide
+  var curEl = document.getElementById('screen-'+SWIPE_TABS[swipeIndex]);
+  if(curEl){
+    curEl.style.transition = 'none';
+    // Subtle: only move 30% of drag distance to hint direction
+    curEl.style.transform = 'translateX('+(pct * 0.3)+'%)';
+  }
+  // Peek next screen
+  var nextIdx = pct < 0 ? swipeIndex+1 : swipeIndex-1;
+  if(nextIdx >= 0 && nextIdx < SWIPE_TABS.length){
+    var nextEl = document.getElementById('screen-'+SWIPE_TABS[nextIdx]);
+    if(nextEl){
+      nextEl.style.transition = 'none';
+      var baseOffset = (nextIdx - swipeIndex) * 100;
+      nextEl.style.transform = 'translateX('+(baseOffset + pct * 0.3)+'%)';
+    }
+  }
 }
 
-function onTouchEnd(e){
-  if(!isDragging && dirLocked && !isVertical){
-    isDragging = true;
-  }
+function onSwipeTouchEnd(e){
+  if(swipeLocked){ isDragging=false; return; }
+
+  // Reset any non-next screens
+  SWIPE_TABS.forEach(function(tab, i){
+    if(i !== swipeIndex){
+      var el = document.getElementById('screen-'+tab);
+      if(el){
+        el.style.transition = 'none';
+        el.style.transform  = 'translateX('+((i-swipeIndex)*100)+'%)';
+      }
+    }
+  });
+
   if(!isDragging || isVertical){
-    // Snap back if no drag
-    positionScreens(swipeIndex, true);
+    // Snap current screen back
+    var cur = document.getElementById('screen-'+SWIPE_TABS[swipeIndex]);
+    if(cur){
+      cur.style.transition = 'transform .25s cubic-bezier(.22,.68,0,1.2)';
+      cur.style.transform  = 'translateX(0%)';
+    }
     return;
   }
 
-  var dx      = touchCurX - touchStartX;
-  var pct     = dx / swipeW;
-  var vel     = swipeVelocity; // px/ms
+  var dx  = touchCurX - touchStartX;
+  var pct = dx / swipeW;
+  var vel = swipeVelocity;
+  var newIdx = swipeIndex;
 
-  var newIdx  = swipeIndex;
-
-  // Flick detection (fast swipe regardless of distance)
-  if(Math.abs(vel) > 0.3){
-    if(vel < 0) newIdx = swipeIndex + 1;
-    else        newIdx = swipeIndex - 1;
-  } else if(Math.abs(pct) > 0.35){
-    // Dragged more than 35% of screen width
-    if(pct < 0) newIdx = swipeIndex + 1;
-    else        newIdx = swipeIndex - 1;
+  if(Math.abs(vel) > 0.25){
+    newIdx = vel < 0 ? swipeIndex+1 : swipeIndex-1;
+  } else if(Math.abs(pct) > 0.3){
+    newIdx = pct < 0 ? swipeIndex+1 : swipeIndex-1;
   }
 
   newIdx = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
-  springToIndex(newIdx);
+
+  // Reset current screen position before spring
+  var cur = document.getElementById('screen-'+SWIPE_TABS[swipeIndex]);
+  if(cur){ cur.style.transform = 'translateX(0%)'; }
+
   isDragging = false;
+  springToIndex(newIdx);
 }
 
-// Override switchTab to work with swipe system
+
+
+
+
+// Override switchTab to use swipe system for main tabs
 function switchTab(tab){
   var swipeIdx = SWIPE_TABS.indexOf(tab);
-
   if(swipeIdx >= 0){
-    // Swipeable tab — animate to it
     springToIndex(swipeIdx);
-  } else {
-    // Non-swipeable tab (budget, income, etc.) — show as overlay
-    document.querySelectorAll('.screen').forEach(function(sc){
-      if(!sc.classList.contains('swipeable-screen')) sc.style.display = 'none';
-    });
-    var el = document.getElementById('screen-'+tab);
-    if(el){
-      el.style.display   = 'flex';
-      el.style.position  = 'fixed';
-      el.style.inset     = '0';
-      el.style.zIndex    = '50';
-      el.style.background= 'var(--bg)';
-      el.style.paddingBottom = '80px';
-      // Add back button
-      addBackButton(el, tab);
-    }
-    document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
-    var navMore = document.getElementById('nav-more');
-    if(navMore) navMore.classList.add('active');
-    currentTab = tab;
-    renderTab(tab);
+    closeFAB();
+    return;
   }
+  // Non-swipeable: show as overlay
+  document.querySelectorAll('.screen:not(.swipeable-screen)').forEach(function(sc){
+    sc.style.display = 'none';
+  });
+  var el = document.getElementById('screen-'+tab);
+  if(el){
+    el.style.display    = 'flex';
+    el.style.position   = 'fixed';
+    el.style.inset      = '0 0 70px 0';
+    el.style.zIndex     = '50';
+    el.style.background = 'var(--bg)';
+    el.style.overflowY  = 'auto';
+    el.style.flexDirection = 'column';
+    addBackButton(el);
+  }
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var moreBtn = document.getElementById('nav-more');
+  if(moreBtn) moreBtn.classList.add('active');
+  currentTab = tab;
+  renderTab(tab);
+  closeFAB();
 }
 
-function addBackButton(el, tab){
-  // Remove existing back button
+function addBackButton(el){
   var existing = el.querySelector('.back-btn');
-  if(existing) existing.remove();
-
+  if(existing) return;
   var pg = el.querySelector('.pg');
   if(!pg) return;
-
   var btn = document.createElement('div');
   btn.className = 'back-btn';
-  btn.style.cssText = 'display:flex;align-items:center;gap:6px;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:12px;-webkit-tap-highlight-color:transparent;';
+  btn.style.cssText = 'display:flex;align-items:center;gap:6px;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:12px;padding:4px 0;-webkit-tap-highlight-color:transparent;';
   btn.innerHTML = '&#8592; Back';
   btn.addEventListener('click', function(){
     el.style.display  = 'none';
     el.style.position = '';
     el.style.inset    = '';
     el.style.zIndex   = '';
-    springToIndex(swipeIndex);
     renderTab(SWIPE_TABS[swipeIndex]);
   });
-
   pg.insertBefore(btn, pg.firstChild);
 }
 
-
 load();
 initTheme();
-// Swipe engine takes over rendering
 initSwipe();
 setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); }, 200);
 
