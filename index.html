@@ -43,7 +43,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 }
 
 /* ── Layout shell ── */
-#app{height:100vh;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;}
+#app{height:100vh;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;overflow:hidden;}
 
 /* ── Status bar ── */
 
@@ -71,7 +71,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .sec-link{font-size:13px;font-weight:500;color:var(--green);}
 
 /* ── Screen pages ── */
-.screen{display:none;flex-direction:column;gap:0;}
+.screen{display:none;flex-direction:column;gap:0;flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;}
 .screen.active{display:flex;}
 
 /* ── Animations ── */
@@ -179,7 +179,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .delete-btn{background:#2A0000;color:var(--red);border:none;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
 /* ── Page padding wrapper ── */
-.pg{padding:16px;display:flex;flex-direction:column;gap:14px;}
+.pg{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1;}
 
 /* ── Modal sheet ── */
 .sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:flex-end;}
