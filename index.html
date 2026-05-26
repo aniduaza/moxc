@@ -81,9 +81,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes countUp{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 
-.slide-up{animation:slideUp .4s cubic-bezier(.22,.68,0,1.2) both;}
-.slide-up.d1{animation-delay:.05s}.slide-up.d2{animation-delay:.1s}.slide-up.d3{animation-delay:.15s}
-.slide-up.d4{animation-delay:.2s}.slide-up.d5{animation-delay:.25s}.slide-up.d6{animation-delay:.3s}
+.slide-up{}
+
+
 .bar-anim{animation:barIn .8s cubic-bezier(.22,.68,0,1.2) both;animation-delay:.2s;}
 .count-up{animation:countUp .5s cubic-bezier(.22,.68,0,1.2) both;animation-delay:.1s;}
 
@@ -347,7 +347,7 @@ body.light .more-item{background:#FFFFFF;}
 
 /* ── Swipe transitions ───────────────────────────────────────────────── */
 #swipe-container{position:relative;flex:1;overflow:hidden;}
-.swipeable-screen{position:absolute;top:0;left:0;width:100vw;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;will-change:transform;-webkit-transform:translateZ(0);}
+.swipeable-screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;will-change:transform;}
 .swipeable-screen::-webkit-scrollbar{display:none;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
@@ -963,6 +963,8 @@ body.light .more-item{background:#FFFFFF;}
 </div><!-- end app -->
 
 <script>
+// ── Constants ────────────
+// 
 // ── Constants ────────────
 // ── Constants ──────────────────────────────────────────────────────────────
 var STORAGE_KEY='moxcoin_v1';
@@ -4705,9 +4707,9 @@ function getScreen(tab){
 }
 
 function initSwipe(){
-  swipeW = window.innerWidth;
+  swipeW = window.innerWidth || document.documentElement.clientWidth || 375;
   window.addEventListener('resize', function(){
-    swipeW = window.innerWidth;
+    swipeW = window.innerWidth || document.documentElement.clientWidth || 375;
     snapToIndex(swipeIndex, false);
   });
 
@@ -4718,7 +4720,7 @@ function initSwipe(){
     el.classList.add('swipeable-screen');
     el.style.display    = 'flex';
     el.style.transition = 'none';
-    el.style.transform  = 'translateX('+(i * 100)+'vw)';
+    el.style.transform  = 'translateX('+(i * swipeW)+'px)';
   });
 
   swipeIndex = 0;
@@ -4729,6 +4731,8 @@ function initSwipe(){
   if(container){
     container.style.position = 'relative';
     container.style.overflow = 'hidden';
+    container.style.flex     = '1';
+    container.style.display  = 'flex';
     container.addEventListener('touchstart', onSwipeTouchStart, {passive:true});
     container.addEventListener('touchmove',  onSwipeTouchMove,  {passive:false});
     container.addEventListener('touchend',   onSwipeTouchEnd,   {passive:true});
@@ -4743,13 +4747,13 @@ function initSwipe(){
   }, 200);
 }
 
-function setAllScreenX(offsetVw, withSpring){
+function setAllScreenX(offsetPx, withSpring){
   SWIPE_TABS.forEach(function(tab, i){
     var el = getScreen(tab);
     if(!el) return;
-    var x = (i - swipeIndex) * 100 + offsetVw;
+    var x = (i - swipeIndex) * swipeW + offsetPx;
     el.style.transition = withSpring ? SPRING : 'none';
-    el.style.transform  = 'translateX('+x+'vw)';
+    el.style.transform  = 'translateX('+x+'px)';
   });
 }
 
@@ -4821,12 +4825,12 @@ function onSwipeTouchMove(e){
   lastTouchT = now;
 
   // Convert pixel drag to vw offset and move ALL screens together
-  var dxVw = (dx / swipeW) * 100;
+  var dxPx = dx;
   // Edge resistance at first/last tab
   if((swipeIndex === 0 && dx > 0) || (swipeIndex === SWIPE_TABS.length-1 && dx < 0)){
-    dxVw = dxVw * 0.18;
+    dxPx = dx * 0.18;
   }
-  setAllScreenX(dxVw, false);
+  setAllScreenX(dxPx, false);
 }
 
 function onSwipeTouchEnd(e){
@@ -4918,12 +4922,8 @@ window.addEventListener('beforeunload', emergencySave);
 document.addEventListener('touchend', emergencySave, {passive:true});
 
 
-iceWorker' in navigator){
+if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(function(regs){
     regs.forEach(function(r){ r.unregister(); console.log('SW unregistered'); });
   });
 }
-</script>
-
-</body>
-</html>
