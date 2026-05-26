@@ -453,6 +453,214 @@ body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
       </div>
     </div>
 
+    <!-- ═══ PORTFOLIO SCREEN ═══ -->
+    <div class="screen" id="screen-portfolio" data-swipe-index="1">
+      <div class="pg">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;" class="slide-up d1">
+          <div style="font-size:18px;font-weight:600;">Portfolio</div>
+          <div id="port-pl-badge"></div>
+        </div>
+
+        <!-- sparkline card -->
+        <div class="card slide-up d2" style="padding:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+            <div style="font-size:22px;font-weight:600;" id="port-total">—</div>
+            <div style="display:flex;gap:6px;">
+              <span class="toggle-btn active" onclick="setRange(this,'3m')">3M</span>
+              <span class="toggle-btn" onclick="setRange(this,'6m')">6M</span>
+              <span class="toggle-btn" onclick="setRange(this,'1y')">1Y</span>
+            </div>
+          </div>
+          <canvas id="sparkline-canvas" height="70" style="width:100%;height:70px;display:block;"></canvas>
+        </div>
+
+        <!-- filter tabs -->
+        <div class="port-tabs slide-up d3">
+          <button class="port-tab active" onclick="setPortFilter(this,'all')">All assets</button>
+          <button class="port-tab" onclick="setPortFilter(this,'crypto')">Crypto</button>
+          <button class="port-tab" onclick="setPortFilter(this,'cards')">Cards</button>
+          <button class="port-tab" onclick="setPortFilter(this,'savings')">Savings</button>
+        </div>
+
+        <!-- ALL section -->
+        <div id="port-section-all">
+          <div class="sec-hdr"><span class="sec-title">Crypto</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
+          <div id="crypto-list"></div>
+          <div class="sec-hdr" style="margin-top:8px;">
+            <span class="sec-title">Cards</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
+              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
+            </div>
+          </div>
+          <div id="collection-list"></div>
+          <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Savings</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
+          <div id="savings-list"></div>
+        </div>
+
+        <!-- CRYPTO section -->
+        <div id="port-section-crypto" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Crypto holdings</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
+          <div id="crypto-list-2"></div>
+        </div>
+
+        <!-- CARDS section -->
+        <div id="port-section-cards" style="display:none;">
+          <div class="sec-hdr">
+            <span class="sec-title">Card collection</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
+              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
+            </div>
+          </div>
+          <div id="collection-list-2"></div>
+        </div>
+
+        <!-- SAVINGS section -->
+        <div id="port-section-savings" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Savings accounts</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
+          <div id="savings-list-2"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ ACTIVITY SCREEN ═══ -->
+    <div class="screen" id="screen-activity" data-swipe-index="2">
+      <div class="pg">
+
+        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
+
+        <!-- month summary card -->
+        <div style="background:#131D00;border-radius:20px;padding:16px;" class="slide-up d2">
+          <div id="act-month-label" style="font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;"></div>
+
+          <!-- 3 stats -->
+          <div style="display:flex;gap:6px;margin-bottom:12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Income</div>
+              <div style="font-size:18px;font-weight:600;color:#A8E63C;letter-spacing:-.5px;" id="act-income">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Spent</div>
+              <div style="font-size:18px;font-weight:600;color:#fff;letter-spacing:-.5px;" id="act-spent">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Saved</div>
+              <div style="font-size:18px;font-weight:600;color:#5B9BD5;letter-spacing:-.5px;" id="act-saved">—</div>
+            </div>
+          </div>
+
+          <!-- budget progress -->
+          <div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:7px;">
+            <div id="act-bar" style="height:5px;border-radius:3px;background:#A8E63C;width:0%;transition:width .8s cubic-bezier(.22,.68,0,1.2);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px;">
+            <span id="act-pct" style="color:#A8E63C;font-weight:600;"></span>
+            <span id="act-remaining" style="color:rgba(255,255,255,.35);"></span>
+          </div>
+
+          <!-- breakdown pills -->
+          <div style="display:flex;gap:6px;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Essentials</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-ess">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Subscriptions</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-subs">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Saved</div>
+              <div style="font-size:13px;font-weight:600;color:#A8E63C;" id="act-saved2">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- search -->
+        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:12px;">
+
+        <!-- filter pills -->
+        <div class="txn-filter-row slide-up d3">
+          <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'expense')">Expenses</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'ess')">Essentials</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'sub')">Subscriptions</button>
+        </div>
+
+        <div id="act-txn-list" class="slide-up d4"></div>
+
+      </div>
+    </div>
+
+    <!-- ═══ MORE SCREEN ═══ -->
+    <div class="screen" id="screen-more" data-swipe-index="3">
+      <div class="pg">
+        <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
+
+        <div class="stat-row slide-up d2" style="margin-bottom:16px;">
+          <div class="stat-pill">
+            <div class="stat-lbl">Monthly income</div>
+            <div class="stat-val" id="more-income-val" style="color:var(--green);">—</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-lbl">Monthly bills</div>
+            <div class="stat-val" id="more-bills-val" style="color:var(--red);">—</div>
+          </div>
+        </div>
+
+        <div class="slide-up d3">
+          <div class="more-item" onclick="switchTab('goals')">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#127919;</div>
+            <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('advisor')">
+            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#128172;</div>
+            <div class="more-item-info"><div class="more-item-title">AI Advisor</div><div class="more-item-sub">Ask Claude about your finances</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('income')">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#128176;</div>
+            <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No income sources yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('expenses')">
+            <div class="more-item-icon" style="background:rgba(224,85,85,.1);">&#128203;</div>
+            <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('savings')">
+            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#127974;</div>
+            <div class="more-item-info"><div class="more-item-title">Savings accounts</div><div class="more-item-sub" id="more-savings-count">No accounts yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('budget')">
+            <div class="more-item-icon" style="background:rgba(232,216,0,.1);">&#128202;</div>
+            <div class="more-item-info"><div class="more-item-title">Budget</div><div class="more-item-sub">Monthly spending breakdown</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+        </div>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d4">Settings</div>
+        <div class="slide-up d4">
+          <div class="more-item" onclick="toggleTheme()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#127769;</div>
+            <div class="more-item-info"><div class="more-item-title">Theme</div><div class="more-item-sub" id="more-theme">Dark mode</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="document.getElementById('currency-toggle').click()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#128178;</div>
+            <div class="more-item-info"><div class="more-item-title">Currency</div><div class="more-item-sub" id="more-currency">AED</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
   </div><!-- end swipe-container -->
 
   <!-- ═══ BUDGET SCREEN ═══ -->
@@ -539,80 +747,7 @@ body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
       </div>
     </div>
 
-    <!-- ═══ PORTFOLIO SCREEN ═══ -->
-    <div class="screen" id="screen-portfolio" data-swipe-index="1">
-      <div class="pg">
-
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;" class="slide-up d1">
-          <div style="font-size:18px;font-weight:600;">Portfolio</div>
-          <div id="port-pl-badge"></div>
-        </div>
-
-        <!-- sparkline card -->
-        <div class="card slide-up d2" style="padding:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-            <div style="font-size:22px;font-weight:600;" id="port-total">—</div>
-            <div style="display:flex;gap:6px;">
-              <span class="toggle-btn active" onclick="setRange(this,'3m')">3M</span>
-              <span class="toggle-btn" onclick="setRange(this,'6m')">6M</span>
-              <span class="toggle-btn" onclick="setRange(this,'1y')">1Y</span>
-            </div>
-          </div>
-          <canvas id="sparkline-canvas" height="70" style="width:100%;height:70px;display:block;"></canvas>
-        </div>
-
-        <!-- filter tabs -->
-        <div class="port-tabs slide-up d3">
-          <button class="port-tab active" onclick="setPortFilter(this,'all')">All assets</button>
-          <button class="port-tab" onclick="setPortFilter(this,'crypto')">Crypto</button>
-          <button class="port-tab" onclick="setPortFilter(this,'cards')">Cards</button>
-          <button class="port-tab" onclick="setPortFilter(this,'savings')">Savings</button>
-        </div>
-
-        <!-- ALL section -->
-        <div id="port-section-all">
-          <div class="sec-hdr"><span class="sec-title">Crypto</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
-          <div id="crypto-list"></div>
-          <div class="sec-hdr" style="margin-top:8px;">
-            <span class="sec-title">Cards</span>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
-              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
-            </div>
-          </div>
-          <div id="collection-list"></div>
-          <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Savings</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
-          <div id="savings-list"></div>
-        </div>
-
-        <!-- CRYPTO section -->
-        <div id="port-section-crypto" style="display:none;">
-          <div class="sec-hdr"><span class="sec-title">Crypto holdings</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
-          <div id="crypto-list-2"></div>
-        </div>
-
-        <!-- CARDS section -->
-        <div id="port-section-cards" style="display:none;">
-          <div class="sec-hdr">
-            <span class="sec-title">Card collection</span>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
-              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
-            </div>
-          </div>
-          <div id="collection-list-2"></div>
-        </div>
-
-        <!-- SAVINGS section -->
-        <div id="port-section-savings" style="display:none;">
-          <div class="sec-hdr"><span class="sec-title">Savings accounts</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
-          <div id="savings-list-2"></div>
-        </div>
-
-      </div>
-    </div>
-
-<!-- ═══ INCOME SCREEN ═══ -->
+    <!-- ═══ INCOME SCREEN ═══ -->
     <div class="screen" id="screen-income">
       <div class="pg">
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
@@ -802,140 +937,7 @@ body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
     </div>
 
 
-    <!-- ═══ ACTIVITY SCREEN ═══ -->
-    <div class="screen" id="screen-activity" data-swipe-index="2">
-      <div class="pg">
-
-        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
-
-        <!-- month summary card -->
-        <div style="background:#131D00;border-radius:20px;padding:16px;" class="slide-up d2">
-          <div id="act-month-label" style="font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;"></div>
-
-          <!-- 3 stats -->
-          <div style="display:flex;gap:6px;margin-bottom:12px;">
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Income</div>
-              <div style="font-size:18px;font-weight:600;color:#A8E63C;letter-spacing:-.5px;" id="act-income">—</div>
-            </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Spent</div>
-              <div style="font-size:18px;font-weight:600;color:#fff;letter-spacing:-.5px;" id="act-spent">—</div>
-            </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Saved</div>
-              <div style="font-size:18px;font-weight:600;color:#5B9BD5;letter-spacing:-.5px;" id="act-saved">—</div>
-            </div>
-          </div>
-
-          <!-- budget progress -->
-          <div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:7px;">
-            <div id="act-bar" style="height:5px;border-radius:3px;background:#A8E63C;width:0%;transition:width .8s cubic-bezier(.22,.68,0,1.2);"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px;">
-            <span id="act-pct" style="color:#A8E63C;font-weight:600;"></span>
-            <span id="act-remaining" style="color:rgba(255,255,255,.35);"></span>
-          </div>
-
-          <!-- breakdown pills -->
-          <div style="display:flex;gap:6px;">
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Essentials</div>
-              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-ess">—</div>
-            </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Subscriptions</div>
-              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-subs">—</div>
-            </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Saved</div>
-              <div style="font-size:13px;font-weight:600;color:#A8E63C;" id="act-saved2">—</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- search -->
-        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:12px;">
-
-        <!-- filter pills -->
-        <div class="txn-filter-row slide-up d3">
-          <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
-          <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
-          <button class="txn-filter-btn" onclick="setActFilter(this,'expense')">Expenses</button>
-          <button class="txn-filter-btn" onclick="setActFilter(this,'ess')">Essentials</button>
-          <button class="txn-filter-btn" onclick="setActFilter(this,'sub')">Subscriptions</button>
-        </div>
-
-        <div id="act-txn-list" class="slide-up d4"></div>
-
-      </div>
-    </div>
-
-<!-- ═══ MORE SCREEN ═══ -->
-    <div class="screen" id="screen-more" data-swipe-index="3">
-      <div class="pg">
-        <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
-
-        <div class="stat-row slide-up d2" style="margin-bottom:16px;">
-          <div class="stat-pill">
-            <div class="stat-lbl">Monthly income</div>
-            <div class="stat-val" id="more-income-val" style="color:var(--green);">—</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-lbl">Monthly bills</div>
-            <div class="stat-val" id="more-bills-val" style="color:var(--red);">—</div>
-          </div>
-        </div>
-
-        <div class="slide-up d3">
-          <div class="more-item" onclick="switchTab('goals')">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#127919;</div>
-            <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('advisor')">
-            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#128172;</div>
-            <div class="more-item-info"><div class="more-item-title">AI Advisor</div><div class="more-item-sub">Ask Claude about your finances</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('income')">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#128176;</div>
-            <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No income sources yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('expenses')">
-            <div class="more-item-icon" style="background:rgba(224,85,85,.1);">&#128203;</div>
-            <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('savings')">
-            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#127974;</div>
-            <div class="more-item-info"><div class="more-item-title">Savings accounts</div><div class="more-item-sub" id="more-savings-count">No accounts yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="switchTab('budget')">
-            <div class="more-item-icon" style="background:rgba(232,216,0,.1);">&#128202;</div>
-            <div class="more-item-info"><div class="more-item-title">Budget</div><div class="more-item-sub">Monthly spending breakdown</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-        </div>
-
-        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d4">Settings</div>
-        <div class="slide-up d4">
-          <div class="more-item" onclick="toggleTheme()">
-            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#127769;</div>
-            <div class="more-item-info"><div class="more-item-title">Theme</div><div class="more-item-sub" id="more-theme">Dark mode</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-          <div class="more-item" onclick="document.getElementById('currency-toggle').click()">
-            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#128178;</div>
-            <div class="more-item-info"><div class="more-item-title">Currency</div><div class="more-item-sub" id="more-currency">AED</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div><!-- end page -->
+      </div><!-- end page -->
 
 <!-- ── Bottom Nav ── -->
   <div class="bottom-nav" style="display:flex;align-items:center;padding:0;">
@@ -3761,3 +3763,211 @@ if('serviceWorker' in navigator){
 
 </body>
 </html>
+
+    <!-- ═══ PORTFOLIO SCREEN ═══ -->
+    <div class="screen" id="screen-portfolio" data-swipe-index="1">
+      <div class="pg">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;" class="slide-up d1">
+          <div style="font-size:18px;font-weight:600;">Portfolio</div>
+          <div id="port-pl-badge"></div>
+        </div>
+
+        <!-- sparkline card -->
+        <div class="card slide-up d2" style="padding:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+            <div style="font-size:22px;font-weight:600;" id="port-total">—</div>
+            <div style="display:flex;gap:6px;">
+              <span class="toggle-btn active" onclick="setRange(this,'3m')">3M</span>
+              <span class="toggle-btn" onclick="setRange(this,'6m')">6M</span>
+              <span class="toggle-btn" onclick="setRange(this,'1y')">1Y</span>
+            </div>
+          </div>
+          <canvas id="sparkline-canvas" height="70" style="width:100%;height:70px;display:block;"></canvas>
+        </div>
+
+        <!-- filter tabs -->
+        <div class="port-tabs slide-up d3">
+          <button class="port-tab active" onclick="setPortFilter(this,'all')">All assets</button>
+          <button class="port-tab" onclick="setPortFilter(this,'crypto')">Crypto</button>
+          <button class="port-tab" onclick="setPortFilter(this,'cards')">Cards</button>
+          <button class="port-tab" onclick="setPortFilter(this,'savings')">Savings</button>
+        </div>
+
+        <!-- ALL section -->
+        <div id="port-section-all">
+          <div class="sec-hdr"><span class="sec-title">Crypto</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
+          <div id="crypto-list"></div>
+          <div class="sec-hdr" style="margin-top:8px;">
+            <span class="sec-title">Cards</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
+              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
+            </div>
+          </div>
+          <div id="collection-list"></div>
+          <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Savings</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
+          <div id="savings-list"></div>
+        </div>
+
+        <!-- CRYPTO section -->
+        <div id="port-section-crypto" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Crypto holdings</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
+          <div id="crypto-list-2"></div>
+        </div>
+
+        <!-- CARDS section -->
+        <div id="port-section-cards" style="display:none;">
+          <div class="sec-hdr">
+            <span class="sec-title">Card collection</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
+              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
+            </div>
+          </div>
+          <div id="collection-list-2"></div>
+        </div>
+
+        <!-- SAVINGS section -->
+        <div id="port-section-savings" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Savings accounts</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
+          <div id="savings-list-2"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ ACTIVITY SCREEN ═══ -->
+    <div class="screen" id="screen-activity" data-swipe-index="2">
+      <div class="pg">
+
+        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
+
+        <!-- month summary card -->
+        <div style="background:#131D00;border-radius:20px;padding:16px;" class="slide-up d2">
+          <div id="act-month-label" style="font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;"></div>
+
+          <!-- 3 stats -->
+          <div style="display:flex;gap:6px;margin-bottom:12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Income</div>
+              <div style="font-size:18px;font-weight:600;color:#A8E63C;letter-spacing:-.5px;" id="act-income">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Spent</div>
+              <div style="font-size:18px;font-weight:600;color:#fff;letter-spacing:-.5px;" id="act-spent">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Saved</div>
+              <div style="font-size:18px;font-weight:600;color:#5B9BD5;letter-spacing:-.5px;" id="act-saved">—</div>
+            </div>
+          </div>
+
+          <!-- budget progress -->
+          <div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:7px;">
+            <div id="act-bar" style="height:5px;border-radius:3px;background:#A8E63C;width:0%;transition:width .8s cubic-bezier(.22,.68,0,1.2);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px;">
+            <span id="act-pct" style="color:#A8E63C;font-weight:600;"></span>
+            <span id="act-remaining" style="color:rgba(255,255,255,.35);"></span>
+          </div>
+
+          <!-- breakdown pills -->
+          <div style="display:flex;gap:6px;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Essentials</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-ess">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Subscriptions</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-subs">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+              <div style="font-size:9px;color:rgba(255,255,255,.35);">Saved</div>
+              <div style="font-size:13px;font-weight:600;color:#A8E63C;" id="act-saved2">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- search -->
+        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:12px;">
+
+        <!-- filter pills -->
+        <div class="txn-filter-row slide-up d3">
+          <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'expense')">Expenses</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'ess')">Essentials</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'sub')">Subscriptions</button>
+        </div>
+
+        <div id="act-txn-list" class="slide-up d4"></div>
+
+      </div>
+    </div>
+
+    <!-- ═══ MORE SCREEN ═══ -->
+    <div class="screen" id="screen-more" data-swipe-index="3">
+      <div class="pg">
+        <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
+
+        <div class="stat-row slide-up d2" style="margin-bottom:16px;">
+          <div class="stat-pill">
+            <div class="stat-lbl">Monthly income</div>
+            <div class="stat-val" id="more-income-val" style="color:var(--green);">—</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-lbl">Monthly bills</div>
+            <div class="stat-val" id="more-bills-val" style="color:var(--red);">—</div>
+          </div>
+        </div>
+
+        <div class="slide-up d3">
+          <div class="more-item" onclick="switchTab('goals')">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#127919;</div>
+            <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('advisor')">
+            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#128172;</div>
+            <div class="more-item-info"><div class="more-item-title">AI Advisor</div><div class="more-item-sub">Ask Claude about your finances</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('income')">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#128176;</div>
+            <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No income sources yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('expenses')">
+            <div class="more-item-icon" style="background:rgba(224,85,85,.1);">&#128203;</div>
+            <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('savings')">
+            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#127974;</div>
+            <div class="more-item-info"><div class="more-item-title">Savings accounts</div><div class="more-item-sub" id="more-savings-count">No accounts yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('budget')">
+            <div class="more-item-icon" style="background:rgba(232,216,0,.1);">&#128202;</div>
+            <div class="more-item-info"><div class="more-item-title">Budget</div><div class="more-item-sub">Monthly spending breakdown</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+        </div>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d4">Settings</div>
+        <div class="slide-up d4">
+          <div class="more-item" onclick="toggleTheme()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#127769;</div>
+            <div class="more-item-info"><div class="more-item-title">Theme</div><div class="more-item-sub" id="more-theme">Dark mode</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="document.getElementById('currency-toggle').click()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#128178;</div>
+            <div class="more-item-info"><div class="more-item-title">Currency</div><div class="more-item-sub" id="more-currency">AED</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
