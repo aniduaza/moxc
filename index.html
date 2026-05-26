@@ -349,6 +349,16 @@ body.light .more-item{background:#FFFFFF;}
 #swipe-container{position:relative;flex:1;overflow:hidden;}
 .swipeable-screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
 .swipeable-screen::-webkit-scrollbar{display:none;}
+
+/* ── Smart insights ──────────────────────────────────────────────────── */
+.insights-card{background:var(--surface);border-radius:var(--r-lg);padding:14px;margin-bottom:0;}
+.insight-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,.06);}
+.insight-row:last-child{border-bottom:none;padding-bottom:0;}
+.insight-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.insight-text{flex:1;font-size:12px;color:var(--text2);line-height:1.5;}
+.insight-text strong{color:var(--text);font-weight:600;}
+body.light .insights-card{background:#FFFFFF;}
+body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -423,8 +433,16 @@ body.light .more-item{background:#FFFFFF;}
           </div>
         </div>
 
-        <!-- daily movers -->
+        <!-- smart insights -->
         <div class="slide-up d3">
+          <div class="sec-hdr">
+            <span class="sec-title">Insights</span>
+          </div>
+          <div class="insights-card" id="home-insights"></div>
+        </div>
+
+        <!-- daily movers -->
+        <div class="slide-up d4">
           <div class="sec-hdr">
             <span class="sec-title">Daily movers</span>
             <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
@@ -1474,7 +1492,7 @@ function todayKey(){
 
 function takeSnapshot(){
   var total = totalAssets();
-  if(total <= 0) return; // don't save zero — assets not loaded yet
+  if(total <= 0) return; // do not save zero — assets not loaded yet
   if(!data.snapshots) data.snapshots = [];
   var key   = todayKey();
   // Update today's entry or add new one
@@ -2045,6 +2063,135 @@ function renderMore(){
 }
 
 
+
+// ── Smart insights engine ─────────────────────────────────────────────────
+function generateInsights(){
+  var insights = [];
+  var b        = calcBudget();
+  var assets   = totalAssets();
+  var now      = new Date();
+  var dayOfMonth = now.getDate();
+  var daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  var monthPct = dayOfMonth / daysInMonth;
+
+  // ── Spending insights ──────────────────────────────────────────────────
+  if(b.inc > 0 && b.tot > 0){
+    var spendRate = b.tot / b.inc;
+    var expectedSpend = monthPct * b.inc;
+
+    if(b.tot > expectedSpend * 1.15){
+      // Overspending vs month progress
+      insights.push({
+        icon:'⚠️', bg:'rgba(224,85,85,.12)',
+        text:'You have spent <strong>'+fmt(b.tot)+' '+curSym()+'</strong> — ahead of pace for this month. ' +
+             'At this rate you will spend <strong>'+fmt(Math.round(b.tot/monthPct))+' '+curSym()+'</strong> by month end.'
+      });
+    } else if(b.rate >= 30){
+      insights.push({
+        icon:'✅', bg:'rgba(168,230,60,.1)',
+        text:'Strong savings rate of <strong>'+b.rate+'%</strong> this month — you are saving <strong>'+fmt(b.sav)+' '+curSym()+'</strong> of your income.'
+      });
+    }
+
+    // Subscriptions as % of expenses
+    if(b.subs > 0 && b.tot > 0){
+      var subPct = Math.round(b.subs/b.tot*100);
+      if(subPct > 35){
+        insights.push({
+          icon:'📱', bg:'rgba(91,155,213,.1)',
+          text:'Subscriptions make up <strong>'+subPct+'%</strong> of your monthly bills (<strong>'+fmt(b.subs)+' '+curSym()+'</strong>). Worth reviewing.'
+        });
+      }
+    }
+  }
+
+  // ── Portfolio insights ─────────────────────────────────────────────────
+  if(data.cryptoHoldings.length > 0){
+    // Best performer today
+    var best = null, bestChg = -999;
+    data.cryptoHoldings.forEach(function(h){
+      var chg = cryptoChangeCache[h.id] || 0;
+      if(chg > bestChg){ bestChg = chg; best = h; }
+    });
+    if(best && bestChg > 1){
+      insights.push({
+        icon:'📈', bg:'rgba(168,230,60,.1)',
+        text:'<strong>'+best.sym+'</strong> is your top mover today at <strong>+'+(bestChg.toFixed(1))+'%</strong>.'
+      });
+    } else if(best && bestChg < -2){
+      insights.push({
+        icon:'📉', bg:'rgba(224,85,85,.1)',
+        text:'<strong>'+best.sym+'</strong> is down <strong>'+(bestChg.toFixed(1))+'%</strong> today — largest drop in your portfolio.'
+      });
+    }
+  }
+
+  // ── Collection insights ───────────────────────────────────────────────
+  var mtgTotal  = data.mtgCards.reduce(function(s,c){ return s+(c.currentPrice||c.addedPrice||0); }, 0);
+  var mtgCost   = data.mtgCards.reduce(function(s,c){ return s+(c.addedPrice||0); }, 0);
+  var pkTotal   = data.pokemonCards.reduce(function(s,c){ return s+(c.currentPrice||c.addedPrice||0); }, 0);
+  var pkCost    = data.pokemonCards.reduce(function(s,c){ return s+(c.addedPrice||0); }, 0);
+
+  if(mtgCost > 0){
+    var mtgGain = ((mtgTotal - mtgCost)/mtgCost*100).toFixed(1);
+    if(parseFloat(mtgGain) > 5){
+      insights.push({
+        icon:'🃏', bg:'rgba(224,80,16,.1)',
+        text:'Your MTG collection is up <strong>+'+mtgGain+'%</strong> since purchase — worth <strong>'+fmt(mtgTotal)+' '+curSym()+'</strong>.'
+      });
+    }
+  }
+  if(pkCost > 0){
+    var pkGain = ((pkTotal - pkCost)/pkCost*100).toFixed(1);
+    if(parseFloat(pkGain) > 5){
+      insights.push({
+        icon:'⚡', bg:'rgba(240,185,11,.1)',
+        text:'Your Pokémon cards are up <strong>+'+pkGain+'%</strong> since purchase — worth <strong>'+fmt(pkTotal)+' '+curSym()+'</strong>.'
+      });
+    }
+  }
+
+  // ── Goals insight ─────────────────────────────────────────────────────
+  if(data.goals.length > 0){
+    // Find closest goal to completion
+    var closest = null, closestPct = 0;
+    data.goals.forEach(function(g){
+      var cur = g.autoTrack==='savings'?totalSavings():g.autoTrack==='assets'?assets:(g.currentAmt||0);
+      var pct = g.targetAmt>0 ? Math.min(100, cur/g.targetAmt*100) : 0;
+      if(pct > closestPct){ closestPct=pct; closest=g; }
+    });
+    if(closest && closestPct >= 50 && closestPct < 100){
+      insights.push({
+        icon:'🎯', bg:'rgba(168,230,60,.08)',
+        text:'<strong>'+closest.name+'</strong> is <strong>'+closestPct.toFixed(0)+'%</strong> complete. '+
+          (b.sav>0 ? 'At your current savings rate, '+calcGoalETA(closest, {current:closestPct/100*closest.targetAmt, pct:closestPct})+'.' : 'Keep going!')
+      });
+    }
+  }
+
+  // ── Fallback if no insights ───────────────────────────────────────────
+  if(!insights.length){
+    insights.push({
+      icon:'💡', bg:'rgba(255,255,255,.05)',
+      text:'Add your income, bills and holdings to get personalised financial insights.'
+    });
+  }
+
+  return insights.slice(0, 3); // max 3 insights
+}
+
+function renderInsights(){
+  var el = document.getElementById('home-insights');
+  if(!el) return;
+  var insights = generateInsights();
+  el.innerHTML = insights.map(function(ins){
+    return '<div class="insight-row">'
+      +'<div class="insight-icon" style="background:'+ins.bg+';">'+ins.icon+'</div>'
+      +'<div class="insight-text">'+ins.text+'</div>'
+    +'</div>';
+  }).join('');
+}
+
 function renderHome(){
   var assets = totalAssets();
   var b      = calcBudget();
@@ -2129,6 +2276,7 @@ function renderHome(){
   if(spentEl)   spentEl.textContent   = fmt(b.tot);
   if(spentOfEl) spentOfEl.textContent = 'of '+fmt(b.inc)+' '+curSym();
 
+  renderInsights();
   renderMovers();
 }
 
