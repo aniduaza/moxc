@@ -1730,48 +1730,87 @@ function renderBudgetAlertBanner(pct, b){
 
 // ── FAB (Floating Action Button) ──────────────────────────────────────────
 var FAB_OPTIONS = [
-  {id:'add-income',      icon:'💰', label:'Income source',   color:'rgba(168,230,60,.12)'},
-  {id:'add-expense',     icon:'📋', label:'Monthly bill',    color:'rgba(224,85,85,.12)'},
-  {id:'add-transaction', icon:'💳', label:'Transaction',     color:'rgba(91,155,213,.12)'},
-  {id:'add-crypto',      icon:'₿',  label:'Crypto holding',  color:'rgba(247,164,0,.12)'},
-  {id:'add-collection',  icon:'🃏', label:'Card (MTG/Pokémon)', color:'rgba(181,123,224,.12)'},
-  {id:'add-goal',        icon:'🎯', label:'Goal',            color:'rgba(168,230,60,.08)'},
-  {id:'add-savings',     icon:'🏦', label:'Savings account', color:'rgba(91,155,213,.08)'},
+  {id:'add-income',      icon:'&#128176;', label:'Income source',     sub:'Salary, freelance, other',   color:'rgba(168,230,60,.08)',  accent:'#A8E63C'},
+  {id:'add-expense',     icon:'&#128203;', label:'Monthly bill',      sub:'Rent, subscriptions, bills', color:'rgba(224,85,85,.08)',   accent:'#E05555'},
+  {id:'add-transaction', icon:'&#128179;', label:'Transaction',       sub:'Log a one-time payment',     color:'rgba(91,155,213,.08)',  accent:'#5B9BD5'},
+  {id:'add-crypto',      icon:'&#8383;',   label:'Crypto holding',    sub:'BTC, ETH, SOL and more',     color:'rgba(247,164,0,.08)',   accent:'#F7A400'},
+  {id:'add-collection',  icon:'&#127183;', label:'Card',              sub:'MTG or Pokémon card',        color:'rgba(181,123,224,.08)', accent:'#B57BE0'},
+  {id:'add-goal',        icon:'&#127919;', label:'Goal',              sub:'Savings target with ETA',    color:'rgba(168,230,60,.06)',  accent:'#A8E63C'},
+  {id:'add-savings',     icon:'&#127974;', label:'Savings account',   sub:'Bank account or cash',       color:'rgba(91,155,213,.06)',  accent:'#5B9BD5'},
 ];
 
 function openFAB(){
   var existing = document.getElementById('fab-overlay');
-  if(existing){ existing.remove(); return; }
+  if(existing){ closeFAB(); return; }
 
   var overlay = document.createElement('div');
   overlay.id  = 'fab-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.7);display:flex;flex-direction:column;justify-content:flex-end;';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.75);display:flex;flex-direction:column;justify-content:flex-end;';
 
   var sheet = document.createElement('div');
-  sheet.style.cssText = 'background:var(--surface);border-radius:24px 24px 0 0;padding:20px 16px 40px;animation:slideUp .3s cubic-bezier(.22,.68,0,1.2) both;';
+  sheet.style.cssText = 'background:var(--surface);border-radius:24px 24px 0 0;padding:20px 16px 36px;';
 
-  var handle = '<div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px;"></div>';
-  var title  = '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">What would you like to add?</div>';
+  // Handle
+  var handle = document.createElement('div');
+  handle.style.cssText = 'width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 18px;';
+  sheet.appendChild(handle);
 
-  var items = FAB_OPTIONS.map(function(opt){
-    return '<div onclick="openFABSheet(\''+opt.id+'\')" style="display:flex;align-items:center;gap:14px;padding:12px;background:'+opt.color+';border-radius:14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;">'
-      +'<div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+opt.icon+'</div>'
-      +'<div style="font-size:14px;font-weight:500;color:var(--text);">'+opt.label+'</div>'
-      +'<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>'
-    +'</div>';
-  }).join('');
+  // Title
+  var title = document.createElement('div');
+  title.style.cssText = 'font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px;';
+  title.textContent = 'Add something';
+  sheet.appendChild(title);
 
-  sheet.innerHTML = handle + title + items;
-  overlay.appendChild(sheet);
-  overlay.addEventListener('click', function(e){
-    if(e.target === overlay) closeFAB();
+  var sub = document.createElement('div');
+  sub.style.cssText = 'font-size:12px;color:var(--text3);margin-bottom:16px;';
+  sub.textContent = 'What would you like to track?';
+  sheet.appendChild(sub);
+
+  // Grid
+  var grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
+
+  FAB_OPTIONS.forEach(function(opt){
+    var card = document.createElement('div');
+    card.style.cssText = 'background:'+opt.color+';border:0.5px solid '+opt.accent+'44;border-radius:16px;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
+    card.setAttribute('data-id', opt.id);
+
+    var ico = document.createElement('div');
+    ico.style.cssText = 'font-size:24px;margin-bottom:8px;';
+    ico.innerHTML = opt.icon;
+    card.appendChild(ico);
+
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'font-size:13px;font-weight:600;color:var(--text);';
+    lbl.textContent = opt.label;
+    card.appendChild(lbl);
+
+    var desc = document.createElement('div');
+    desc.style.cssText = 'font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4;';
+    desc.textContent = opt.sub;
+    card.appendChild(desc);
+
+    card.addEventListener('click', function(){
+      openFABSheet(this.getAttribute('data-id'));
+    });
+    grid.appendChild(card);
   });
+
+  sheet.appendChild(grid);
+  overlay.appendChild(sheet);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeFAB(); });
   document.body.appendChild(overlay);
+
+  var fab = document.getElementById('fab-btn');
+  if(fab){ fab.style.transform='rotate(45deg)'; fab.style.transition='transform .2s cubic-bezier(.22,.68,0,1.2)'; }
 }
+
 
 function closeFAB(){
   var el = document.getElementById('fab-overlay');
   if(el) el.remove();
+  var fab = document.getElementById('fab-btn');
+  if(fab){ fab.style.transform='rotate(0deg)'; fab.style.transition='transform .2s cubic-bezier(.22,.68,0,1.2)'; }
 }
 
 function openFABSheet(type){
