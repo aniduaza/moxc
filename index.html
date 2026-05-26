@@ -1952,7 +1952,7 @@ function renderIncome(){
       +'<div class="txn-avatar" style="background:#1A2800;color:var(--green);">'+s.name.slice(0,2).toUpperCase()+'</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+s.name+'</div><div style="font-size:11px;color:var(--text3);">'+(s.freq||'monthly')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--green);">+'+fmt(s.amt)+'</div>'
-      +'<div onclick="deleteItem("income",'+i+')" class="delete-btn">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;income&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=incHtml;
@@ -1974,7 +1974,7 @@ function renderExpenses(){
       +'<div class="txn-avatar" style="background:#2A0000;color:var(--red);">'+e.name.slice(0,2).toUpperCase()+'</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+e.name+'</div><div style="font-size:11px;color:var(--text3);">'+(e.cat==='sub'?'Subscription':'Essential')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--red);">&#8722;'+fmt(e.amt)+'</div>'
-      +'<div onclick="deleteItem("expense",'+i+')" class="delete-btn">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;expense&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=expHtml;
@@ -1993,7 +1993,7 @@ function renderSavingsTab(){
       +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+a.name+'</div><div style="font-size:11px;color:var(--text3);">'+(a.bank||'Account')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--blue);">'+fmt(a.balance)+'</div>'
-      +'<div onclick="deleteItem("savings",'+i+')" class="delete-btn">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=savFullHtml;
@@ -3160,7 +3160,7 @@ function renderIncome(){
       +'<div class="txn-avatar" style="background:#1A2800;color:var(--green);">'+s.name.slice(0,2).toUpperCase()+'</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+s.name+'</div><div style="font-size:11px;color:var(--text3);">'+(s.freq||'monthly')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--green);">+'+fmt(s.amt)+'</div>'
-      +'<div onclick="deleteItem("income",'+i+')" class="delete-btn">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;income&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=incHtml;
@@ -3182,7 +3182,7 @@ function renderExpenses(){
       +'<div class="txn-avatar" style="background:#2A0000;color:var(--red);">'+e.name.slice(0,2).toUpperCase()+'</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+e.name+'</div><div style="font-size:11px;color:var(--text3);">'+(e.cat==='sub'?'Subscription':'Essential')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--red);">&#8722;'+fmt(e.amt)+'</div>'
-      +'<div onclick="deleteItem("expense",'+i+')" class="delete-btn">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;expense&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=expHtml;
@@ -3201,7 +3201,7 @@ function renderSavingsTab(){
       +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+a.name+'</div><div style="font-size:11px;color:var(--text3);">'+(a.bank||'Account')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--blue);">'+fmt(a.balance)+'</div>'
-      +'<div onclick="deleteItem("savings",'+i+')" class="delete-btn">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=savFullHtml;
