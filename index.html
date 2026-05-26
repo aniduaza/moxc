@@ -498,6 +498,7 @@ body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
           <button class="port-tab" onclick="setPortFilter(this,'crypto')">Crypto</button>
           <button class="port-tab" onclick="setPortFilter(this,'cards')">Cards</button>
           <button class="port-tab" onclick="setPortFilter(this,'savings')">Savings</button>
+          <button class="port-tab" onclick="setPortFilter(this,'history')">History</button>
         </div>
 
         <!-- ALL section -->
@@ -538,6 +539,65 @@ body.light .insight-row{border-bottom-color:rgba(0,0,0,.06);}
         <div id="port-section-savings" style="display:none;">
           <div class="sec-hdr"><span class="sec-title">Savings accounts</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
           <div id="savings-list-2"></div>
+        </div>
+
+        <!-- HISTORY section -->
+        <div id="port-section-history" style="display:none;">
+
+          <!-- range selector -->
+          <div style="display:flex;gap:6px;margin-bottom:12px;">
+            <span class="toggle-btn active" id="hist-btn-3m" onclick="setHistRange(this,'3m')">3M</span>
+            <span class="toggle-btn" id="hist-btn-6m" onclick="setHistRange(this,'6m')">6M</span>
+            <span class="toggle-btn" id="hist-btn-1y" onclick="setHistRange(this,'1y')">1Y</span>
+            <span class="toggle-btn" id="hist-btn-all" onclick="setHistRange(this,'all')">All</span>
+          </div>
+
+          <!-- main chart card -->
+          <div class="card" style="padding:16px;margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+              <div>
+                <div style="font-size:11px;color:var(--text3);margin-bottom:2px;">Net worth</div>
+                <div style="font-size:24px;font-weight:700;color:var(--text);letter-spacing:-1px;" id="hist-current">—</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:11px;color:var(--text3);">Change</div>
+                <div style="font-size:14px;font-weight:600;" id="hist-change">—</div>
+              </div>
+            </div>
+            <canvas id="hist-canvas" height="120" style="width:100%;height:120px;display:block;margin:10px 0 4px;"></canvas>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);">
+              <span id="hist-date-start">—</span>
+              <span id="hist-date-end">—</span>
+            </div>
+          </div>
+
+          <!-- stats row -->
+          <div class="stat-row" style="margin-bottom:12px;">
+            <div class="stat-pill">
+              <div class="stat-lbl">Peak value</div>
+              <div class="stat-val" id="hist-peak" style="color:var(--green);">—</div>
+            </div>
+            <div class="stat-pill">
+              <div class="stat-lbl">Lowest value</div>
+              <div class="stat-val" id="hist-low">—</div>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-pill">
+              <div class="stat-lbl">Avg monthly gain</div>
+              <div class="stat-val" id="hist-avg-gain">—</div>
+            </div>
+            <div class="stat-pill">
+              <div class="stat-lbl">Days tracked</div>
+              <div class="stat-val" id="hist-days">—</div>
+            </div>
+          </div>
+
+          <!-- no data message -->
+          <div id="hist-no-data" style="display:none;text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;">
+            No history yet — the app saves a snapshot of your net worth every day. Check back tomorrow!
+          </div>
+
         </div>
 
       </div>
@@ -2495,7 +2555,7 @@ function setPortFilter(btn, filter){
   document.querySelectorAll('.port-tab').forEach(function(b){
     b.classList.toggle('active', b === btn);
   });
-  var sections = ['all','crypto','cards','savings'];
+  var sections = ['all','crypto','cards','savings','history'];
   sections.forEach(function(sec){
     var el = document.getElementById('port-section-'+sec);
     if(el) el.style.display = (sec === filter) ? 'block' : 'none';
@@ -2503,6 +2563,7 @@ function setPortFilter(btn, filter){
   if(filter === 'crypto')  renderCryptoListTo('crypto-list-2');
   if(filter === 'cards')   renderCollectionListTo('collection-list-2');
   if(filter === 'savings') renderSavingsListTo('savings-list-2');
+  if(filter === 'history') renderHistory();
 }
 
 function renderCryptoListTo(elId){
@@ -2560,6 +2621,147 @@ function renderSavingsListTo(elId){
     +'</div>';
   });
   el.innerHTML = html;
+}
+
+
+// ── Net worth history ─────────────────────────────────────────────────────
+var histRange = '3m';
+
+function setHistRange(btn, range){
+  histRange = range;
+  document.querySelectorAll('#port-section-history .toggle-btn').forEach(function(b){
+    b.classList.toggle('active', b === btn);
+  });
+  renderHistory();
+}
+
+function getHistoryPoints(range){
+  var snaps = data.snapshots || [];
+  if(!snaps.length) return [];
+  var days = range === '1y' ? 365 : range === '6m' ? 180 : range === '3m' ? 90 : 9999;
+  var cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  var cutStr = cutoff.toISOString().slice(0,10);
+  var pts = range === 'all' ? snaps.slice() : snaps.filter(function(s){ return s.date >= cutStr; });
+  // Always add today as last point
+  var today = {date: todayKey(), total: totalAssets()};
+  if(!pts.length || pts[pts.length-1].date !== today.date) pts.push(today);
+  return pts;
+}
+
+function drawHistChart(pts){
+  var canvas = document.getElementById('hist-canvas');
+  if(!canvas) return;
+  var dpr = window.devicePixelRatio || 1;
+  var W   = canvas.offsetWidth || 300;
+  var H   = 120;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  if(pts.length < 2) return;
+
+  var vals = pts.map(function(p){ return p.total; });
+  var mn   = Math.min.apply(null, vals);
+  var mx   = Math.max.apply(null, vals);
+  var rng  = mx - mn || mx * 0.05 || 1;
+  mn -= rng * 0.08; mx += rng * 0.08;
+
+  function px(i){ return (i / (pts.length-1)) * W; }
+  function py(v){ return H - ((v-mn)/(mx-mn)) * (H * 0.88) - H * 0.06; }
+
+  // Determine colour based on overall change
+  var isUp  = vals[vals.length-1] >= vals[0];
+  var color = isUp ? '#A8E63C' : '#E05555';
+
+  // Gradient fill
+  var grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, isUp ? 'rgba(168,230,60,.2)' : 'rgba(224,85,85,.2)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+  ctx.beginPath();
+  ctx.moveTo(px(0), py(vals[0]));
+  for(var i=1; i<pts.length; i++) ctx.lineTo(px(i), py(vals[i]));
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.moveTo(px(0), py(vals[0]));
+  for(var i=1; i<pts.length; i++) ctx.lineTo(px(i), py(vals[i]));
+  ctx.strokeStyle = color; ctx.lineWidth = 2;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+
+  // End dot
+  var ex = px(pts.length-1), ey = py(vals[vals.length-1]);
+  ctx.beginPath(); ctx.arc(ex, ey, 5, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(168,230,60,.2)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(ex, ey, 3, 0, Math.PI*2);
+  ctx.fillStyle = color; ctx.fill();
+
+  // Horizontal mid-line
+  var midY = py((mx+mn)/2);
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle = 'rgba(255,255,255,.08)';
+  ctx.lineWidth   = 1;
+  ctx.beginPath(); ctx.moveTo(0, midY); ctx.lineTo(W, midY); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function renderHistory(){
+  var pts = getHistoryPoints(histRange);
+
+  var noData   = document.getElementById('hist-no-data');
+  var canvas   = document.getElementById('hist-canvas');
+
+  if(pts.length < 2){
+    if(noData)  noData.style.display  = 'block';
+    if(canvas)  canvas.style.display  = 'none';
+    return;
+  }
+  if(noData)  noData.style.display  = 'none';
+  if(canvas)  canvas.style.display  = 'block';
+
+  var vals    = pts.map(function(p){ return p.total; });
+  var first   = vals[0];
+  var last    = vals[vals.length-1];
+  var peak    = Math.max.apply(null, vals);
+  var low     = Math.min.apply(null, vals);
+  var change  = last - first;
+  var changePct = first > 0 ? ((change/first)*100).toFixed(1) : '0.0';
+  var isUp    = change >= 0;
+
+  function set(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; }
+  function setC(id, v, color){ var e=document.getElementById(id); if(e){ e.textContent=v; e.style.color=color; } }
+
+  set('hist-current', fmt(last) + ' ' + curSym());
+  setC('hist-change',
+    (isUp?'+':'')+fmt(change)+' '+curSym()+' ('+changePct+'%)',
+    isUp ? 'var(--green)' : 'var(--red)'
+  );
+  set('hist-peak',    fmt(peak) + ' ' + curSym());
+  set('hist-low',     fmt(low)  + ' ' + curSym());
+  set('hist-days',    pts.length + ' days');
+
+  // Avg monthly gain
+  var months = Math.max(1, pts.length / 30);
+  var avgMonthly = change / months;
+  setC('hist-avg-gain',
+    (avgMonthly >= 0 ? '+' : '') + fmt(Math.round(avgMonthly)) + ' ' + curSym(),
+    avgMonthly >= 0 ? 'var(--green)' : 'var(--red)'
+  );
+
+  // Date labels
+  function fmtDate(str){
+    var d = new Date(str);
+    return d.toLocaleDateString('en', {day:'numeric', month:'short', year:'2-digit'});
+  }
+  set('hist-date-start', fmtDate(pts[0].date));
+  set('hist-date-end',   fmtDate(pts[pts.length-1].date));
+
+  // Draw chart after layout
+  setTimeout(function(){ drawHistChart(pts); }, 50);
 }
 
 function renderPortfolio(){
