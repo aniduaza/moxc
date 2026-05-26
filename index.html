@@ -4690,40 +4690,35 @@ var swipeW        = 0;
 var touchStartX   = 0;
 var touchStartY   = 0;
 var touchCurX     = 0;
+var touchCurY     = 0;
 var isDragging    = false;
 var isVertical    = false;
 var dirLocked     = false;
 var swipeVelocity = 0;
 var lastTouchX    = 0;
 var lastTouchT    = 0;
-var swipeLocked   = false; // prevent double-swipe during animation
-
-function getSwipeContainer(){
-  return document.getElementById('swipe-container');
-}
+var swipeLocked   = false;
 
 function initSwipe(){
   swipeW = window.innerWidth;
   window.addEventListener('resize', function(){ swipeW = window.innerWidth; });
 
-  // Position all swipeable screens
+  // Show only home screen, hide rest
   SWIPE_TABS.forEach(function(tab, i){
     var el = document.getElementById('screen-'+tab);
     if(!el) return;
     el.classList.add('swipeable-screen');
-    el.style.transform  = 'translateX('+(i*100)+'%)';
-    el.style.display    = 'flex';
-    el.style.transition = 'none';
+    el.style.display   = i === 0 ? 'flex' : 'none';
+    el.style.transform = 'none';
+    el.style.transition= 'none';
   });
 
-  // Set home as active
   swipeIndex = 0;
   updateNavActive(0);
-  animateScreenIn('home');
+  renderTab('home');
+  animateScreenIn('home', true);
 
-  // Attach touch to the WHOLE container (not individual screens)
-  // so swipe works even when over scrollable content
-  var container = getSwipeContainer();
+  var container = document.getElementById('swipe-container');
   if(container){
     container.addEventListener('touchstart', onSwipeTouchStart, {passive:true});
     container.addEventListener('touchmove',  onSwipeTouchMove,  {passive:false});
@@ -4731,7 +4726,6 @@ function initSwipe(){
     container.addEventListener('touchcancel',onSwipeTouchEnd,   {passive:true});
   }
 
-  // Also trigger initial data load
   setTimeout(function(){
     fetchCryptoPrices();
     fetchMovers();
@@ -4740,55 +4734,59 @@ function initSwipe(){
   }, 200);
 }
 
-function positionAllScreens(targetIdx, withTransition, dragOffsetPct){
-  var off = dragOffsetPct || 0;
-  SWIPE_TABS.forEach(function(tab, i){
-    var el = document.getElementById('screen-'+tab);
-    if(!el) return;
-    el.style.transition = withTransition ? 'transform .38s cubic-bezier(.22,.68,0,1.2)' : 'none';
-    el.style.transform  = 'translateX('+((i - targetIdx)*100 + off)+'%)';
-  });
-}
-
-function springToIndex(newIdx){
-  if(swipeLocked) return;
-  var prev   = swipeIndex;
-  swipeIndex = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
-  swipeLocked = true;
-
-  positionAllScreens(swipeIndex, false);
-  updateNavActive(swipeIndex);
-
-  // fromRight=true means new screen enters from right (swiped left)
-  // fromRight=false means new screen enters from left (swiped right)
-  var fromRight = swipeIndex > prev;
-  animateScreenIn(SWIPE_TABS[swipeIndex], fromRight);
-  renderTab(SWIPE_TABS[swipeIndex]);
-
-  setTimeout(function(){ swipeLocked = false; }, 50);
-}
-
 function animateScreenIn(tab, fromRight){
   var el = document.getElementById('screen-'+tab);
   if(!el) return;
   var pg = el.querySelector('.pg');
   if(!pg) return;
 
-  // Determine direction — default right (swiping left = moving to higher index)
-  var dir = (fromRight === false) ? -1 : 1;
-  var startX = dir * 60; // px offset to start from
+  // fromRight=true  → rows arrive from right (swiped left  → moving forward)
+  // fromRight=false → rows arrive from left  (swiped right → moving backward)
+  var startX = (fromRight ? 1 : -1) * 56;
 
   var children = Array.prototype.slice.call(pg.children);
   children.forEach(function(child, i){
     child.style.opacity    = '0';
     child.style.transform  = 'translateX('+startX+'px)';
     child.style.transition = 'none';
+    // force reflow
+    void child.offsetWidth;
     setTimeout(function(){
-      child.style.transition = 'opacity .3s ease, transform .4s cubic-bezier(.22,.68,0,1.2)';
+      child.style.transition = 'opacity .28s ease, transform .38s cubic-bezier(.22,.68,0,1.2)';
       child.style.opacity    = '1';
-      child.style.transform  = 'translateX(0px)';
-    }, 30 + i * 50);
+      child.style.transform  = 'translateX(0)';
+    }, 25 + i * 48);
   });
+}
+
+function springToIndex(newIdx){
+  if(swipeLocked) return;
+  var prev   = swipeIndex;
+  newIdx     = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
+  if(newIdx === prev){ swipeLocked=false; return; }
+
+  swipeLocked = true;
+
+  var fromRight = newIdx > prev;
+
+  // Hide current screen
+  var curEl = document.getElementById('screen-'+SWIPE_TABS[prev]);
+  if(curEl) curEl.style.display = 'none';
+
+  // Show and animate new screen
+  swipeIndex = newIdx;
+  var newEl = document.getElementById('screen-'+SWIPE_TABS[newIdx]);
+  if(newEl){
+    newEl.style.display    = 'flex';
+    newEl.style.transform  = 'none';
+    newEl.style.transition = 'none';
+  }
+
+  updateNavActive(newIdx);
+  renderTab(SWIPE_TABS[newIdx]);
+  animateScreenIn(SWIPE_TABS[newIdx], fromRight);
+
+  setTimeout(function(){ swipeLocked = false; }, 120);
 }
 
 function updateNavActive(idx){
@@ -4803,6 +4801,7 @@ function onSwipeTouchStart(e){
   touchStartX = t.clientX;
   touchStartY = t.clientY;
   touchCurX   = t.clientX;
+  touchCurY   = t.clientY;
   lastTouchX  = t.clientX;
   lastTouchT  = Date.now();
   swipeVelocity = 0;
@@ -4819,7 +4818,7 @@ function onSwipeTouchMove(e){
 
   if(!dirLocked && (Math.abs(dx) > 8 || Math.abs(dy) > 8)){
     dirLocked  = true;
-    isVertical = Math.abs(dy) > Math.abs(dx) * 1.2;
+    isVertical = Math.abs(dy) > Math.abs(dx) * 1.1;
   }
   if(!dirLocked || isVertical) return;
 
@@ -4827,84 +4826,37 @@ function onSwipeTouchMove(e){
   isDragging = true;
   touchCurX  = t.clientX;
 
+  // Velocity tracking
   var now = Date.now();
   var dt  = now - lastTouchT;
   if(dt > 0) swipeVelocity = (t.clientX - lastTouchX) / dt;
   lastTouchX = t.clientX;
   lastTouchT = now;
-
-  var pct = (dx / swipeW) * 100;
-  // Edge resistance
-  if((swipeIndex === 0 && dx > 0) || (swipeIndex === SWIPE_TABS.length-1 && dx < 0)){
-    pct = pct * 0.2;
-  }
-
-  // Just show a subtle parallax hint — screens don't fully slide
-  var curEl = document.getElementById('screen-'+SWIPE_TABS[swipeIndex]);
-  if(curEl){
-    curEl.style.transition = 'none';
-    // Subtle: only move 30% of drag distance to hint direction
-    curEl.style.transform = 'translateX('+(pct * 0.3)+'%)';
-  }
-  // Peek next screen
-  var nextIdx = pct < 0 ? swipeIndex+1 : swipeIndex-1;
-  if(nextIdx >= 0 && nextIdx < SWIPE_TABS.length){
-    var nextEl = document.getElementById('screen-'+SWIPE_TABS[nextIdx]);
-    if(nextEl){
-      nextEl.style.transition = 'none';
-      var baseOffset = (nextIdx - swipeIndex) * 100;
-      nextEl.style.transform = 'translateX('+(baseOffset + pct * 0.3)+'%)';
-    }
-  }
 }
 
 function onSwipeTouchEnd(e){
   if(swipeLocked){ isDragging=false; return; }
+  if(!isDragging || isVertical){ isDragging=false; return; }
 
-  // Reset any non-next screens
-  SWIPE_TABS.forEach(function(tab, i){
-    if(i !== swipeIndex){
-      var el = document.getElementById('screen-'+tab);
-      if(el){
-        el.style.transition = 'none';
-        el.style.transform  = 'translateX('+((i-swipeIndex)*100)+'%)';
-      }
-    }
-  });
-
-  if(!isDragging || isVertical){
-    // Snap current screen back
-    var cur = document.getElementById('screen-'+SWIPE_TABS[swipeIndex]);
-    if(cur){
-      cur.style.transition = 'transform .25s cubic-bezier(.22,.68,0,1.2)';
-      cur.style.transform  = 'translateX(0%)';
-    }
-    return;
-  }
+  isDragging = false;
 
   var dx  = touchCurX - touchStartX;
   var pct = dx / swipeW;
   var vel = swipeVelocity;
   var newIdx = swipeIndex;
 
-  if(Math.abs(vel) > 0.25){
-    newIdx = vel < 0 ? swipeIndex+1 : swipeIndex-1;
-  } else if(Math.abs(pct) > 0.3){
-    newIdx = pct < 0 ? swipeIndex+1 : swipeIndex-1;
+  // Flick (fast) or drag (slow but far enough)
+  if(vel < -0.25 || (vel > -0.25 && vel < 0 && pct < -0.28)){
+    newIdx = swipeIndex + 1; // go right (next tab)
+  } else if(vel > 0.25 || (vel < 0.25 && vel > 0 && pct > 0.28)){
+    newIdx = swipeIndex - 1; // go left (prev tab)
   }
 
   newIdx = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
-
-  // Reset current screen position before spring
-  var cur = document.getElementById('screen-'+SWIPE_TABS[swipeIndex]);
-  if(cur){ cur.style.transform = 'translateX(0%)'; }
-
-  isDragging = false;
   springToIndex(newIdx);
 }
 
-
-
+function positionAllScreens(){}  // no-op, kept for compatibility
 
 
 // Override switchTab to use swipe system for main tabs
