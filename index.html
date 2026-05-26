@@ -49,7 +49,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 
 
 /* ── Scrollable content ── */
-.page{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:y proximity;padding-bottom:8px;}
+.page{flex:1;overflow:hidden;display:flex;flex-direction:column;}
 .page::-webkit-scrollbar{display:none;}
 
 /* ── Bottom nav ── */
@@ -71,7 +71,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .sec-link{font-size:13px;font-weight:500;color:var(--green);}
 
 /* ── Screen pages ── */
-.screen{display:none;flex-direction:column;gap:0;flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;}
+.screen{display:none;flex-direction:column;flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;}
 .screen.active{display:flex;}
 
 /* ── Animations ── */
@@ -926,6 +926,7 @@ body.light .more-item{background:#FFFFFF;}
         </div>
       </div>
     </div>
+  </div><!-- end page -->
 
 <!-- ── Bottom Nav ── -->
   <div class="bottom-nav" style="display:flex;align-items:center;padding:0;">
