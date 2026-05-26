@@ -325,6 +325,10 @@ body.light #more-drawer{background:#FFFFFF;}
 @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideToast{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-20px)}}
 #budget-toast{position:fixed!important;}
+
+.more-screen-item{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r-lg);padding:14px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent;}
+.more-screen-item:active{background:var(--surface2);}
+body.light .more-screen-item{background:#FFFFFF;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -761,59 +765,177 @@ body.light #more-drawer{background:#FFFFFF;}
       </div>
     </div>
 
+
+    <!-- ═══ ACTIVITY SCREEN ═══ -->
+    <div class="screen" id="screen-activity">
+      <div class="pg">
+
+        <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">Activity</div>
+
+        <!-- Budget summary card -->
+        <div class="card slide-up d1" style="margin-bottom:14px;">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;font-weight:600;">This month</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;">
+            <div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:2px;">Spent</div>
+              <div style="font-size:24px;font-weight:600;color:var(--text);" id="act-spent">—</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:12px;color:var(--text3);margin-bottom:2px;">Budget</div>
+              <div style="font-size:24px;font-weight:600;color:var(--text);" id="act-budget">—</div>
+            </div>
+          </div>
+          <div style="height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;margin-bottom:8px;">
+            <div id="act-bar" style="height:6px;border-radius:3px;background:var(--green);width:0%;transition:width .8s cubic-bezier(.22,.68,0,1.2);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;">
+            <span id="act-pct" style="color:var(--green);font-weight:600;">0% used</span>
+            <span id="act-remaining" style="color:var(--text3);">— remaining</span>
+          </div>
+          <!-- breakdown pills -->
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
+              <div style="font-size:10px;color:var(--text3);">Essentials</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);" id="act-ess">—</div>
+            </div>
+            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
+              <div style="font-size:10px;color:var(--text3);">Subscriptions</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);" id="act-subs">—</div>
+            </div>
+            <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;flex:1;">
+              <div style="font-size:10px;color:var(--text3);">Saved</div>
+              <div style="font-size:13px;font-weight:600;color:var(--green);" id="act-saved">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;" class="slide-up d2">
+          <div style="font-size:13px;font-weight:600;color:var(--text);">Transactions</div>
+          <div id="act-add-btn" style="font-size:12px;color:var(--green);cursor:pointer;padding:4px 0;" onclick="openFABSheet('add-transaction')">+ Add</div>
+        </div>
+
+        <!-- search + filters -->
+        <input class="txn-search slide-up d2" id="act-search" placeholder="Search transactions..." oninput="renderActivity()" style="margin-bottom:8px;">
+        <div class="txn-filter-row slide-up d2" style="margin-bottom:10px;">
+          <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'expense')">Expenses</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'ess')">Essentials</button>
+          <button class="txn-filter-btn" onclick="setActFilter(this,'sub')">Subscriptions</button>
+        </div>
+
+        <div id="act-txn-list" class="slide-up d3"></div>
+
+      </div>
+    </div>
+
+    <!-- ═══ MORE SCREEN ═══ -->
+    <div class="screen" id="screen-more">
+      <div class="pg">
+
+        <div style="font-size:18px;font-weight:600;margin-bottom:20px;" class="slide-up d1">More</div>
+
+        <!-- menu items -->
+        <div style="display:flex;flex-direction:column;gap:8px;">
+
+          <div onclick="switchTab('goals')" class="more-screen-item slide-up d1">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🎯</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Goals</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;">Track your financial targets</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+          <div onclick="switchTab('advisor')" class="more-screen-item slide-up d2">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🤖</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">AI Advisor</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;">Your personal finance assistant</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+          <div onclick="switchTab('income')" class="more-screen-item slide-up d2">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">💰</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Income sources</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-income-count">—</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+          <div onclick="switchTab('expenses')" class="more-screen-item slide-up d3">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(224,85,85,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📋</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Monthly bills</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-bills-count">—</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+          <div onclick="switchTab('savings')" class="more-screen-item slide-up d3">
+            <div style="width:42px;height:42px;border-radius:13px;background:rgba(91,155,213,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏦</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Savings accounts</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-savings-count">—</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+          </div>
+
+        </div>
+
+        <!-- currency + theme toggles -->
+        <div style="margin-top:20px;padding-top:16px;border-top:0.5px solid rgba(255,255,255,.07);">
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Preferences</div>
+          <div style="display:flex;gap:8px;">
+            <div id="currency-toggle" style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px;text-align:center;cursor:pointer;">
+              <div style="font-size:11px;color:var(--text3);">Currency</div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);margin-top:2px;" id="more-currency">AED</div>
+            </div>
+            <div onclick="toggleTheme()" style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px;text-align:center;cursor:pointer;">
+              <div style="font-size:11px;color:var(--text3);">Theme</div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);margin-top:2px;" id="more-theme">Dark</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div><!-- end page -->
 
   <!-- ── Bottom Nav ── -->
-  <div class="bottom-nav">
-    <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
+  <div class="bottom-nav" style="display:flex;align-items:center;padding:0;">
+
+    <div class="nav-item active" id="nav-home" onclick="switchTab('home')" style="flex:1;">
       <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><path d="M8 20v-8h6v8"/></svg>
       <span class="nav-label">Home</span>
     </div>
-    <div class="nav-item" id="nav-portfolio" onclick="switchTab('portfolio')">
+
+    <div class="nav-item" id="nav-portfolio" onclick="switchTab('portfolio')" style="flex:1;">
       <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 18l5-6 4 3 5-7 4 4"/></svg>
       <span class="nav-label">Portfolio</span>
     </div>
-    <div class="nav-item" id="nav-goals" onclick="switchTab('goals')">
-      <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><circle cx="11" cy="11" r="4"/><circle cx="11" cy="11" r="1.5" fill="currentColor"/></svg>
-      <span class="nav-label">Goals</span>
+
+    <!-- FAB -->
+    <div style="flex:1;display:flex;justify-content:center;align-items:center;padding-bottom:4px;">
+      <div id="fab-btn" onclick="openFAB()" style="width:52px;height:52px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(168,230,60,.3);transition:transform .15s;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(.92)'" ontouchend="this.style.transform='scale(1)'">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A2800" stroke-width="2.5" stroke-linecap="round"><path d="M11 4v14M4 11h14"/></svg>
+      </div>
     </div>
-    <div class="nav-item" id="nav-advisor" onclick="switchTab('advisor')">
-      <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      <span class="nav-label">Advisor</span>
+
+    <div class="nav-item" id="nav-activity" onclick="switchTab('activity')" style="flex:1;">
+      <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="4" height="4" rx="1"/><path d="M9 12h4M9 16h6"/></svg>
+      <span class="nav-label">Activity</span>
     </div>
-    <div class="nav-item" id="nav-more" onclick="toggleMoreMenu()">
+
+    <div class="nav-item" id="nav-more" onclick="switchTab('more')" style="flex:1;">
       <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="11" r="1.5" fill="currentColor" stroke="none"/><circle cx="11" cy="11" r="1.5" fill="currentColor" stroke="none"/><circle cx="17" cy="11" r="1.5" fill="currentColor" stroke="none"/></svg>
       <span class="nav-label">More</span>
     </div>
-  </div>
 
-  <!-- ── More Menu Drawer ── -->
-  <div id="more-overlay" onclick="closeMoreMenu()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:40;"></div>
-  <div id="more-drawer" style="display:none;position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:16px 16px max(env(safe-area-inset-bottom),16px);z-index:41;">
-    <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px;"></div>
-    <div style="font-size:12px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;">More screens</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div onclick="switchTabFromMore('budget')" class="more-menu-item">
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M11 3C11 3 15 7 15 11S11 19 11 19"/><path d="M3 11h16"/></svg>
-        <span>Budget</span>
-      </div>
-      <div onclick="switchTabFromMore('transactions')" class="more-menu-item">
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="4" height="4" rx="1"/><path d="M9 12h4M9 16h6"/></svg>
-        <span>History</span>
-      </div>
-      <div onclick="switchTabFromMore('income')" class="more-menu-item">
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 3v16M4 10l7-7 7 7"/></svg>
-        <span>Income</span>
-      </div>
-      <div onclick="switchTabFromMore('expenses')" class="more-menu-item">
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="18" height="14" rx="2"/><path d="M16 5V3H6v2"/><path d="M8 12h6M8 15h4"/></svg>
-        <span>Bills</span>
-      </div>
-      <div onclick="switchTabFromMore('savings')" class="more-menu-item">
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M11 7v4l3 3"/></svg>
-        <span>Savings</span>
-      </div>
-    </div>
   </div>
 
   <!-- ── Bottom Sheets ── -->
@@ -857,29 +979,8 @@ var cryptoChangeCache={};
 var isDark = true;
 
 
-function toggleMoreMenu(){
-  var overlay = document.getElementById('more-overlay');
-  var drawer  = document.getElementById('more-drawer');
-  var isOpen  = drawer.style.display !== 'none';
-  if(isOpen){
-    closeMoreMenu();
-  } else {
-    overlay.style.display = 'block';
-    drawer.style.display  = 'block';
-    document.getElementById('nav-more').classList.add('active');
-  }
-}
 
-function closeMoreMenu(){
-  document.getElementById('more-overlay').style.display = 'none';
-  document.getElementById('more-drawer').style.display  = 'none';
-  document.getElementById('nav-more').classList.remove('active');
-}
 
-function switchTabFromMore(tab){
-  closeMoreMenu();
-  switchTab(tab);
-}
 
 function toggleTheme(){
   isDark = !isDark;
@@ -987,28 +1088,29 @@ function calcBudget(){
 
 
 // ── Navigation ─────────────────────────────────────────────────────────────
-var MORE_TABS = ['budget','transactions','income','expenses','savings'];
+var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','advisor','activity','more'];
 
 function switchTab(tab){
   document.querySelectorAll('.screen').forEach(function(sc){sc.classList.remove('active');});
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
   var screen = document.getElementById('screen-'+tab);
   if(screen) screen.classList.add('active');
-  var navEl = document.getElementById('nav-'+tab);
-  if(navEl){
-    navEl.classList.add('active');
-  } else if(MORE_TABS.indexOf(tab) >= 0){
-    // Tab lives in More menu — highlight the More button
-    var moreBtn = document.getElementById('nav-more');
-    if(moreBtn) moreBtn.classList.add('active');
-  }
+  // Map tabs to nav items
+  var navMap = {
+    home:'nav-home', portfolio:'nav-portfolio',
+    activity:'nav-activity', more:'nav-more',
+    // secondary screens highlight their parent
+    budget:'nav-activity', transactions:'nav-activity',
+    income:'nav-more', expenses:'nav-more', savings:'nav-more',
+    goals:'nav-more', advisor:'nav-more'
+  };
+  var navId = navMap[tab] || ('nav-'+tab);
+  var navEl = document.getElementById(navId);
+  if(navEl) navEl.classList.add('active');
   currentTab = tab;
   renderTab(tab);
 }
-function navTo(screenId){
-  var tab=screenId.replace('screen-','');
-  switchTab(tab);
-}
+
 
 function renderTab(tab){
   if(tab==='home')renderHome();
@@ -1020,6 +1122,8 @@ function renderTab(tab){
   else if(tab==='advisor')renderAdvisor();
   else if(tab==='transactions')renderTransactionsTab();
   else if(tab==='goals')renderGoalsTab();
+  else if(tab==='activity')renderActivityTab();
+  else if(tab==='more')renderMore();
 }
 
 // ── Render All ──────────────────────────────────────────────────────────────
@@ -1616,6 +1720,187 @@ function renderBudgetAlertBanner(pct, b){
       '</div>' +
     '</div>' +
     '<div style="font-size:11px;font-weight:500;color:' + current.color + ';cursor:pointer;" onclick="switchTab(\'expenses\')">View bills</div>';
+}
+
+
+
+// ── FAB (Floating Action Button) ──────────────────────────────────────────
+var FAB_OPTIONS = [
+  {id:'add-income',      icon:'💰', label:'Income source',   color:'rgba(168,230,60,.12)'},
+  {id:'add-expense',     icon:'📋', label:'Monthly bill',    color:'rgba(224,85,85,.12)'},
+  {id:'add-transaction', icon:'💳', label:'Transaction',     color:'rgba(91,155,213,.12)'},
+  {id:'add-crypto',      icon:'₿',  label:'Crypto holding',  color:'rgba(247,164,0,.12)'},
+  {id:'add-collection',  icon:'🃏', label:'Card (MTG/Pokémon)', color:'rgba(181,123,224,.12)'},
+  {id:'add-goal',        icon:'🎯', label:'Goal',            color:'rgba(168,230,60,.08)'},
+  {id:'add-savings',     icon:'🏦', label:'Savings account', color:'rgba(91,155,213,.08)'},
+];
+
+function openFAB(){
+  var existing = document.getElementById('fab-overlay');
+  if(existing){ existing.remove(); return; }
+
+  var overlay = document.createElement('div');
+  overlay.id  = 'fab-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.7);display:flex;flex-direction:column;justify-content:flex-end;';
+
+  var sheet = document.createElement('div');
+  sheet.style.cssText = 'background:var(--surface);border-radius:24px 24px 0 0;padding:20px 16px 40px;animation:slideUp .3s cubic-bezier(.22,.68,0,1.2) both;';
+
+  var handle = '<div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 16px;"></div>';
+  var title  = '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;">What would you like to add?</div>';
+
+  var items = FAB_OPTIONS.map(function(opt){
+    return '<div onclick="openFABSheet(\''+opt.id+'\')" style="display:flex;align-items:center;gap:14px;padding:12px;background:'+opt.color+';border-radius:14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;">'
+      +'<div style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+opt.icon+'</div>'
+      +'<div style="font-size:14px;font-weight:500;color:var(--text);">'+opt.label+'</div>'
+      +'<svg style="margin-left:auto;flex-shrink:0;" width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>'
+    +'</div>';
+  }).join('');
+
+  sheet.innerHTML = handle + title + items;
+  overlay.appendChild(sheet);
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) closeFAB();
+  });
+  document.body.appendChild(overlay);
+}
+
+function closeFAB(){
+  var el = document.getElementById('fab-overlay');
+  if(el) el.remove();
+}
+
+function openFABSheet(type){
+  closeFAB();
+  openSheet(type);
+}
+
+// ── Activity screen ───────────────────────────────────────────────────────
+var actFilter = 'all';
+
+function setActFilter(btn, filter){
+  actFilter = filter;
+  document.querySelectorAll('.txn-filter-btn').forEach(function(b){
+    b.classList.toggle('active', b === btn);
+  });
+  renderActivityTxns();
+}
+
+function renderActivity(){
+  renderActivityBudget();
+  renderActivityTxns();
+}
+
+function renderActivityBudget(){
+  var b    = calcBudget();
+  var limit = Math.max(b.inc, b.tot * 1.2, 1000);
+  var pct  = b.inc > 0 ? Math.min(100, Math.round(b.tot / b.inc * 100)) : 0;
+  var rem  = b.inc - b.tot;
+  var barColor = pct >= 90 ? 'var(--red)' : pct >= 75 ? '#E0A030' : 'var(--green)';
+
+  function set(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; }
+  set('act-spent',   fmt(b.tot)  + ' ' + curSym());
+  set('act-budget',  fmt(b.inc)  + ' ' + curSym());
+  set('act-pct',     pct + '% used');
+  set('act-remaining', fmt(Math.max(0,rem)) + ' ' + curSym() + ' left');
+  set('act-ess',     fmt(b.ess)  + ' ' + curSym());
+  set('act-subs',    fmt(b.subs) + ' ' + curSym());
+  set('act-saved',   fmt(b.sav)  + ' ' + curSym());
+
+  var bar = document.getElementById('act-bar');
+  if(bar){ bar.style.width = pct + '%'; bar.style.background = barColor; }
+  var pctEl = document.getElementById('act-pct');
+  if(pctEl) pctEl.style.color = barColor;
+}
+
+function renderActivityTxns(){
+  var el = document.getElementById('act-txn-list');
+  if(!el) return;
+
+  var q = (document.getElementById('act-search')||{}).value||'';
+  q = q.toLowerCase();
+
+  var txns = (data.transactions||[]).slice().reverse();
+  txns = txns.filter(function(t){
+    if(actFilter==='income'  && t.type!=='income')  return false;
+    if(actFilter==='expense' && t.type!=='expense') return false;
+    if(actFilter==='ess'     && t.cat!=='ess')      return false;
+    if(actFilter==='sub'     && t.cat!=='sub')      return false;
+    if(q && t.name.toLowerCase().indexOf(q)<0 && (t.note||'').toLowerCase().indexOf(q)<0) return false;
+    return true;
+  });
+
+  if(!txns.length){
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">'
+      + (data.transactions.length ? 'No results' : 'No transactions yet — tap + to add one') + '</div>';
+    return;
+  }
+
+  var groups = {}, groupOrder = [];
+  txns.forEach(function(t){
+    var d = new Date(t.date);
+    var key = d.getFullYear()+'-'+d.getMonth();
+    var lbl = d.toLocaleDateString('en',{month:'long',year:'numeric'});
+    if(!groups[key]){ groups[key]={label:lbl,items:[]}; groupOrder.push(key); }
+    groups[key].items.push(t);
+  });
+
+  var TXN_CATS = {
+    income:{label:'Income',icon:'💰',bg:'#1A2800',color:'var(--green)'},
+    ess:{label:'Essential',icon:'🏠',bg:'#2A0A00',color:'var(--red)'},
+    sub:{label:'Subscription',icon:'📱',bg:'#001020',color:'var(--blue)'},
+    saving:{label:'Saving',icon:'🏦',bg:'#001A2A',color:'var(--blue)'},
+    other:{label:'Other',icon:'📋',bg:'#1A1A1A',color:'var(--text2)'},
+  };
+
+  var html = '';
+  groupOrder.forEach(function(key){
+    var g = groups[key];
+    html += '<div class="txn-month-hdr">'+g.label+'</div>';
+    g.items.forEach(function(t){
+      var isIncome = t.type==='income';
+      var cat = TXN_CATS[t.cat]||TXN_CATS.other;
+      var d   = new Date(t.date);
+      var time = d.toLocaleDateString('en',{day:'numeric',month:'short'});
+      var amtColor = isIncome?'var(--green)':'var(--red)';
+      var sign = isIncome?'+':'&#8722;';
+      html += '<div class="txn-item">'
+        +'<div class="txn-icon" style="background:'+cat.bg+';">'+cat.icon+'</div>'
+        +'<div class="txn-detail"><div class="txn-detail-name">'+t.name+'</div>'
+          +'<div class="txn-detail-sub">'+cat.label+(t.note?' · '+t.note:'')+'</div></div>'
+        +'<div class="txn-amount-col">'
+          +'<div class="txn-amount-val" style="color:'+amtColor+';">'+sign+fmt(t.amt)+' '+curSym()+'</div>'
+          +'<div class="txn-amount-time">'+time+'</div>'
+        +'</div>'
+        +'<div onclick="deleteTxn('+t.id+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;">&#10005;</div>'
+      +'</div>';
+    });
+  });
+  el.innerHTML = html;
+}
+
+function renderActivityTab(){
+  renderActivity();
+}
+
+// ── More screen ───────────────────────────────────────────────────────────
+function renderMore(){
+  var iEl = document.getElementById('more-income-count');
+  var bEl = document.getElementById('more-bills-count');
+  var sEl = document.getElementById('more-savings-count');
+  var cEl = document.getElementById('more-currency');
+  var tEl = document.getElementById('more-theme');
+  if(iEl) iEl.textContent = data.incomeSources.length
+    ? data.incomeSources.length + ' source' + (data.incomeSources.length>1?'s':'') + ' · ' + fmt(totalIncome()) + ' ' + curSym() + '/mo'
+    : 'No income sources yet';
+  if(bEl) bEl.textContent = data.expenses.length
+    ? data.expenses.length + ' bill' + (data.expenses.length>1?'s':'') + ' · ' + fmt(totalExpenses()) + ' ' + curSym() + '/mo'
+    : 'No bills yet';
+  if(sEl) sEl.textContent = data.savingsAccounts.length
+    ? data.savingsAccounts.length + ' account' + (data.savingsAccounts.length>1?'s':'') + ' · ' + fmt(totalSavings()) + ' ' + curSym()
+    : 'No savings accounts yet';
+  if(cEl) cEl.textContent = data.currency||'AED';
+  if(tEl) tEl.textContent = document.body.classList.contains('light') ? 'Light' : 'Dark';
 }
 
 
@@ -2241,10 +2526,15 @@ function deleteItem(type,idx){
 }
 
 // ── Currency toggle ────────────────────────────────────────────────────────
-var _ct=document.getElementById('currency-toggle');if(_ct)_ct.addEventListener('click',function(){
+document.addEventListener('click',function(e){
+  if(e.target&&(e.target.id==='currency-toggle'||e.target.closest&&e.target.closest('#currency-toggle'))){
+
   var idx=CURRENCIES.indexOf(data.currency);
   data.currency=CURRENCIES[(idx+1)%CURRENCIES.length];
   save();updateCurrencyToggle();renderAll();renderTab(currentTab);
+
+    renderMore();
+  }
 });
 
 // ── Range toggle ───────────────────────────────────────────────────────────
