@@ -329,6 +329,21 @@ body.light #more-drawer{background:#FFFFFF;}
 .more-screen-item{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r-lg);padding:14px;cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent;}
 .more-screen-item:active{background:var(--surface2);}
 body.light .more-screen-item{background:#FFFFFF;}
+
+/* ── Portfolio filter tabs ───────────────────────────────────────────── */
+.port-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px;}
+.port-tabs::-webkit-scrollbar{display:none;}
+.port-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;flex-shrink:0;}
+.port-tab.active{background:var(--green);color:var(--green-dark);}
+.port-tab:not(.active){background:var(--surface);color:var(--text3);}
+/* ── More screen menu items ──────────────────────────────────────────── */
+.more-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface);border-radius:var(--r-md);margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.more-item:active{opacity:.7;}
+.more-item-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.more-item-info{flex:1;min-width:0;}
+.more-item-title{font-size:14px;font-weight:500;color:var(--text);}
+.more-item-sub{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.light .more-item{background:#FFFFFF;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -524,59 +539,76 @@ body.light .more-screen-item{background:#FFFFFF;}
     <div class="screen" id="screen-portfolio">
       <div class="pg">
 
-        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Portfolio</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;" class="slide-up d1">
+          <div style="font-size:18px;font-weight:600;">Portfolio</div>
+          <div id="port-pl-badge"></div>
+        </div>
 
-        <!-- total + sparkline -->
-        <div class="card slide-up d2">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-            <div>
-              <div style="font-size:11px;color:var(--text3);margin-bottom:3px;">Total value</div>
-              <div style="font-size:26px;font-weight:600;color:var(--text);letter-spacing:-.8px;" id="port-total">—</div>
+        <!-- sparkline card -->
+        <div class="card slide-up d2" style="padding:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+            <div style="font-size:22px;font-weight:600;" id="port-total">—</div>
+            <div style="display:flex;gap:6px;">
+              <span class="toggle-btn active" onclick="setRange(this,'3m')">3M</span>
+              <span class="toggle-btn" onclick="setRange(this,'6m')">6M</span>
+              <span class="toggle-btn" onclick="setRange(this,'1y')">1Y</span>
             </div>
-            <div id="port-pl-badge"></div>
           </div>
-          <canvas id="sparkline-canvas" width="340" height="70" style="width:100%;height:70px;display:block;"></canvas>
-          <div style="display:flex;gap:6px;margin-top:10px;">
-            <div class="toggle-btn active" onclick="setRange(this,'3m')" style="flex:none;padding:5px 14px;font-size:11px;">3M</div>
-            <div class="toggle-btn" onclick="setRange(this,'6m')" style="flex:none;padding:5px 14px;font-size:11px;">6M</div>
-            <div class="toggle-btn" onclick="setRange(this,'1y')" style="flex:none;padding:5px 14px;font-size:11px;">1Y</div>
-          </div>
+          <canvas id="sparkline-canvas" height="70" style="width:100%;height:70px;display:block;"></canvas>
         </div>
 
-        <!-- crypto holdings -->
-        <div class="slide-up d3">
-          <div class="sec-hdr">
-            <span class="sec-title">Crypto</span>
-            <span class="sec-link" onclick="openSheet('add-crypto')">+ Add</span>
-          </div>
+        <!-- filter tabs -->
+        <div class="port-tabs slide-up d3">
+          <button class="port-tab active" onclick="setPortFilter(this,'all')">All assets</button>
+          <button class="port-tab" onclick="setPortFilter(this,'crypto')">Crypto</button>
+          <button class="port-tab" onclick="setPortFilter(this,'cards')">Cards</button>
+          <button class="port-tab" onclick="setPortFilter(this,'savings')">Savings</button>
+        </div>
+
+        <!-- ALL section -->
+        <div id="port-section-all">
+          <div class="sec-hdr"><span class="sec-title">Crypto</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
           <div id="crypto-list"></div>
-        </div>
-
-        <!-- collections -->
-        <div class="slide-up d4">
-          <div class="sec-hdr">
-            <span class="sec-title">Collections</span>
-            <div style="display:flex;gap:10px;align-items:center;">
-              <span style="font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">↻</span>
-              <span class="sec-link" onclick="openSheet('add-collection')">+ Add</span>
+          <div class="sec-hdr" style="margin-top:8px;">
+            <span class="sec-title">Cards</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
+              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
             </div>
           </div>
           <div id="collection-list"></div>
+          <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Savings</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
+          <div id="savings-list"></div>
         </div>
 
-        <!-- savings accounts -->
-        <div class="slide-up d5">
+        <!-- CRYPTO section -->
+        <div id="port-section-crypto" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Crypto holdings</span><span class="sec-link" onclick="openFABSheet('add-crypto')">+ Add</span></div>
+          <div id="crypto-list-2"></div>
+        </div>
+
+        <!-- CARDS section -->
+        <div id="port-section-cards" style="display:none;">
           <div class="sec-hdr">
-            <span class="sec-title">Savings</span>
-            <span class="sec-link" onclick="openSheet('add-savings')">+ Add</span>
+            <span class="sec-title">Card collection</span>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
+              <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
+            </div>
           </div>
-          <div id="savings-list"></div>
+          <div id="collection-list-2"></div>
+        </div>
+
+        <!-- SAVINGS section -->
+        <div id="port-section-savings" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Savings accounts</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
+          <div id="savings-list-2"></div>
         </div>
 
       </div>
     </div>
 
-    <!-- ═══ INCOME SCREEN ═══ -->
+<!-- ═══ INCOME SCREEN ═══ -->
     <div class="screen" id="screen-income">
       <div class="pg">
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
@@ -833,80 +865,69 @@ body.light .more-screen-item{background:#FFFFFF;}
     <!-- ═══ MORE SCREEN ═══ -->
     <div class="screen" id="screen-more">
       <div class="pg">
+        <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
 
-        <div style="font-size:18px;font-weight:600;margin-bottom:20px;" class="slide-up d1">More</div>
-
-        <!-- menu items -->
-        <div style="display:flex;flex-direction:column;gap:8px;">
-
-          <div onclick="switchTab('goals')" class="more-screen-item slide-up d1">
-            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🎯</div>
-            <div style="flex:1;">
-              <div style="font-size:14px;font-weight:500;color:var(--text);">Goals</div>
-              <div style="font-size:12px;color:var(--text3);margin-top:1px;">Track your financial targets</div>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
+        <div class="stat-row slide-up d2" style="margin-bottom:16px;">
+          <div class="stat-pill">
+            <div class="stat-lbl">Monthly income</div>
+            <div class="stat-val" id="more-income-val" style="color:var(--green);">—</div>
           </div>
-
-          <div onclick="switchTab('advisor')" class="more-screen-item slide-up d2">
-            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.12);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🤖</div>
-            <div style="flex:1;">
-              <div style="font-size:14px;font-weight:500;color:var(--text);">AI Advisor</div>
-              <div style="font-size:12px;color:var(--text3);margin-top:1px;">Your personal finance assistant</div>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
-          </div>
-
-          <div onclick="switchTab('income')" class="more-screen-item slide-up d2">
-            <div style="width:42px;height:42px;border-radius:13px;background:rgba(168,230,60,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">💰</div>
-            <div style="flex:1;">
-              <div style="font-size:14px;font-weight:500;color:var(--text);">Income sources</div>
-              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-income-count">—</div>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
-          </div>
-
-          <div onclick="switchTab('expenses')" class="more-screen-item slide-up d3">
-            <div style="width:42px;height:42px;border-radius:13px;background:rgba(224,85,85,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📋</div>
-            <div style="flex:1;">
-              <div style="font-size:14px;font-weight:500;color:var(--text);">Monthly bills</div>
-              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-bills-count">—</div>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
-          </div>
-
-          <div onclick="switchTab('savings')" class="more-screen-item slide-up d3">
-            <div style="width:42px;height:42px;border-radius:13px;background:rgba(91,155,213,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏦</div>
-            <div style="flex:1;">
-              <div style="font-size:14px;font-weight:500;color:var(--text);">Savings accounts</div>
-              <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="more-savings-count">—</div>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 22 22" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M9 6l6 5-6 5"/></svg>
-          </div>
-
-        </div>
-
-        <!-- currency + theme toggles -->
-        <div style="margin-top:20px;padding-top:16px;border-top:0.5px solid rgba(255,255,255,.07);">
-          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Preferences</div>
-          <div style="display:flex;gap:8px;">
-            <div id="currency-toggle" style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px;text-align:center;cursor:pointer;">
-              <div style="font-size:11px;color:var(--text3);">Currency</div>
-              <div style="font-size:14px;font-weight:600;color:var(--text);margin-top:2px;" id="more-currency">AED</div>
-            </div>
-            <div onclick="toggleTheme()" style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px;text-align:center;cursor:pointer;">
-              <div style="font-size:11px;color:var(--text3);">Theme</div>
-              <div style="font-size:14px;font-weight:600;color:var(--text);margin-top:2px;" id="more-theme">Dark</div>
-            </div>
+          <div class="stat-pill">
+            <div class="stat-lbl">Monthly bills</div>
+            <div class="stat-val" id="more-bills-val" style="color:var(--red);">—</div>
           </div>
         </div>
 
+        <div class="slide-up d3">
+          <div class="more-item" onclick="switchTab('goals')">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#127919;</div>
+            <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('advisor')">
+            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#128172;</div>
+            <div class="more-item-info"><div class="more-item-title">AI Advisor</div><div class="more-item-sub">Ask Claude about your finances</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('income')">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#128176;</div>
+            <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No income sources yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('expenses')">
+            <div class="more-item-icon" style="background:rgba(224,85,85,.1);">&#128203;</div>
+            <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('savings')">
+            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#127974;</div>
+            <div class="more-item-info"><div class="more-item-title">Savings accounts</div><div class="more-item-sub" id="more-savings-count">No accounts yet</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="switchTab('budget')">
+            <div class="more-item-icon" style="background:rgba(232,216,0,.1);">&#128202;</div>
+            <div class="more-item-info"><div class="more-item-title">Budget</div><div class="more-item-sub">Monthly spending breakdown</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+        </div>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d4">Settings</div>
+        <div class="slide-up d4">
+          <div class="more-item" onclick="toggleTheme()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#127769;</div>
+            <div class="more-item-info"><div class="more-item-title">Theme</div><div class="more-item-sub" id="more-theme">Dark mode</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+          <div class="more-item" onclick="document.getElementById('currency-toggle').click()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#128178;</div>
+            <div class="more-item-info"><div class="more-item-title">Currency</div><div class="more-item-sub" id="more-currency">AED</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
+        </div>
       </div>
     </div>
 
-  </div><!-- end page -->
-
-  <!-- ── Bottom Nav ── -->
+<!-- ── Bottom Nav ── -->
   <div class="bottom-nav" style="display:flex;align-items:center;padding:0;">
 
     <div class="nav-item active" id="nav-home" onclick="switchTab('home')" style="flex:1;">
@@ -1885,22 +1906,23 @@ function renderActivityTab(){
 
 // ── More screen ───────────────────────────────────────────────────────────
 function renderMore(){
-  var iEl = document.getElementById('more-income-count');
-  var bEl = document.getElementById('more-bills-count');
-  var sEl = document.getElementById('more-savings-count');
-  var cEl = document.getElementById('more-currency');
-  var tEl = document.getElementById('more-theme');
-  if(iEl) iEl.textContent = data.incomeSources.length
-    ? data.incomeSources.length + ' source' + (data.incomeSources.length>1?'s':'') + ' · ' + fmt(totalIncome()) + ' ' + curSym() + '/mo'
-    : 'No income sources yet';
-  if(bEl) bEl.textContent = data.expenses.length
-    ? data.expenses.length + ' bill' + (data.expenses.length>1?'s':'') + ' · ' + fmt(totalExpenses()) + ' ' + curSym() + '/mo'
-    : 'No bills yet';
-  if(sEl) sEl.textContent = data.savingsAccounts.length
-    ? data.savingsAccounts.length + ' account' + (data.savingsAccounts.length>1?'s':'') + ' · ' + fmt(totalSavings()) + ' ' + curSym()
-    : 'No savings accounts yet';
-  if(cEl) cEl.textContent = data.currency||'AED';
-  if(tEl) tEl.textContent = document.body.classList.contains('light') ? 'Light' : 'Dark';
+  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  set('more-income-count', data.incomeSources.length
+    ? data.incomeSources.length+' source'+(data.incomeSources.length>1?'s':'')+' · '+fmt(totalIncome())+' '+curSym()+'/mo'
+    : 'No income sources yet');
+  set('more-bills-count', data.expenses.length
+    ? data.expenses.length+' bill'+(data.expenses.length>1?'s':'')+' · '+fmt(totalExpenses())+' '+curSym()+'/mo'
+    : 'No bills yet');
+  set('more-savings-count', data.savingsAccounts.length
+    ? data.savingsAccounts.length+' account'+(data.savingsAccounts.length>1?'s':'')+' · '+fmt(totalSavings())+' '+curSym()
+    : 'No savings accounts yet');
+  set('more-goals-sub', data.goals.length
+    ? data.goals.length+' goal'+(data.goals.length>1?'s':'')+' active'
+    : 'Track your financial targets');
+  set('more-income-val', '+'+fmt(totalIncome())+' '+curSym());
+  set('more-bills-val',  '-'+fmt(totalExpenses())+' '+curSym());
+  set('more-currency', data.currency||'AED');
+  set('more-theme', document.body.classList.contains('light')?'Light mode':'Dark mode');
 }
 
 
@@ -2118,6 +2140,82 @@ function setBW(id,pct){
 }
 
 // ── PORTFOLIO ──────────────────────────────────────────────────────────────
+
+// ── Portfolio filter tabs ─────────────────────────────────────────────────
+var portFilter = 'all';
+
+function setPortFilter(btn, filter){
+  portFilter = filter;
+  document.querySelectorAll('.port-tab').forEach(function(b){
+    b.classList.toggle('active', b === btn);
+  });
+  var sections = ['all','crypto','cards','savings'];
+  sections.forEach(function(sec){
+    var el = document.getElementById('port-section-'+sec);
+    if(el) el.style.display = (sec === filter) ? 'block' : 'none';
+  });
+  if(filter === 'crypto')  renderCryptoListTo('crypto-list-2');
+  if(filter === 'cards')   renderCollectionListTo('collection-list-2');
+  if(filter === 'savings') renderSavingsListTo('savings-list-2');
+}
+
+function renderCryptoListTo(elId){
+  var el = document.getElementById(elId);
+  if(!el) return;
+  if(!data.cryptoHoldings.length){
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">No crypto yet — tap + to add</div>';
+    return;
+  }
+  el.innerHTML = data.cryptoHoldings.map(function(h,i){
+    var price = cryptoCache[h.id]||0;
+    var val   = h.qty*price*3.6725;
+    var chg   = (cryptoChangeCache[h.id]||0).toFixed(2);
+    var up    = parseFloat(chg) >= 0;
+    return '<div class="holding-row">'
+      +'<div class="holding-icon" style="background:'+holdingColor(h.sym)+';">'+h.sym.slice(0,3)+'</div>'
+      +'<div style="flex:1;"><div class="holding-name">'+(h.name||h.sym)+'</div><div class="holding-qty">'+h.qty+' units</div></div>'
+      +'<div style="text-align:right;"><div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
+        +'<div class="holding-chg '+(up?'txn-positive':'txn-negative')+'">'+(up?'+':'')+chg+'%</div></div>'
+      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
+    +'</div>';
+  }).join('');
+}
+
+function renderCollectionListTo(elId){
+  var el = document.getElementById(elId);
+  if(!el) return;
+  if(!data.mtgCards.length && !data.pokemonCards.length){
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">No cards yet — tap + to add</div>';
+    return;
+  }
+  // Swap element IDs temporarily
+  var main = document.getElementById('collection-list');
+  if(main) main.id = '_cl_tmp';
+  el.id = 'collection-list';
+  renderCollectionList();
+  el.id = elId;
+  if(main) main.id = 'collection-list';
+}
+
+function renderSavingsListTo(elId){
+  var el = document.getElementById(elId);
+  if(!el) return;
+  if(!data.savingsAccounts.length){
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">No savings yet — tap + to add</div>';
+    return;
+  }
+  var html = '';
+  data.savingsAccounts.forEach(function(a,i){
+    html += '<div class="holding-row">'
+      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
+      +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
+      +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
+      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
+    +'</div>';
+  });
+  el.innerHTML = html;
+}
+
 function renderPortfolio(){
   var total=totalAssets();
   function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
@@ -2220,8 +2318,20 @@ function deleteStack(type,indices){
 function renderSavingsPortfolio(){
   var el=document.getElementById('savings-list');
   if(!el)return;
-  if(!data.savingsAccounts.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No accounts yet</div>';return;}
-  // replaced
+  if(!data.savingsAccounts.length){
+    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No savings yet — tap + to add</div>';
+    return;
+  }
+  var html='';
+  data.savingsAccounts.forEach(function(a,i){
+    html+='<div class="holding-row">'
+      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
+      +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
+      +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
+      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
+    +'</div>';
+  });
+  el.innerHTML=html;
 }
 
 // ── INCOME ─────────────────────────────────────────────────────────────────
