@@ -362,23 +362,22 @@ body.light .more-item{background:#FFFFFF;}
     <div class="screen active" id="screen-home">
       <div class="pg">
 
-        <!-- top nav row -->
+        <!-- top row: greeting + controls -->
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
           <div>
-            <div style="font-size:11px;color:var(--text3);" id="home-timegreeting">Good morning</div>
-            <div style="font-size:16px;font-weight:600;color:var(--text);" id="home-greeting">Aniduaza</div>
+            <div id="home-timegreeting" style="font-size:11px;color:var(--text3);"></div>
+            <div id="home-greeting" style="font-size:17px;font-weight:600;color:var(--text);">Moxcoin</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div id="currency-toggle" style="background:var(--surface);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--green);cursor:pointer;"></div>
-            <div id="theme-toggle" onclick="toggleTheme()" style="width:36px;height:36px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;" title="Toggle day/night"></div>
-            <div style="width:36px;height:36px;border-radius:50%;background:#1A2800;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--green);">M</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 12px;border-radius:20px;cursor:pointer;">AED</div>
+            <div id="theme-toggle" onclick="toggleTheme()" style="font-size:18px;cursor:pointer;">&#9728;&#65039;</div>
           </div>
         </div>
 
-        <!-- balance hero -->
+        <!-- hero summary card -->
         <div class="greeting-card slide-up d1">
           <!-- top row: label + live dot + date -->
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <div class="live-dot"></div>
               <div class="greeting-title" style="margin-bottom:0;">Total assets</div>
@@ -386,64 +385,42 @@ body.light .more-item{background:#FFFFFF;}
             <div style="font-size:10px;color:rgba(168,230,60,.4);" id="home-date"></div>
           </div>
 
-          <!-- big number with count-up -->
-          <div class="balance-amount count-up-num" id="home-balance" style="font-size:34px;font-weight:600;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin-bottom:10px;">—</div>
-
-          <!-- P&L badge row -->
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div id="home-pl-badge"></div>
+          <!-- big balance -->
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+            <div class="balance-amount count-up-num" id="home-balance" style="font-size:40px;font-weight:700;color:#fff;letter-spacing:-2px;line-height:1;">—</div>
+            <div style="font-size:14px;color:rgba(255,255,255,.35);" id="home-bal-cur">AED</div>
           </div>
 
-          <!-- mini sparkline -->
-          <canvas id="assets-spark" height="40" style="width:100%;height:40px;display:block;margin-bottom:8px;"></canvas>
+          <!-- change badge -->
+          <div id="home-pl-badge" style="margin-bottom:12px;"></div>
+
+          <!-- sparkline -->
+          <canvas id="assets-spark" height="44" style="width:100%;height:44px;display:block;margin-bottom:10px;"></canvas>
 
           <!-- breakdown bar -->
-          <div style="display:flex;flex-direction:column;gap:5px;">
-            <div id="asset-bar" style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;display:flex;gap:1px;"></div>
-            <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
-          </div>
+          <div id="asset-bar" style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:flex;gap:1px;"></div>
+          <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
         </div>
 
-        <!-- action buttons -->
-        <div class="action-grid slide-up d2">
-          <div class="action-btn action-btn-dark" onclick="navTo('screen-income')">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="var(--green)" stroke-width="1.8"><path d="M11 3v16M4 10l7-7 7 7"/></svg>
-            <span>Income</span>
-          </div>
-          <div class="action-btn action-btn-yellow" onclick="navTo('screen-expenses')">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="var(--yellow-dark)" stroke-width="1.8"><path d="M11 19V3M4 12l7 7 7-7"/></svg>
-            <span style="color:var(--yellow-dark);">Bills</span>
-          </div>
-          <div class="action-btn action-btn-dark" onclick="navTo('screen-savings')">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="var(--green)" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M11 7v4l3 3"/></svg>
-            <span>Savings</span>
-          </div>
-          <div class="action-btn action-btn-green" onclick="navTo('screen-portfolio')">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="var(--green-dark)" stroke-width="1.8"><path d="M2 18l5-6 4 3 5-7 4 4"/></svg>
-            <span style="color:var(--green-dark);">Portfolio</span>
-          </div>
-        </div>
-
-        <!-- stat pills -->
-        <div class="stat-row slide-up d3">
-          <div class="stat-pill">
-            <div class="stat-lbl">Net savings</div>
-            <div class="stat-val" id="home-savings">—</div>
-            <div class="stat-sub" id="home-savings-cur">/ month</div>
-            <div class="bar-track"><div class="bar-fill bar-anim" id="home-rate-bar" style="--w:0%;background:var(--green);"></div></div>
-          </div>
+        <!-- 2 key stats -->
+        <div class="stat-row slide-up d2">
           <div class="stat-pill">
             <div class="stat-lbl">Savings rate</div>
-            <div class="stat-val" id="home-rate">—</div>
+            <div class="stat-val" id="home-rate" style="color:var(--green);">—</div>
             <div class="stat-sub">of income</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-lbl">Spent this month</div>
+            <div class="stat-val" id="home-spent">—</div>
+            <div class="stat-sub" id="home-spent-of">of — AED</div>
           </div>
         </div>
 
-        <!-- daily price movers -->
-        <div class="slide-up d4">
+        <!-- daily movers -->
+        <div class="slide-up d3">
           <div class="sec-hdr">
             <span class="sec-title">Daily movers</span>
-            <span id="movers-updated" style="font-size:11px;color:var(--text3);"></span>
+            <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
           </div>
           <div id="home-movers" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
         </div>
@@ -451,7 +428,7 @@ body.light .more-item{background:#FFFFFF;}
       </div>
     </div>
 
-    <!-- ═══ BUDGET SCREEN ═══ -->
+<!-- ═══ BUDGET SCREEN ═══ -->
     <div class="screen" id="screen-budget">
       <div class="pg">
 
@@ -1928,73 +1905,92 @@ function renderMore(){
 
 
 function renderHome(){
-  var assets=totalAssets();
-  var b=calcBudget();
+  var assets = totalAssets();
+  var b      = calcBudget();
+
+  // Greeting
+  var greet = document.getElementById('home-timegreeting');
+  var greetName = document.getElementById('home-greeting');
+  if(greet){
+    var h = new Date().getHours();
+    greet.textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  }
+
+  // Date
+  var dateEl = document.getElementById('home-date');
+  if(dateEl){
+    var n = new Date();
+    dateEl.textContent = n.toLocaleDateString('en-AE',{weekday:'short',day:'numeric',month:'short'});
+  }
+
+  // Currency label
+  var curEl = document.getElementById('home-bal-cur');
+  if(curEl) curEl.textContent = curSym();
 
   // Count-up balance
-  var balEl=document.getElementById('home-balance');
+  var balEl = document.getElementById('home-balance');
   if(balEl){
-    var startVal=0,endVal=assets,dur=1000,t0=performance.now();
-    balEl.classList.remove('count-up-num');void balEl.offsetWidth;balEl.classList.add('count-up-num');
+    var startVal=0, endVal=assets, dur=1000, t0=performance.now();
+    balEl.classList.remove('count-up-num'); void balEl.offsetWidth; balEl.classList.add('count-up-num');
     function countTick(now){
-      var p=Math.min(1,(now-t0)/dur);
-      var ease=1-Math.pow(1-p,3);
-      balEl.textContent=fmt(Math.round(startVal+ease*(endVal-startVal)))+' '+curSym();
-      if(p<1)requestAnimationFrame(countTick);
+      var p = Math.min(1,(now-t0)/dur);
+      var ease = 1-Math.pow(1-p,3);
+      balEl.textContent = fmt(Math.round(startVal+ease*(endVal-startVal)));
+      if(p<1) requestAnimationFrame(countTick);
     }
     requestAnimationFrame(countTick);
   }
 
-  // Mini sparkline
+  // P&L badge
+  var plEl = document.getElementById('home-pl-badge');
+  if(plEl){
+    var plPct = (Math.random()*4-1).toFixed(2);
+    var up    = parseFloat(plPct) >= 0;
+    plEl.innerHTML = '<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
+  }
+
+  // Sparkline
   setTimeout(drawAssetsSpark, 50);
 
-  // Asset breakdown bar
-  var assetBarEl=document.getElementById('asset-bar');
-  var legEl=document.getElementById('asset-legend');
-  if(assetBarEl&&legEl){
-    var savVal=totalSavings();
-    var cryptoVal=data.cryptoHoldings.reduce(function(s,h){return s+(h.qty*(cryptoCache[h.id]||0)*3.6725);},0);
-    var mtgVal=data.mtgCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
-    var pkVal=data.pokemonCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
-    var total=savVal+cryptoVal+mtgVal+pkVal||1;
-    var segs=[
-      {label:'Savings',val:savVal,color:'#A8E63C'},
-      {label:'Crypto',val:cryptoVal,color:'#5B9BD5'},
-      {label:'MTG',val:mtgVal,color:'#E05010'},
-      {label:'Pokemon',val:pkVal,color:'#F0B90B'},
+  // Breakdown bar
+  var assetBarEl = document.getElementById('asset-bar');
+  var legEl      = document.getElementById('asset-legend');
+  if(assetBarEl && legEl){
+    var savVal    = totalSavings();
+    var cryptoVal = data.cryptoHoldings.reduce(function(s,h){return s+(h.qty*(cryptoCache[h.id]||0)*3.6725);},0);
+    var mtgVal    = data.mtgCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
+    var pkVal     = data.pokemonCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
+    var total     = savVal+cryptoVal+mtgVal+pkVal||1;
+    var segs = [
+      {label:'Savings',val:savVal,  color:'#A8E63C'},
+      {label:'Crypto', val:cryptoVal,color:'#5B9BD5'},
+      {label:'MTG',    val:mtgVal,  color:'#E05010'},
+      {label:'Pokemon',val:pkVal,   color:'#F0B90B'},
     ].filter(function(sg){return sg.val>0;});
-    assetBarEl.innerHTML=segs.map(function(sg){
-      var pct=(sg.val/total*100).toFixed(1);
+    assetBarEl.innerHTML = segs.map(function(sg){
+      var pct = (sg.val/total*100).toFixed(1);
       return '<div class="seg" style="flex:'+pct+';background:'+sg.color+';--f:'+pct+';" title="'+sg.label+'"></div>';
     }).join('');
-    legEl.innerHTML=segs.map(function(sg){
+    legEl.innerHTML = segs.map(function(sg){
       return '<span style="font-size:9px;color:'+sg.color+';display:flex;align-items:center;gap:3px;">'
         +'<span style="width:5px;height:5px;border-radius:50%;background:'+sg.color+';display:inline-block;"></span>'
         +sg.label+'</span>';
     }).join('');
   }
 
-  // Date
-  var dateEl=document.getElementById('home-date');
-  if(dateEl){var n=new Date();dateEl.textContent=n.toLocaleDateString('en-AE',{weekday:'short',day:'numeric',month:'short'});}
+  // Stat: savings rate
+  var rateEl = document.getElementById('home-rate');
+  if(rateEl) rateEl.textContent = b.rate+'%';
 
-  // P&L badge
-  var plEl=document.getElementById('home-pl-badge');
-  if(plEl){
-    var plPct=(Math.random()*4-1).toFixed(2);
-    var up=parseFloat(plPct)>=0;
-    plEl.innerHTML='<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
-  }
+  // Stat: spent this month
+  var spentEl   = document.getElementById('home-spent');
+  var spentOfEl = document.getElementById('home-spent-of');
+  if(spentEl)   spentEl.textContent   = fmt(b.tot);
+  if(spentOfEl) spentOfEl.textContent = 'of '+fmt(b.inc)+' '+curSym();
 
-  // Savings stats
-  var savEl=document.getElementById('home-savings');
-  if(savEl)savEl.textContent=fmt(b.sav)+' '+curSym();
-  var rateEl=document.getElementById('home-rate');
-  if(rateEl)rateEl.textContent=b.rate+'%';
-  var rateBarEl=document.getElementById('home-rate-bar');
-  if(rateBarEl){rateBarEl.style.setProperty('--w',Math.max(0,Math.min(100,b.rate))+'%');rateBarEl.style.width=Math.max(0,Math.min(100,b.rate))+'%';}
   renderMovers();
 }
+
 
 // ── Daily movers: owned assets only ──────────────────────────────────────
 var moversCache={};
@@ -2085,24 +2081,14 @@ function renderMovers(){
     var priceStr=asset.price&&asset.price>=1000?(asset.price/1000).toFixed(2)+'k':asset.price&&asset.price>=1?asset.price.toFixed(2):asset.price?asset.price.toFixed(4):'';
     var upColor=asset.chg==null?'var(--text3)':up?'var(--green)':'var(--red)';
     var barW=asset.chg!=null?Math.min(100,Math.abs(asset.chg)*8)+'%':'0%';
-    html+='<div style="background:var(--surface);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;">'
-      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:'+asset.color+';opacity:.7;"></div>'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;">'
-        +'<div style="display:flex;align-items:center;gap:6px;">'
-          +'<div style="width:26px;height:26px;border-radius:7px;background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';">'+asset.sym+'</div>'
-          +'<div>'
-            +'<div style="font-size:11px;font-weight:600;color:var(--text);">'+asset.sym+'</div>'
-            +'<div style="font-size:9px;color:var(--text3);">'+asset.name+'</div>'
-          +'</div>'
-        +'</div>'
-        +'<div style="text-align:right;">'
-          +'<div style="font-size:12px;font-weight:600;color:var(--text);">'+valStr+' '+curSym()+'</div>'
-          +(priceStr?'<div style="font-size:10px;color:var(--text3);">$'+priceStr+'</div>':'')
-          +'<div style="font-size:11px;font-weight:600;color:'+upColor+';">'+chgStr+'</div>'
-        +'</div>'
-      +'</div>'
-      +'<div style="height:2px;background:var(--surface3);border-radius:1px;overflow:hidden;">'
-        +'<div style="height:2px;border-radius:1px;background:'+upColor+';width:'+barW+';"></div>'
+    html+='<div style="background:var(--surface);border-radius:14px;padding:11px;border:0.5px solid rgba(255,255,255,.06);position:relative;overflow:hidden;">'
+      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;background:'+asset.color+';"></div>'
+      +'<div style="width:28px;height:28px;border-radius:8px;background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';margin-bottom:7px;">'+asset.sym+'</div>'
+      +'<div style="font-size:11px;font-weight:600;color:var(--text);">'+asset.name+'</div>'
+      +'<div style="font-size:9px;color:var(--text3);margin-top:1px;">'+(priceStr?'$'+priceStr:'&nbsp;')+'</div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">'
+        +'<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5);">'+valStr+'</div>'
+        +'<div style="font-size:13px;font-weight:700;color:'+upColor+';">'+chgStr+'</div>'
       +'</div>'
     +'</div>';
   });
