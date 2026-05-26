@@ -4752,40 +4752,42 @@ function positionAllScreens(targetIdx, withTransition, dragOffsetPct){
 
 function springToIndex(newIdx){
   if(swipeLocked) return;
-  var prev = swipeIndex;
+  var prev   = swipeIndex;
   swipeIndex = Math.max(0, Math.min(SWIPE_TABS.length-1, newIdx));
   swipeLocked = true;
 
-  // Just snap screens — no full-page slide animation
-  // Each screen's content animates in element by element instead
   positionAllScreens(swipeIndex, false);
   updateNavActive(swipeIndex);
 
-  // Animate the new screen's elements in
-  animateScreenIn(SWIPE_TABS[swipeIndex]);
+  // fromRight=true means new screen enters from right (swiped left)
+  // fromRight=false means new screen enters from left (swiped right)
+  var fromRight = swipeIndex > prev;
+  animateScreenIn(SWIPE_TABS[swipeIndex], fromRight);
   renderTab(SWIPE_TABS[swipeIndex]);
 
   setTimeout(function(){ swipeLocked = false; }, 50);
 }
 
-function animateScreenIn(tab){
+function animateScreenIn(tab, fromRight){
   var el = document.getElementById('screen-'+tab);
   if(!el) return;
-
-  // Get all direct children of .pg
   var pg = el.querySelector('.pg');
   if(!pg) return;
 
+  // Determine direction — default right (swiping left = moving to higher index)
+  var dir = (fromRight === false) ? -1 : 1;
+  var startX = dir * 60; // px offset to start from
+
   var children = Array.prototype.slice.call(pg.children);
   children.forEach(function(child, i){
-    child.style.opacity   = '0';
-    child.style.transform = 'translateY(18px)';
+    child.style.opacity    = '0';
+    child.style.transform  = 'translateX('+startX+'px)';
     child.style.transition = 'none';
     setTimeout(function(){
-      child.style.transition = 'opacity .28s ease, transform .32s cubic-bezier(.22,.68,0,1.2)';
+      child.style.transition = 'opacity .3s ease, transform .4s cubic-bezier(.22,.68,0,1.2)';
       child.style.opacity    = '1';
-      child.style.transform  = 'translateY(0)';
-    }, 40 + i * 55);
+      child.style.transform  = 'translateX(0px)';
+    }, 30 + i * 50);
   });
 }
 
