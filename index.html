@@ -4159,6 +4159,7 @@ function springToIndex(newIdx){
       } else { el.style.transition='transform .3s ease'; el.style.transform='translateX('+(i*swipeW)+'px)'; }
     });
   } else { setAllScreenX(0,true); }
+  currentTab = SWIPE_TABS[swipeIndex];
   updateNavActive(swipeIndex); renderTab(SWIPE_TABS[swipeIndex]);
   setTimeout(function(){ swipeLocked=false; },460);
 }
