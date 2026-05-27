@@ -37,9 +37,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
   --red:#E24B4A;
   --blue:#5B9BD5;
   --r-sm:12px;
-  --r-md:18px;
-  --r-lg:24px;
-  --r-xl:32px;
+  --r-md:16px;
+  --r-lg:20px;
+  --r-xl:28px;
 }
 
 /* ── Layout shell ── */
@@ -114,8 +114,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .balance-label{font-size:12px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;}
 .balance-amount{font-size:38px;font-weight:600;color:var(--text);letter-spacing:-1.5px;line-height:1;}
 .balance-sub{font-size:12px;color:var(--text3);margin-top:4px;}
-.badge-green{background:var(--green);color:var(--green-dark);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
-.badge-red{background:#2A0000;color:var(--red);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.badge-green{background:var(--green);color:var(--green-dark);font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--r-md);display:inline-flex;align-items:center;gap:4px;}
+.badge-red{background:#2A0000;color:var(--red);font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--r-md);}
 
 /* ── Action buttons ── */
 .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -144,7 +144,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .txn-list{display:flex;flex-direction:column;gap:0;}
 .txn-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,.05);}
 .txn-row:last-child{border-bottom:none;}
-.txn-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.txn-avatar{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
 .txn-name{font-size:13px;font-weight:500;color:var(--text);}
 .txn-date{font-size:11px;color:var(--text3);}
 .txn-amount{font-size:13px;font-weight:600;margin-left:auto;flex-shrink:0;}
@@ -158,7 +158,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 
 /* ── Holdings list ── */
 .holding-row{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:var(--r-md);margin-bottom:8px;}
-.holding-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
+.holding-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
 .holding-name{font-size:13px;font-weight:500;color:var(--text);}
 .holding-qty{font-size:11px;color:var(--text3);}
 .holding-val{font-size:13px;font-weight:600;color:var(--text);margin-left:auto;}
@@ -179,7 +179,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 .delete-btn{background:#2A0000;color:var(--red);border:none;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
 /* ── Page padding wrapper ── */
-.pg{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1;}
+.pg{padding:16px;display:flex;flex-direction:column;gap:0;flex:1;}
 
 /* ── Modal sheet ── */
 .sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:flex-end;}
@@ -191,7 +191,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 /* ── Month tabs ── */
 .month-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
 .month-row::-webkit-scrollbar{display:none;}
-.month-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all .15s;}
+.month-tab{padding:6px 16px;border-radius:var(--r-md);font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all .15s;}
 .month-tab.active{background:var(--green);color:var(--green-dark);}
 .month-tab:not(.active){background:var(--surface);color:var(--text3);}
 
@@ -253,18 +253,18 @@ body{transition:background .3s,color .3s;}
 .advisor-header{background:linear-gradient(135deg,#131D00,#1A2800);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;}
 .advisor-header::after{content:'';position:absolute;right:-16px;top:-16px;width:100px;height:100px;border-radius:50%;background:rgba(168,230,60,.07);}
 .chat-wrap{display:flex;flex-direction:column;gap:10px;min-height:200px;}
-.chat-bubble{max-width:88%;padding:11px 14px;border-radius:16px;font-size:13px;line-height:1.55;word-break:break-word;}
+.chat-bubble{max-width:88%;padding:11px 14px;border-radius:var(--r-md);font-size:13px;line-height:1.55;word-break:break-word;}
 .chat-bubble.user{background:var(--green);color:var(--green-dark);align-self:flex-end;border-bottom-right-radius:4px;font-weight:500;}
 .chat-bubble.assistant{background:var(--surface);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
 .chat-bubble.thinking{background:var(--surface);color:var(--text3);align-self:flex-start;border-bottom-left-radius:4px;font-style:italic;}
 .chat-input-row{display:flex;gap:8px;align-items:flex-end;padding:12px 16px;background:var(--surface);border-top:0.5px solid rgba(255,255,255,.07);position:sticky;bottom:0;}
-.chat-input{flex:1;background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:20px;padding:10px 16px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:none;max-height:100px;line-height:1.4;}
+.chat-input{flex:1;background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:10px 16px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:none;max-height:100px;line-height:1.4;}
 .chat-input:focus{border-color:rgba(168,230,60,.4);}
 .chat-send{width:38px;height:38px;border-radius:50%;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s;}
 .chat-send:active{transform:scale(.93);}
 .chat-send:disabled{background:var(--surface2);cursor:default;}
 .briefing-card{background:var(--surface);border-radius:var(--r-lg);padding:14px;border-left:3px solid var(--green);margin-bottom:4px;}
-.quick-btn{background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.quick-btn{background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;transition:background .15s;}
 .quick-btn:active{background:var(--surface3);}
 body.light .advisor-header{background:linear-gradient(135deg,#E8F5D0,#D4ECA8);}
 body.light .chat-bubble.assistant{background:#F0F0EC;color:#0D0D0D;}
@@ -279,14 +279,14 @@ body.light #bg-canvas{opacity:.25;}
 /* ── Transactions ────────────────────────────────────────────────────── */
 .txn-filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
 .txn-filter-row::-webkit-scrollbar{display:none;}
-.txn-filter-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.txn-filter-btn{padding:5px 14px;border-radius:var(--r-md);font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .txn-filter-btn.active{background:var(--green);color:var(--green-dark);}
 .txn-filter-btn:not(.active){background:var(--surface);color:var(--text3);}
 .txn-search{width:100%;background:var(--surface);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:11px 16px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
 .txn-search:focus{border-color:rgba(168,230,60,.4);}
 .txn-month-hdr{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;padding:12px 0 6px;}
 .txn-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--surface);border-radius:var(--r-md);margin-bottom:6px;}
-.txn-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.txn-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
 .txn-detail{flex:1;min-width:0;}
 .txn-detail-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .txn-detail-sub{font-size:11px;color:var(--text3);margin-top:1px;}
@@ -333,13 +333,13 @@ body.light .more-screen-item{background:#FFFFFF;}
 /* ── Portfolio filter tabs ───────────────────────────────────────────── */
 .port-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px;}
 .port-tabs::-webkit-scrollbar{display:none;}
-.port-tab{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;flex-shrink:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:36px;}
+.port-tab{padding:8px 16px;border-radius:var(--r-md);font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;flex-shrink:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:36px;}
 .port-tab.active{background:var(--green);color:var(--green-dark);}
 .port-tab:not(.active){background:var(--surface);color:var(--text3);}
 /* ── More screen menu items ──────────────────────────────────────────── */
 .more-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface);border-radius:var(--r-md);margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .more-item:active{opacity:.7;}
-.more-item-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.more-item-icon{width:40px;height:40px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .more-item-info{flex:1;min-width:0;}
 .more-item-title{font-size:14px;font-weight:500;color:var(--text);}
 .more-item-sub{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -353,7 +353,7 @@ body.light .more-item{background:#FFFFFF;}
 /* ── Backup ──────────────────────────────────────────────────────────── */
 .backup-btn{display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);border-radius:var(--r-md);margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;border:none;width:100%;font-family:'DM Sans',sans-serif;text-align:left;}
 .backup-btn:active{opacity:.7;}
-.backup-btn-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.backup-btn-icon{width:40px;height:40px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .backup-btn-info{flex:1;}
 .backup-btn-title{font-size:14px;font-weight:500;color:var(--text);}
 .backup-btn-sub{font-size:11px;color:var(--text3);margin-top:2px;}
@@ -364,7 +364,7 @@ body.light .more-item{background:#FFFFFF;}
 .insight-ticker-icon{font-size:12px;flex-shrink:0;}
 .insight-ticker-text{font-size:12px;color:rgba(168,230,60,.75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .insight-ticker-text b{color:#A8E63C;font-weight:600;}
-.insight-expanded{position:absolute;left:0;right:0;top:0;background:#131D00;border:0.5px solid rgba(168,230,60,.25);border-radius:12px;padding:10px 12px;z-index:10;display:none;flex-direction:column;gap:8px;}
+.insight-expanded{position:absolute;left:0;right:0;top:0;background:#131D00;border:0.5px solid rgba(168,230,60,.25);border-radius:var(--r-sm);padding:10px 12px;z-index:10;display:none;flex-direction:column;gap:8px;}
 .insight-expanded.open{display:flex;}
 .insight-exp-row{display:flex;align-items:flex-start;gap:8px;}
 .insight-exp-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
@@ -374,7 +374,7 @@ body.light .more-item{background:#FFFFFF;}
 /* ── Portfolio filter tabs ───────────────────────────────────────────── */
 .port-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px;}
 .port-tabs::-webkit-scrollbar{display:none;}
-.port-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;flex-shrink:0;}
+.port-tab{padding:6px 16px;border-radius:var(--r-md);font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;flex-shrink:0;}
 .port-tab.active{background:var(--green);color:var(--green-dark);}
 .port-tab:not(.active){background:var(--surface);color:var(--text3);}
 /* ── More screen ─────────────────────────────────────────────────────── */
@@ -502,7 +502,7 @@ button, .nav-item, .more-item, .card, .holding-row,
 .empty-state-img{
   width:80px;
   height:80px;
-  border-radius:20px;
+  border-radius:var(--r-md);
   object-fit:cover;
   margin-bottom:4px;
   opacity:.9;
@@ -531,7 +531,7 @@ button, .nav-item, .more-item, .card, .holding-row,
   padding:10px 24px;
   background:var(--green);
   color:var(--green-dark);
-  border-radius:20px;
+  border-radius:var(--r-md);
   font-size:13px;
   font-weight:600;
   cursor:pointer;
@@ -545,7 +545,7 @@ button, .nav-item, .more-item, .card, .holding-row,
 }
 
 /* ── Pager dots ──────────────────────────────────────────────────────── */
-#pager-dots{display:flex;justify-content:center;align-items:center;gap:5px;padding:6px 0 2px;flex-shrink:0;}
+#pager-dots{display:flex;justify-content:center;align-items:center;gap:5px;padding:10px 0 8px;flex-shrink:0;}
 .pager-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s cubic-bezier(0.16,1,0.3,1);cursor:pointer;}
 .pager-dot.active{width:16px;border-radius:3px;background:#A8E63C;}
 /* ── Goal progress card ─────────────────────────────────────────────── */
@@ -556,6 +556,31 @@ button, .nav-item, .more-item, .card, .holding-row,
 body.light .goal-progress-card{background:#FFFFFF;}
 /* ── Spacing rhythm ─────────────────────────────────────────────────── */
 .sec-hdr{margin-bottom:8px;margin-top:2px;}
+
+/* ── Spacing rhythm ──────────────────────────────────────────────────── */
+/* Sections get 16px breathing room */
+.pg > * { margin-bottom: 8px; }
+.pg > .greeting-card,
+.pg > .stat-row,
+.pg > [id$="-section"],
+.pg > [id$="-section-all"],
+.pg > [id$="-section-crypto"],
+.pg > [id$="-section-cards"],
+.pg > [id$="-section-savings"],
+.pg > [id$="-section-history"] { margin-bottom: 16px; }
+
+/* Tighter inside cards */
+.card { padding: 14px; }
+
+/* Section header spacing */
+.sec-hdr { margin-bottom: 8px; margin-top: 4px; }
+
+/* List item spacing */
+.holding-row,
+.txn-row { margin-bottom: 6px; }
+
+/* Stat pills gap */
+.stat-row { gap: 10px; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -583,13 +608,13 @@ body.light .goal-progress-card{background:#FFFFFF;}
             <div id="home-greeting" style="font-size:17px;font-weight:600;color:var(--text);">Moxcoin</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
-            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 12px;border-radius:20px;cursor:pointer;">AED</div>
+            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 12px;border-radius:var(--r-md);cursor:pointer;">AED</div>
             <div id="theme-toggle" onclick="toggleTheme()" style="font-size:18px;cursor:pointer;">&#9728;&#65039;</div>
           </div>
         </div>
 
         <!-- hero summary card -->
-        <div class="greeting-card slide-up d1">
+        <div class="greeting-card slide-up d1" style="padding:18px;">
           <!-- top row: label + live dot + date -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:6px;">
@@ -770,20 +795,20 @@ body.light .goal-progress-card{background:#FFFFFF;}
         <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
 
         <!-- month summary card -->
-        <div style="background:#131D00;border-radius:20px;padding:16px;" class="slide-up d2">
+        <div style="background:#131D00;border-radius:var(--r-md);padding:16px;" class="slide-up d2">
           <div id="act-month-label" style="font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;"></div>
 
           <!-- 3 stats -->
           <div style="display:flex;gap:6px;margin-bottom:12px;">
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
               <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Income</div>
               <div style="font-size:18px;font-weight:600;color:#A8E63C;letter-spacing:-.5px;" id="act-income">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
               <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Spent</div>
               <div style="font-size:18px;font-weight:600;color:#fff;letter-spacing:-.5px;" id="act-spent">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
               <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Saved</div>
               <div style="font-size:18px;font-weight:600;color:#5B9BD5;letter-spacing:-.5px;" id="act-saved">—</div>
             </div>
@@ -800,15 +825,15 @@ body.light .goal-progress-card{background:#FFFFFF;}
 
           <!-- breakdown pills -->
           <div style="display:flex;gap:6px;">
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
               <div style="font-size:9px;color:rgba(255,255,255,.35);">Essentials</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="act-ess">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
               <div style="font-size:9px;color:rgba(255,255,255,.35);">Subscriptions</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="act-subs">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
               <div style="font-size:9px;color:rgba(255,255,255,.35);">Saved</div>
               <div style="font-size:13px;font-weight:600;color:#A8E63C;" id="act-saved2">—</div>
             </div>
@@ -816,7 +841,7 @@ body.light .goal-progress-card{background:#FFFFFF;}
         </div>
 
         <!-- search -->
-        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:12px;">
+        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:var(--r-sm);">
 
         <!-- filter pills -->
         <div class="txn-filter-row slide-up d3">
@@ -1116,7 +1141,7 @@ body.light .goal-progress-card{background:#FFFFFF;}
               <div style="font-size:12px;color:rgba(168,230,60,.45);margin-top:3px;">Powered by Claude · based on your real data</div>
             </div>
           </div>
-          <div onclick="openAdvisorSettings()" style="width:100%;padding:10px 12px;background:rgba(168,230,60,.1);border:0.5px solid rgba(168,230,60,.25);border-radius:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:rgba(168,230,60,.2);">
+          <div onclick="openAdvisorSettings()" style="width:100%;padding:10px 12px;background:rgba(168,230,60,.1);border:0.5px solid rgba(168,230,60,.25);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:rgba(168,230,60,.2);">
             <div style="display:flex;align-items:center;gap:8px;">
               <span style="font-size:16px;">⚙️</span>
               <span style="font-size:13px;font-weight:500;color:var(--green);">API Settings</span>
@@ -1248,20 +1273,20 @@ body.light .goal-progress-card{background:#FFFFFF;}
         <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
 
         <!-- month summary card -->
-        <div style="background:#131D00;border-radius:20px;padding:16px;" class="slide-up d2">
+        <div style="background:#131D00;border-radius:var(--r-md);padding:16px;" class="slide-up d2">
           <div id="act-month-label" style="font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;"></div>
 
           <!-- 3 stats -->
           <div style="display:flex;gap:6px;margin-bottom:12px;">
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
               <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Income</div>
               <div style="font-size:18px;font-weight:600;color:#A8E63C;letter-spacing:-.5px;" id="act-income">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
               <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Spent</div>
               <div style="font-size:18px;font-weight:600;color:#fff;letter-spacing:-.5px;" id="act-spent">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:12px;padding:10px 12px;">
+            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
               <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Saved</div>
               <div style="font-size:18px;font-weight:600;color:#5B9BD5;letter-spacing:-.5px;" id="act-saved">—</div>
             </div>
@@ -1278,15 +1303,15 @@ body.light .goal-progress-card{background:#FFFFFF;}
 
           <!-- breakdown pills -->
           <div style="display:flex;gap:6px;">
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
               <div style="font-size:9px;color:rgba(255,255,255,.35);">Essentials</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="act-ess">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
               <div style="font-size:9px;color:rgba(255,255,255,.35);">Subscriptions</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="act-subs">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:7px 10px;text-align:center;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
               <div style="font-size:9px;color:rgba(255,255,255,.35);">Saved</div>
               <div style="font-size:13px;font-weight:600;color:#A8E63C;" id="act-saved2">—</div>
             </div>
@@ -1294,7 +1319,7 @@ body.light .goal-progress-card{background:#FFFFFF;}
         </div>
 
         <!-- search -->
-        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:12px;">
+        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:var(--r-sm);">
 
         <!-- filter pills -->
         <div class="txn-filter-row slide-up d3">
@@ -1846,7 +1871,7 @@ function renderGoals(){
       // header
       + '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">'
         + '<div style="display:flex;align-items:center;gap:8px;">'
-          + '<div style="width:32px;height:32px;border-radius:10px;background:' + col.bg + ';display:flex;align-items:center;justify-content:center;font-size:16px;">' + icon + '</div>'
+          + '<div style="width:32px;height:32px;border-radius:var(--r-sm);background:' + col.bg + ';display:flex;align-items:center;justify-content:center;font-size:16px;">' + icon + '</div>'
           + '<div>'
             + '<div class="goal-title">' + g.name + '</div>'
             + '<div class="goal-sub">' + (g.desc || (g.autoTrack ? 'Auto-tracked' : 'Manual')) + '</div>'
@@ -2115,7 +2140,7 @@ function showBudgetAlert(threshold, pct, b){
   toast.id  = 'budget-toast';
   toast.style.cssText =
     'position:fixed;top:20px;left:16px;right:16px;z-index:200;' +
-    'background:var(--surface);border-radius:14px;padding:14px 16px;' +
+    'background:var(--surface);border-radius:var(--r-md);padding:14px 16px;' +
     'border-left:4px solid ' + threshold.color + ';' +
     'box-shadow:0 8px 32px rgba(0,0,0,.4);' +
     'animation:slideDown .35s cubic-bezier(0.16,1,0.3,1) both;' +
@@ -2217,7 +2242,7 @@ function openFAB(){
 
   FAB_OPTIONS.forEach(function(opt){
     var card = document.createElement('div');
-    card.style.cssText = 'background:'+opt.color+';border:0.5px solid '+opt.accent+'44;border-radius:16px;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
+    card.style.cssText = 'background:'+opt.color+';border:0.5px solid '+opt.accent+'44;border-radius:var(--r-md);padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
     card.setAttribute('data-id', opt.id);
 
     var ico = document.createElement('div');
@@ -2368,8 +2393,8 @@ function renderActivity(){
       var time     = d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false});
       var amtColor = isIncome?'#A8E63C':'#E05555';
       var amtSign  = isIncome?'+':'&#8722;';
-      html+='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border-radius:12px;margin-bottom:6px;border:0.5px solid rgba(255,255,255,.05);">'
-        +'<div style="width:36px;height:36px;border-radius:10px;background:'+cat.bg+';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">'+cat.icon+'</div>'
+      html+='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border-radius:var(--r-sm);margin-bottom:6px;border:0.5px solid rgba(255,255,255,.05);">'
+        +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+cat.bg+';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">'+cat.icon+'</div>'
         +'<div style="flex:1;min-width:0;">'
           +'<div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+t.name+'</div>'
           +'<div style="font-size:10px;color:var(--text3);margin-top:1px;">'+(t.note||t.cat||'')+'</div>'
@@ -2517,7 +2542,7 @@ function handleImportFile(e){
 function showToast(msg){
   var ex=document.getElementById('mox-toast'); if(ex) ex.remove();
   var t=document.createElement('div'); t.id='mox-toast';
-  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:0.5px solid rgba(168,230,60,.3);color:var(--text);font-size:13px;font-weight:500;padding:10px 20px;border-radius:20px;z-index:200;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:0.5px solid rgba(168,230,60,.3);color:var(--text);font-size:13px;font-weight:500;padding:10px 20px;border-radius:var(--r-md);z-index:200;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);';
   t.textContent=msg; document.body.appendChild(t);
   setTimeout(function(){ t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(function(){ if(t.parentNode) t.remove(); },300); },2500);
 }
@@ -2900,9 +2925,9 @@ function renderMovers(){
     var priceStr=asset.price&&asset.price>=1000?(asset.price/1000).toFixed(2)+'k':asset.price&&asset.price>=1?asset.price.toFixed(2):asset.price?asset.price.toFixed(4):'';
     var upColor=asset.chg==null?'var(--text3)':up?'var(--green)':'var(--red)';
     var barW=asset.chg!=null?Math.min(100,Math.abs(asset.chg)*8)+'%':'0%';
-    html+='<div style="background:var(--surface);border-radius:14px;padding:11px;border:0.5px solid rgba(255,255,255,.06);position:relative;overflow:hidden;">'
+    html+='<div style="background:var(--surface);border-radius:var(--r-md);padding:11px;border:0.5px solid rgba(255,255,255,.06);position:relative;overflow:hidden;">'
       +'<div style="position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;background:'+asset.color+';"></div>'
-      +'<div style="width:28px;height:28px;border-radius:8px;background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';margin-bottom:7px;">'+asset.sym+'</div>'
+      +'<div style="width:28px;height:28px;border-radius:var(--r-sm);background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';margin-bottom:7px;">'+asset.sym+'</div>'
       +'<div style="font-size:11px;font-weight:600;color:var(--text);">'+asset.name+'</div>'
       +'<div style="font-size:9px;color:var(--text3);margin-top:1px;">'+(priceStr?'$'+priceStr:'&nbsp;')+'</div>'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">'
@@ -3158,7 +3183,7 @@ function renderCollectionList(){
       ?'<img src="'+s.imageUrl+'" style="width:36px;height:50px;object-fit:cover;border-radius:4px;flex-shrink:0;" onerror="this.style.display="none"">'
       :'<div style="background:'+bgCol+';color:'+txtCol+';width:36px;height:50px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;">'+s.type+'</div>';
     var setLbl=s.set?'<div class="holding-qty">'+s.set+'</div>':'<div class="holding-qty">'+s.type+' card</div>';
-    var badge=s.count>1?'<span style="background:rgba(255,255,255,.1);color:var(--text2);font-size:9px;font-weight:600;padding:1px 6px;border-radius:10px;margin-left:4px;">x'+s.count+'</span>':'';
+    var badge=s.count>1?'<span style="background:rgba(255,255,255,.1);color:var(--text2);font-size:9px;font-weight:600;padding:1px 6px;border-radius:var(--r-sm);margin-left:4px;">x'+s.count+'</span>':'';
     var usdLine=s.usdPrice?'<div style="font-size:10px;color:var(--text3);">$'+(s.usdPrice*s.count).toFixed(2)+'</div>':'';
     var chgLine=chg?'<div class="holding-chg '+(parseFloat(chg)>=0?'txn-positive':'txn-negative')+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</div>':'';
     var idxJson=JSON.stringify(s.indices);
@@ -3222,6 +3247,70 @@ function renderIncome(){
 }
 
 // ── EXPENSES ───────────────────────────────────────────────────────────────
+
+// ── Recurring transactions ────────────────────────────────────────────────
+
+function toggleRecurring(idx){
+  if(!data.expenses[idx]) return;
+  // Default is true, so if undefined treat as true
+  var current = data.expenses[idx].recurring !== false;
+  data.expenses[idx].recurring = !current;
+  save();
+  renderExpenses();
+}
+
+function autoLogRecurring(){
+  if(!data.expenses || !data.expenses.length) return;
+
+  var now      = new Date();
+  var monthKey = now.getFullYear()+'-'+(now.getMonth()+1); // e.g. "2026-5"
+  var lastKey  = data.lastAutoLog || '';
+
+  // Already ran this month
+  if(lastKey === monthKey) return;
+
+  var logged = 0;
+  data.expenses.forEach(function(e){
+    // Skip if recurring is explicitly disabled
+    if(e.recurring === false) return;
+
+    // Check if already manually logged this month
+    var alreadyLogged = (data.transactions||[]).some(function(t){
+      if(t.type !== 'expense') return false;
+      var d = new Date(t.date);
+      return d.getFullYear() === now.getFullYear()
+          && d.getMonth()    === now.getMonth()
+          && t.name.toLowerCase() === e.name.toLowerCase();
+    });
+
+    if(alreadyLogged) return;
+
+    // Auto-log it on the 1st of the month
+    var txnDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    var txn = {
+      id:   Date.now() + Math.random(),
+      name: e.name,
+      amt:  e.amt,
+      type: 'expense',
+      cat:  e.cat || 'ess',
+      note: 'Auto-logged',
+      date: txnDate.toISOString()
+    };
+    if(!data.transactions) data.transactions = [];
+    data.transactions.push(txn);
+    logged++;
+  });
+
+  if(logged > 0){
+    data.lastAutoLog = monthKey;
+    save();
+    showToast('&#8635; '+logged+' bill'+(logged>1?'s':'')+' auto-logged for '+now.toLocaleDateString('en',{month:'long'}));
+  } else {
+    data.lastAutoLog = monthKey;
+    save();
+  }
+}
+
 function renderExpenses(){
   var el=document.getElementById('expense-list');
   var tot=document.getElementById('exp-total');
@@ -3230,14 +3319,28 @@ function renderExpenses(){
   if(tot)tot.textContent=fmt(exp)+' '+curSym();
   if(ratio)ratio.textContent=inc>0?Math.round(exp/inc*100)+'%':'—';
   if(!el)return;
-  if(!data.expenses.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No expenses yet</div>';return;}
+  if(!data.expenses.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No bills yet</div>';return;}
   var expHtml='';
   data.expenses.forEach(function(e,i){
-    expHtml+='<div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
-      +'<div class="txn-avatar" style="background:#2A0000;color:var(--red);">'+e.name.slice(0,2).toUpperCase()+'</div>'
-      +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+e.name+'</div><div style="font-size:11px;color:var(--text3);">'+(e.cat==='sub'?'Subscription':'Essential')+'</div></div>'
-      +'<div style="font-size:14px;font-weight:600;color:var(--red);">&#8722;'+fmt(e.amt)+'</div>'
-      +'<div onclick="deleteItem(&quot;expense&quot;,'+i+')" class="delete-btn">&#10005;</div>'
+    var isRecurring = e.recurring !== false; // default ON for all bills
+    expHtml+='<div class="card" style="margin-bottom:8px;">'
+      +'<div style="display:flex;align-items:center;gap:12px;">'
+        +'<div class="txn-avatar" style="background:rgba(224,85,85,.1);color:var(--red);">'+e.name.slice(0,2).toUpperCase()+'</div>'
+        +'<div style="flex:1;min-width:0;">'
+          +'<div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+e.name+'</div>'
+          +'<div style="font-size:11px;color:var(--text3);margin-top:1px;display:flex;align-items:center;gap:6px;">'
+            +(e.cat==='sub'?'Subscription':'Essential')
+            +'<span style="display:inline-flex;align-items:center;gap:3px;cursor:pointer;" onclick="toggleRecurring('+i+')">'
+              +'<span style="width:24px;height:13px;border-radius:7px;background:'+(isRecurring?'var(--brand)':'rgba(255,255,255,.15)')+';position:relative;display:inline-block;transition:background .2s;">'
+                +'<span style="width:9px;height:9px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(isRecurring?'right:2px':'left:2px')+';transition:left .2s,right .2s;"></span>'
+              +'</span>'
+              +'<span style="font-size:10px;color:'+(isRecurring?'var(--brand)':'var(--text3)')+';">Auto-log</span>'
+            +'</span>'
+          +'</div>'
+        +'</div>'
+        +'<div style="font-size:13px;font-weight:600;color:var(--red);white-space:nowrap;">&#8722;'+fmt(e.amt)+' '+curSym()+'</div>'
+        +'<div onclick="deleteItem(&quot;expense&quot;,'+i+')" class="delete-btn">&#10005;</div>'
+      +'</div>'
     +'</div>';
   });
   el.innerHTML=expHtml;
@@ -3329,14 +3432,14 @@ function openSheet(type){
     title.textContent = 'Add card';
     body.innerHTML =
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">' +
-        '<div id="ctype-mtg" onclick="switchCardType(\'mtg\')" style="border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;border:1.5px solid var(--green);background:rgba(168,230,60,.08);">' +
+        '<div id="ctype-mtg" onclick="switchCardType(\'mtg\')" style="border-radius:var(--r-md);padding:14px 10px;text-align:center;cursor:pointer;border:1.5px solid var(--green);background:rgba(168,230,60,.08);">' +
           '<div style="margin:0 auto 4px;display:flex;align-items:center;justify-content:center;">' +
             '<i class="ss ss-planeswalker" style="font-size:26px;color:#E05010;"></i>' +
           '</div>' +
           '<div style="font-size:11px;font-weight:600;color:var(--green);">Magic: The Gathering</div>' +
           '<div style="font-size:10px;color:var(--text3);margin-top:2px;">via Scryfall</div>' +
         '</div>' +
-        '<div id="ctype-poke" onclick="switchCardType(\'poke\')" style="border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;border:1.5px solid var(--surface3);background:transparent;">' +
+        '<div id="ctype-poke" onclick="switchCardType(\'poke\')" style="border-radius:var(--r-md);padding:14px 10px;text-align:center;cursor:pointer;border:1.5px solid var(--surface3);background:transparent;">' +
           '<div style="width:26px;height:26px;margin:0 auto 4px;"><svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="14" cy="14" r="13" fill="#E8E8E8" stroke="#333" stroke-width="1.5"/><rect x="1" y="12.5" width="26" height="3" fill="#333"/><rect x="2" y="12.5" width="24" height="3" fill="#333"/><path d="M1 14 Q1 1 14 1 Q27 1 27 14Z" fill="#E24B4A"/><circle cx="14" cy="14" r="4.5" fill="white" stroke="#333" stroke-width="1.5"/><circle cx="14" cy="14" r="2" fill="#E8E8E8"/></svg></div>' +
           '<div style="font-size:13px;font-weight:600;color:var(--text2);">Pok&#233;mon</div>' +
           '<div style="font-size:10px;color:var(--text3);margin-top:2px;">via TCG API</div>' +
@@ -3348,8 +3451,8 @@ function openSheet(type){
           '<input class="field-input" id="sh-scryfall-url" placeholder="https://scryfall.com/card/..." oninput="onScryfallUrlChange()" style="margin-bottom:8px;">' +
           '<input class="field-input" id="sh-card-name" placeholder="Black Lotus, Mox Pearl..." oninput="debounceSearch()">' +
         '</div>' +
-        '<div id="sh-search-results" style="display:none;background:var(--surface2);border-radius:12px;overflow:hidden;margin-bottom:12px;max-height:180px;overflow-y:auto;"></div>' +
-        '<div id="sh-scryfall-preview" style="display:none;background:var(--surface2);border-radius:12px;padding:12px;margin-bottom:12px;flex-direction:row;gap:10px;align-items:flex-start;"></div>' +
+        '<div id="sh-search-results" style="display:none;background:var(--surface2);border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px;max-height:180px;overflow-y:auto;"></div>' +
+        '<div id="sh-scryfall-preview" style="display:none;background:var(--surface2);border-radius:var(--r-sm);padding:12px;margin-bottom:12px;flex-direction:row;gap:10px;align-items:flex-start;"></div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
           '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Qty</div><input class="field-input" id="sh-qty" type="number" value="1" min="1"></div>' +
           '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Paid (AED)</div><input class="field-input" id="sh-paid" type="number" placeholder="0"></div>' +
@@ -3362,8 +3465,8 @@ function openSheet(type){
           '<input class="field-input" id="sh-poke-url" placeholder="https://pokemontcg.io/... or card ID" oninput="onPokeUrlChange()" style="margin-bottom:8px;">' +
           '<input class="field-input" id="sh-poke-name" placeholder="Charizard, Pikachu, Mewtwo..." oninput="debouncePokeSearch()">' +
         '</div>' +
-        '<div id="sh-poke-results" style="display:none;background:var(--surface2);border-radius:12px;overflow:hidden;margin-bottom:12px;max-height:180px;overflow-y:auto;"></div>' +
-        '<div id="sh-poke-preview" style="display:none;background:var(--surface2);border-radius:12px;padding:12px;margin-bottom:12px;flex-direction:row;gap:10px;align-items:flex-start;"></div>' +
+        '<div id="sh-poke-results" style="display:none;background:var(--surface2);border-radius:var(--r-sm);overflow:hidden;margin-bottom:12px;max-height:180px;overflow-y:auto;"></div>' +
+        '<div id="sh-poke-preview" style="display:none;background:var(--surface2);border-radius:var(--r-sm);padding:12px;margin-bottom:12px;flex-direction:row;gap:10px;align-items:flex-start;"></div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">' +
           '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Qty</div><input class="field-input" id="sh-poke-qty" type="number" value="1" min="1"></div>' +
           '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Paid (AED)</div><input class="field-input" id="sh-poke-paid" type="number" placeholder="0"></div>' +
@@ -3375,7 +3478,7 @@ function openSheet(type){
     title.textContent = 'Add goal';
     var iconOpts = ['🎯','🏠','✈️','🎓','💎','🚗','📱','💰','🏋️','🌍'];
     var iconBtns = iconOpts.map(function(ic){
-      return '<div onclick="selectGoalIcon(this,\'' + ic + '\')" style="width:36px;height:36px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:1.5px solid transparent;" data-icon="' + ic + '">' + ic + '</div>';
+      return '<div onclick="selectGoalIcon(this,\'' + ic + '\')" style="width:36px;height:36px;border-radius:var(--r-sm);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:1.5px solid transparent;" data-icon="' + ic + '">' + ic + '</div>';
     }).join('');
     body.innerHTML =
       '<div class="field-group"><div class="field-label">Goal name</div>' +
@@ -3685,7 +3788,7 @@ function displayPokeCard(card){
       +'<div><div style="font-size:10px;color:var(--text3);">AED</div>'
       +'<div style="font-size:15px;font-weight:600;color:var(--green);">'+(priceAED?priceAED.toFixed(0):'—')+'</div></div>'
       +'</div>'
-      +(priceAED?'<button onclick="prefillPokePrice()" style="background:rgba(168,230,60,.12);color:var(--green);border:none;border-radius:8px;padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
+      +(priceAED?'<button onclick="prefillPokePrice()" style="background:rgba(168,230,60,.12);color:var(--green);border:none;border-radius:var(--r-sm);padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
       +'</div>';
   }
   var paidInput=document.getElementById('sh-poke-paid');
@@ -3813,7 +3916,7 @@ function displayScryfallCard(card){
       +'<div><div style="font-size:10px;color:var(--text3);">Market</div><div style="font-size:15px;font-weight:600;color:var(--yellow);">'+(priceUSD?'$'+priceUSD.toFixed(2):'—')+'</div></div>'
       +'<div><div style="font-size:10px;color:var(--text3);">AED</div><div style="font-size:15px;font-weight:600;color:var(--green);">'+(priceAED?priceAED.toFixed(0):'—')+'</div></div>'
       +'</div>'
-      +(priceAED?'<button onclick="prefillPrice()" style="background:rgba(168,230,60,.12);color:var(--green);border:none;border-radius:8px;padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
+      +(priceAED?'<button onclick="prefillPrice()" style="background:rgba(168,230,60,.12);color:var(--green);border:none;border-radius:var(--r-sm);padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
       +'</div>';
   }
   var paidInput=document.getElementById('sh-paid');
@@ -3951,7 +4054,7 @@ function showPriceStatus(msg){
   if(!el){
     el=document.createElement('div');
     el.id='price-status';
-    el.style.cssText='position:absolute;bottom:72px;left:50%;transform:translateX(-50%);background:var(--surface2);color:var(--text2);font-size:11px;padding:6px 14px;border-radius:20px;white-space:nowrap;transition:opacity .3s;z-index:40;';
+    el.style.cssText='position:absolute;bottom:72px;left:50%;transform:translateX(-50%);background:var(--surface2);color:var(--text2);font-size:11px;padding:6px 14px;border-radius:var(--r-md);white-space:nowrap;transition:opacity .3s;z-index:40;';
     document.getElementById('app').appendChild(el);
   }
   el.textContent=msg;
@@ -4294,7 +4397,7 @@ function addBackButton(el){
 load();
 initTheme();
 initSwipe();
-setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); }, 200);
+setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); autoLogRecurring(); }, 200);
 
 // ── Persistent save triggers for Android PWA ─────────────────────────────
 function emergencySave(){
