@@ -543,6 +543,11 @@ button, .nav-item, .more-item, .card, .holding-row,
 .empty-state-btn:active{
   transform:scale(0.96);
 }
+
+/* ── Pager dots ──────────────────────────────────────────────────────── */
+#pager-dots{display:flex;justify-content:center;align-items:center;gap:5px;padding:6px 0 2px;flex-shrink:0;}
+.pager-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s cubic-bezier(0.16,1,0.3,1);cursor:pointer;}
+.pager-dot.active{width:16px;border-radius:3px;background:#A8E63C;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -861,6 +866,11 @@ button, .nav-item, .more-item, .card, .holding-row,
 
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d4">Settings</div>
         <div class="slide-up d4">
+          <div class="more-item" onclick="editUserName()">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#128100;</div>
+            <div class="more-item-info"><div class="more-item-title">Your name</div><div class="more-item-sub" id="more-username">Tap to personalise greeting</div></div>
+            <span style="color:var(--text3);">&#8250;</span>
+          </div>
           <div class="more-item" onclick="toggleTheme()">
             <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#127769;</div>
             <div class="more-item-info"><div class="more-item-title">Theme</div><div class="more-item-sub" id="more-theme">Dark mode</div></div>
@@ -1359,6 +1369,14 @@ button, .nav-item, .more-item, .card, .holding-row,
       </div>
     </div>
   </div><!-- end page -->
+
+<!-- ── Pager dots ── -->
+  <div id="pager-dots">
+    <div class="pager-dot active" onclick="springToIndex(0)"></div>
+    <div class="pager-dot" onclick="springToIndex(1)"></div>
+    <div class="pager-dot" onclick="springToIndex(2)"></div>
+    <div class="pager-dot" onclick="springToIndex(3)"></div>
+  </div>
 
 <!-- ── Bottom Nav ── -->
   <div class="bottom-nav" style="display:flex;align-items:center;padding:0;">
@@ -2519,6 +2537,14 @@ function updateBackupSize(){
     el.textContent=kb+'KB'+(counts.length?' - '+counts.join(', '):'');
   }catch(e){}
 }
+
+function editUserName(){
+  var current = data.userName || '';
+  var name = window.prompt('Enter your name for the greeting:', current);
+  if(name === null) return;
+  data.userName = name.trim().slice(0, 30);
+  save(); renderHome(); renderMore();
+}
 function renderMore(){
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   set('more-income-count', data.incomeSources.length
@@ -2537,6 +2563,7 @@ function renderMore(){
   set('more-bills-val',  '-'+fmt(totalExpenses())+' '+curSym());
   set('more-currency', data.currency||'AED');
   set('more-theme', document.body.classList.contains('light')?'Light mode':'Dark mode');
+  set('more-username', data.userName || 'Tap to personalise greeting');
   updateBackupSize();
 }
 
@@ -2669,6 +2696,9 @@ function renderHome(){
   if(greet){
     var h = new Date().getHours();
     greet.textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  }
+  if(greetName){
+    greetName.textContent = (data.userName && data.userName.trim()) ? data.userName : 'Moxcoin';
   }
 
   // Date
@@ -4169,6 +4199,7 @@ function springToIndex(newIdx){
 function updateNavActive(idx){
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
   var el=document.getElementById('nav-'+SWIPE_TABS[idx]); if(el) el.classList.add('active');
+  document.querySelectorAll('.pager-dot').forEach(function(d,i){ d.classList.toggle('active', i===idx); });
 }
 
 function onSwipeTouchStart(e){
