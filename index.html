@@ -548,6 +548,14 @@ button, .nav-item, .more-item, .card, .holding-row,
 #pager-dots{display:flex;justify-content:center;align-items:center;gap:5px;padding:6px 0 2px;flex-shrink:0;}
 .pager-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s cubic-bezier(0.16,1,0.3,1);cursor:pointer;}
 .pager-dot.active{width:16px;border-radius:3px;background:#A8E63C;}
+/* ── Goal progress card ─────────────────────────────────────────────── */
+.goal-progress-card{background:var(--surface);border-radius:var(--r-md);padding:14px;border:0.5px solid rgba(255,255,255,.06);}
+.goal-progress-card:active{transform:scale(0.98);}
+.goal-prog-track{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin:10px 0 6px;}
+.goal-prog-fill{height:6px;border-radius:3px;background:#A8E63C;transition:width .8s cubic-bezier(0.16,1,0.3,1);width:0%;}
+body.light .goal-progress-card{background:#FFFFFF;}
+/* ── Spacing rhythm ─────────────────────────────────────────────────── */
+.sec-hdr{margin-bottom:8px;margin-top:2px;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -820,18 +828,7 @@ button, .nav-item, .more-item, .card, .holding-row,
       <div class="pg">
         <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
 
-        <div class="stat-row slide-up d2" style="margin-bottom:16px;">
-          <div class="stat-pill">
-            <div class="stat-lbl">Monthly income</div>
-            <div class="stat-val" id="more-income-val" style="color:var(--green);">—</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-lbl">Monthly bills</div>
-            <div class="stat-val" id="more-bills-val" style="color:var(--red);">—</div>
-          </div>
-        </div>
-
-        <div class="slide-up d3">
+        <div class="slide-up d2">
           <div class="more-item" onclick="switchTab('goals')">
             <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#127919;</div>
             <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
@@ -1309,17 +1306,6 @@ button, .nav-item, .more-item, .card, .holding-row,
       <div class="pg">
         <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
 
-        <div class="stat-row slide-up d2" style="margin-bottom:16px;">
-          <div class="stat-pill">
-            <div class="stat-lbl">Monthly income</div>
-            <div class="stat-val" id="more-income-val" style="color:var(--green);">—</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-lbl">Monthly bills</div>
-            <div class="stat-val" id="more-bills-val" style="color:var(--red);">—</div>
-          </div>
-        </div>
-
         <div class="slide-up d3">
           <div class="more-item" onclick="switchTab('goals')">
             <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#127919;</div>
@@ -1440,6 +1426,7 @@ var data={
   transactions:[],
   goals:[],
   snapshots:[],
+  userName:'',
 };
 var currentTab='home';
 var currentRange='3m';
@@ -2537,14 +2524,14 @@ function updateBackupSize(){
     el.textContent=kb+'KB'+(counts.length?' - '+counts.join(', '):'');
   }catch(e){}
 }
-
 function editUserName(){
-  var current = data.userName || '';
-  var name = window.prompt('Enter your name for the greeting:', current);
-  if(name === null) return;
-  data.userName = name.trim().slice(0, 30);
-  save(); renderHome(); renderMore();
+  var current=data.userName||'';
+  var name=window.prompt('Enter your name for the greeting:',current);
+  if(name===null)return;
+  data.userName=name.trim().slice(0,30);
+  save();renderHome();renderMore();
 }
+
 function renderMore(){
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   set('more-income-count', data.incomeSources.length
@@ -2559,11 +2546,9 @@ function renderMore(){
   set('more-goals-sub', data.goals.length
     ? data.goals.length+' goal'+(data.goals.length>1?'s':'')+' active'
     : 'Track your financial targets');
-  set('more-income-val', '+'+fmt(totalIncome())+' '+curSym());
-  set('more-bills-val',  '-'+fmt(totalExpenses())+' '+curSym());
   set('more-currency', data.currency||'AED');
+  set('more-username', data.userName||'Tap to personalise greeting');
   set('more-theme', document.body.classList.contains('light')?'Light mode':'Dark mode');
-  set('more-username', data.userName || 'Tap to personalise greeting');
   updateBackupSize();
 }
 
@@ -2670,6 +2655,47 @@ function emptyState(icon, title, sub, btnLabel, btnAction){
     +'</div>';
 }
 
+// ── Home screen top goal ──────────────────────────────────────────────────
+function renderHomeGoal(){
+  var section = document.getElementById('home-goal-section');
+  var card    = document.getElementById('home-goal-card');
+  if(!section || !card) return;
+  if(!data.goals || !data.goals.length){ section.style.display='none'; return; }
+  var assets = totalAssets();
+  var best = null, bestPct = -1;
+  data.goals.forEach(function(g){
+    var cur = g.autoTrack==='savings'?totalSavings():g.autoTrack==='assets'?assets:(g.currentAmt||0);
+    var pct = g.targetAmt>0?Math.min(100,(cur/g.targetAmt)*100):0;
+    if(pct>bestPct&&pct<100){bestPct=pct;best={goal:g,cur:cur,pct:pct};}
+  });
+  if(!best){section.style.display='none';return;}
+  section.style.display='block';
+  var g=best.goal,pct=Math.round(best.pct),cur=best.cur;
+  var etaStr='';
+  var b=calcBudget();
+  if(b.sav>0&&cur<g.targetAmt){
+    var monthsLeft=Math.ceil((g.targetAmt-cur)/b.sav);
+    var eta=new Date();eta.setMonth(eta.getMonth()+monthsLeft);
+    etaStr=eta.toLocaleDateString('en',{month:'short',year:'numeric'});
+  }
+  var html='<div class="goal-progress-card" onclick="switchTab(&quot;goals&quot;)">';
+  html+='<div style="display:flex;align-items:center;gap:10px;">';
+  html+='<div style="font-size:22px;line-height:1;">'+(g.icon||'&#127919;')+'</div>';
+  html+='<div style="flex:1;min-width:0;">';
+  html+='<div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+g.name+'</div>';
+  if(etaStr) html+='<div style="font-size:11px;color:var(--text3);margin-top:1px;">Est. '+etaStr+'</div>';
+  html+='</div>';
+  html+='<div style="font-size:20px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums;">'+pct+'%</div>';
+  html+='</div>';
+  html+='<div class="goal-prog-track"><div class="goal-prog-fill" style="width:0%;" id="home-goal-fill"></div></div>';
+  html+='<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);">';
+  html+='<span>'+fmt(cur)+' '+curSym()+' saved</span>';
+  html+='<span>'+fmt(g.targetAmt)+' '+curSym()+' goal</span>';
+  html+='</div></div>';
+  card.innerHTML=html;
+  setTimeout(function(){var fill=document.getElementById('home-goal-fill');if(fill)fill.style.width=pct+'%';},80);
+}
+
 function renderHome(){
   var assets = totalAssets();
   var b      = calcBudget();
@@ -2696,9 +2722,6 @@ function renderHome(){
   if(greet){
     var h = new Date().getHours();
     greet.textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  }
-  if(greetName){
-    greetName.textContent = (data.userName && data.userName.trim()) ? data.userName : 'Moxcoin';
   }
 
   // Date
@@ -2774,6 +2797,7 @@ function renderHome(){
   if(spentOfEl) spentOfEl.textContent = 'of '+fmt(b.inc)+' '+curSym();
 
   renderInsights();
+  renderHomeGoal();
   renderMovers();
 }
 
@@ -4199,7 +4223,7 @@ function springToIndex(newIdx){
 function updateNavActive(idx){
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
   var el=document.getElementById('nav-'+SWIPE_TABS[idx]); if(el) el.classList.add('active');
-  document.querySelectorAll('.pager-dot').forEach(function(d,i){ d.classList.toggle('active', i===idx); });
+  document.querySelectorAll('.pager-dot').forEach(function(d,i){ d.classList.toggle('active',i===idx); });
 }
 
 function onSwipeTouchStart(e){
