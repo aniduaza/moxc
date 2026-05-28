@@ -79,6 +79,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 @keyframes barIn{from{width:0}to{width:var(--w)}}
 @keyframes needleIn{from{transform:rotate(-120deg)}to{transform:rotate(var(--deg))}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes countUp{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 
 .slide-up{}
@@ -584,8 +585,12 @@ body.light .backup-btn{background:#FFFFFF;}
             <div id="home-timegreeting" style="font-size:11px;color:var(--text3);"></div>
             <div id="home-greeting" style="font-size:17px;font-weight:600;color:var(--text);">Moxcoin</div>
           </div>
-          <div style="display:flex;align-items:center;gap:10px;">
+          <div style="display:flex;align-items:center;gap:8px;">
             <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 12px;border-radius:var(--r-md);cursor:pointer;">AED</div>
+            <div id="briefing-btn" onclick="openBriefing()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(168,230,60,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
+              <div id="briefing-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--green);"></div>
+            </div>
             <div id="theme-toggle" onclick="toggleTheme()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
           </div>
         </div>
@@ -1279,6 +1284,25 @@ body.light .backup-btn{background:#FFFFFF;}
       <div class="sheet-handle"></div>
       <div class="sheet-title" id="sheet-title"></div>
       <div id="sheet-body"></div>
+    </div>
+  </div>
+
+  <!-- ═══ DAILY BRIEFING ═══ -->
+  <div id="briefing-overlay" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:9985;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;">
+    <div id="briefing-sheet" style="background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;width:100%;padding:22px 20px 40px;transform:translateY(100%);transition:transform .38s cubic-bezier(0.32,0.72,0,1);max-height:80vh;overflow-y:auto;">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 18px;"></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="width:36px;height:36px;border-radius:var(--r-sm);background:rgba(168,230,60,.1);color:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Daily briefing</div>
+          <div id="briefing-date" style="font-size:11px;color:var(--text3);"></div>
+        </div>
+        <div onclick="closeBriefing()" style="margin-left:auto;color:var(--text3);cursor:pointer;padding:4px;font-size:18px;">&#10005;</div>
+      </div>
+      <div id="briefing-content" style="font-size:14px;color:var(--text2);line-height:1.65;min-height:80px;"></div>
+      <button onclick="closeBriefing()" style="width:100%;margin-top:20px;padding:14px;background:var(--surface2);color:var(--text);border:none;border-radius:var(--r-md);font-size:15px;font-weight:500;cursor:pointer;">Got it</button>
     </div>
   </div>
 
@@ -4417,6 +4441,87 @@ function generateBriefing(){
   });
 }
 
+// ── Home daily briefing ────────────────────────────────────────────────────
+var BRIEFING_KEY = 'moxcoin_briefing';
+var _briefingCache = null;
+
+function getBriefingState(){
+  try{ return JSON.parse(localStorage.getItem(BRIEFING_KEY)||'{}'); }catch(e){ return {}; }
+}
+function saveBriefingState(s){
+  try{ localStorage.setItem(BRIEFING_KEY, JSON.stringify(s)); }catch(e){}
+}
+
+function openBriefing(){
+  var overlay = document.getElementById('briefing-overlay');
+  var sheet   = document.getElementById('briefing-sheet');
+  var dateEl  = document.getElementById('briefing-date');
+  var dot     = document.getElementById('briefing-dot');
+  if(!overlay || !sheet) return;
+  if(dot) dot.style.display = 'none';
+  if(dateEl){
+    var n = new Date();
+    dateEl.textContent = n.toLocaleDateString('en',{weekday:'long',day:'numeric',month:'long'});
+  }
+  overlay.style.display = 'flex';
+  setTimeout(function(){ sheet.style.transform = 'translateY(0)'; }, 20);
+  loadBriefingContent();
+  // Mark today as seen
+  var s = getBriefingState();
+  s.lastSeen = todayKey();
+  saveBriefingState(s);
+}
+
+function closeBriefing(){
+  var sheet   = document.getElementById('briefing-sheet');
+  var overlay = document.getElementById('briefing-overlay');
+  if(sheet) sheet.style.transform = 'translateY(100%)';
+  setTimeout(function(){ if(overlay) overlay.style.display = 'none'; }, 400);
+}
+
+function loadBriefingContent(){
+  var el = document.getElementById('briefing-content');
+  if(!el) return;
+  // Use cached content for today if available
+  var s = getBriefingState();
+  if(s.date === todayKey() && s.text){
+    el.innerHTML = s.text.replace(/\n/g,'<br>');
+    return;
+  }
+  // Check API key before showing spinner
+  var apiKey = getApiKey();
+  if(!apiKey){
+    el.innerHTML = '<span style="color:var(--text3);font-style:italic;">Add an API key in AI Advisor settings to enable daily briefings.</span>';
+    return;
+  }
+  el.innerHTML = '<div style="display:flex;align-items:center;gap:10px;color:var(--text3);font-style:italic;">'
+    + '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite;flex-shrink:0;"><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2Z" opacity=".2"/><path d="M10 2a8 8 0 0 1 8 8"/></svg>'
+    + 'Generating your briefing...</div>';
+  callClaude('Give me a brief 2-3 sentence summary of my current financial situation and one specific actionable recommendation for today. Be direct, use my actual numbers, and keep it under 60 words.').then(function(reply){
+    var s = getBriefingState();
+    s.date = todayKey();
+    s.text = reply;
+    saveBriefingState(s);
+    _briefingCache = reply;
+    if(el) el.innerHTML = reply.replace(/\n/g,'<br>');
+  }).catch(function(err){
+    if(el) el.innerHTML = '<span style="color:var(--text3);font-style:italic;">Could not load briefing. ' + err.message + '</span>';
+  });
+}
+
+function checkAutoBriefing(){
+  // Only auto-show if user has data and hasn't seen today's briefing
+  var hasData = data.incomeSources.length > 0 || data.expenses.length > 0 || data.cryptoHoldings.length > 0;
+  if(!hasData) return;
+  var s = getBriefingState();
+  if(s.lastSeen === todayKey()) return;
+  // Show dot on briefing button to signal a new briefing
+  var dot = document.getElementById('briefing-dot');
+  if(dot) dot.style.display = 'block';
+  // Auto-open after 1.5s
+  setTimeout(openBriefing, 1500);
+}
+
 function callClaude(userMsg){
   var apiKey = getApiKey();
   if(!apiKey) return Promise.reject(new Error('No API key. Tap the settings icon to add one.'));
@@ -4600,7 +4705,7 @@ function addBackButton(el){
 load();
 initTheme();
 initSwipe();
-setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); autoLogRecurring(); }, 200);
+setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); autoLogRecurring(); checkAutoBriefing(); }, 200);
 
 // ── Persistent save triggers for Android PWA ─────────────────────────────
 function emergencySave(){
