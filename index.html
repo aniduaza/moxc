@@ -586,7 +586,7 @@ body.light .backup-btn{background:#FFFFFF;}
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 12px;border-radius:var(--r-md);cursor:pointer;">AED</div>
-            <div id="theme-toggle" onclick="toggleTheme()" style="font-size:18px;cursor:pointer;">&#9728;&#65039;</div>
+            <div id="theme-toggle" onclick="toggleTheme()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
           </div>
         </div>
 
@@ -1282,6 +1282,19 @@ body.light .backup-btn{background:#FFFFFF;}
     </div>
   </div>
 
+  <!-- ═══ DELETE CONFIRMATION ═══ -->
+  <div id="del-overlay" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:9990;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;">
+    <div id="del-sheet" style="background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;width:100%;padding:20px 20px 36px;transform:translateY(100%);transition:transform .3s cubic-bezier(0.32,0.72,0,1);">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 18px;"></div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:6px;" id="del-title">Delete?</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px;" id="del-sub">This cannot be undone.</div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="hideDel()" style="flex:1;padding:14px;background:var(--surface2);color:var(--text);border:none;border-radius:var(--r-md);font-size:15px;font-weight:500;cursor:pointer;">Cancel</button>
+        <button id="del-confirm-btn" style="flex:1;padding:14px;background:var(--red);color:#fff;border:none;border-radius:var(--r-md);font-size:15px;font-weight:600;cursor:pointer;">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══ CLEAR DATA CONFIRMATION ═══ -->
   <div id="clear-data-overlay" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:9998;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;">
     <div id="clear-data-sheet" style="background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;width:100%;padding:28px 24px 40px;transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);">
@@ -1342,7 +1355,9 @@ function toggleTheme(){
 function applyTheme(){
   document.body.classList.toggle('light', !isDark);
   var btn = document.getElementById('theme-toggle');
-  if(btn) btn.textContent = isDark ? '☀️' : '🌙';
+  if(btn) btn.innerHTML = isDark
+    ? '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 2v1.5M10 16.5V18M2 10h1.5M16.5 10H18M4.1 4.1l1.1 1.1M14.8 14.8l1.1 1.1M15.9 4.1l-1.1 1.1M5.2 14.8l-1.1 1.1"/></svg>'
+    : '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 12.5A7.5 7.5 0 0 1 7.5 3 8 8 0 1 0 17 12.5Z"/></svg>';
 }
 
 function initTheme(){
@@ -1491,6 +1506,19 @@ function getIcon(name, sz) {
       + '<circle cx="10" cy="10" r="1" fill="currentColor" stroke="none"/>'
       + '<circle cx="6.5" cy="10" r="1" fill="currentColor" stroke="none"/>'
       + '<circle cx="13.5" cy="10" r="1" fill="currentColor" stroke="none"/>';
+  } else if(name === 'food') {
+    d = '<path d="M10 3v14M6 3c0 3 1 5 4 6M14 3c0 3-1 5-4 6"/>';
+  } else if(name === 'transport') {
+    d = '<rect x="3" y="7" width="14" height="8" rx="2"/>'
+      + '<path d="M7 15v2M13 15v2M3 10h14"/>'
+      + '<path d="M7 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>';
+  } else if(name === 'health') {
+    d = '<path d="M10 3.5c-1.5-2-5.5-2-6.5 2-.8 3.2 1.5 5.5 6.5 9 5-3.5 7.3-5.8 6.5-9-1-4-5-4-6.5-2Z"/>';
+  } else if(name === 'shopping') {
+    d = '<path d="M5 3.5h10l1.5 10a1 1 0 0 1-1 1.1H4.5a1 1 0 0 1-1-1.1L5 3.5Z"/>'
+      + '<path d="M7.5 3.5a2.5 2.5 0 0 1 5 0"/>';
+  } else if(name === 'entertainment') {
+    d = '<polygon points="7,4 17,10 7,16"/>';
   } else if(name === 'search') {
     d = '<circle cx="8.5" cy="8.5" r="5"/>'
       + '<path d="M13.5 13.5L17.5 17.5"/>';
@@ -1604,11 +1632,16 @@ function submitTxnSheet(){
 
 var txnFilter = 'all';
 var TXN_CATS = {
-  income:  {label:'Income',       iconName:'income',       bg:'#1A2800', color:'var(--green)'},
-  ess:     {label:'Essential',    iconName:'essential',    bg:'#2A0A00', color:'var(--red)'},
-  sub:     {label:'Subscription', iconName:'subscription', bg:'#001020', color:'var(--blue)'},
-  saving:  {label:'Saving',       iconName:'saving-cat',   bg:'#001A2A', color:'var(--blue)'},
-  other:   {label:'Other',        iconName:'other',        bg:'#1A1A1A', color:'var(--text2)'},
+  income:  {label:'Income',        iconName:'income',       bg:'#1A2800', color:'var(--green)'},
+  ess:     {label:'Essential',     iconName:'essential',    bg:'#2A0A00', color:'var(--red)'},
+  food:    {label:'Food',          iconName:'food',         bg:'#2A1200', color:'#F7A400'},
+  transport:{label:'Transport',    iconName:'transport',    bg:'#001A18', color:'#3DD9C5'},
+  health:  {label:'Health',        iconName:'health',       bg:'#1A002A', color:'#B57BE0'},
+  shopping:{label:'Shopping',      iconName:'shopping',     bg:'#2A0A1A', color:'#E05588'},
+  entertainment:{label:'Entertainment',iconName:'entertainment',bg:'#1A1A00',color:'#E8D800'},
+  sub:     {label:'Subscription',  iconName:'subscription', bg:'#001020', color:'var(--blue)'},
+  saving:  {label:'Saving',        iconName:'saving-cat',   bg:'#001A2A', color:'var(--blue)'},
+  other:   {label:'Other',         iconName:'other',        bg:'#1A1A1A', color:'var(--text2)'},
 };
 
 function logTransaction(name, amt, type, cat, note){
@@ -1706,11 +1739,7 @@ function renderTransactions(){
   el.innerHTML = html;
 }
 
-function deleteTxn(id){
-  data.transactions = data.transactions.filter(function(t){ return t.id !== id; });
-  save();
-  renderTransactions();
-}
+
 
 function renderTransactionsTab(){
   renderTransactions();
@@ -1844,9 +1873,7 @@ function renderGoals(){
 }
 
 function deleteGoal(idx){
-  data.goals.splice(idx, 1);
-  save();
-  renderGoals();
+  deleteItem('goal', idx);
 }
 
 function updateGoalAmt(idx){
@@ -2686,39 +2713,46 @@ function renderHomeGoal(){
   var card    = document.getElementById('home-goal-card');
   if(!section || !card) return;
   if(!data.goals || !data.goals.length){ section.style.display='none'; return; }
-  var assets = totalAssets();
-  var best = null, bestPct = -1;
-  data.goals.forEach(function(g){
-    var cur = g.autoTrack==='savings'?totalSavings():g.autoTrack==='assets'?assets:(g.currentAmt||0);
-    var pct = g.targetAmt>0?Math.min(100,(cur/g.targetAmt)*100):0;
-    if(pct>bestPct&&pct<100){bestPct=pct;best={goal:g,cur:cur,pct:pct};}
+
+  // Pick the in-progress goal closest to completion
+  var best = null, bestPct = -1, bestIdx = 0;
+  data.goals.forEach(function(g, i){
+    var prog = calcGoalProgress(g);
+    if(prog.pct > bestPct && prog.pct < 100){ bestPct = prog.pct; best = g; bestIdx = i; }
   });
-  if(!best){section.style.display='none';return;}
-  section.style.display='block';
-  var g=best.goal,pct=Math.round(best.pct),cur=best.cur;
-  var etaStr='';
-  var b=calcBudget();
-  if(b.sav>0&&cur<g.targetAmt){
-    var monthsLeft=Math.ceil((g.targetAmt-cur)/b.sav);
-    var eta=new Date();eta.setMonth(eta.getMonth()+monthsLeft);
-    etaStr=eta.toLocaleDateString('en',{month:'short',year:'numeric'});
-  }
-  var html='<div class="goal-progress-card" onclick="switchTab(&quot;goals&quot;)">';
-  html+='<div style="display:flex;align-items:center;gap:10px;">';
-  html+='<div style="font-size:22px;line-height:1;">'+(g.icon||'&#127919;')+'</div>';
-  html+='<div style="flex:1;min-width:0;">';
-  html+='<div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+g.name+'</div>';
-  if(etaStr) html+='<div style="font-size:11px;color:var(--text3);margin-top:1px;">Est. '+etaStr+'</div>';
-  html+='</div>';
-  html+='<div style="font-size:20px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;">'+pct+'%</div>';
-  html+='</div>';
-  html+='<div class="goal-prog-track"><div class="goal-prog-fill" style="width:0%;" id="home-goal-fill"></div></div>';
-  html+='<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);">';
-  html+='<span>'+fmt(cur)+' '+curSym()+' saved</span>';
-  html+='<span>'+fmt(g.targetAmt)+' '+curSym()+' goal</span>';
-  html+='</div></div>';
-  card.innerHTML=html;
-  setTimeout(function(){var fill=document.getElementById('home-goal-fill');if(fill)fill.style.width=pct+'%';},80);
+  if(!best){ section.style.display='none'; return; }
+
+  section.style.display = 'block';
+  var col  = getGoalColor(bestIdx);
+  var prog = calcGoalProgress(best);
+  var eta  = calcGoalETA(best, prog);
+  var pct  = prog.pct.toFixed(1);
+  var icon = best.icon || '&#127919;';
+
+  var html = '<div class="goal-card item-in" style="border:0.5px solid '+col.accent+'33;cursor:pointer;" onclick="switchTab(\'goals\')">'
+    + '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+col.accent+';border-radius:3px 3px 0 0;"></div>'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
+      + '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+icon+'</div>'
+      + '<div style="flex:1;min-width:0;">'
+        + '<div class="goal-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+best.name+'</div>'
+        + '<div style="font-size:11px;color:var(--text3);">ETA: '+eta+'</div>'
+      + '</div>'
+      + '<div class="goal-pct" style="color:'+col.accent+';">'+pct+'%</div>'
+    + '</div>'
+    + '<div class="goal-bar-track">'
+      + '<div class="goal-bar-fill" id="home-goal-fill" style="width:0%;background:'+col.accent+';"></div>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px;">'
+      + '<span>'+fmt(prog.current)+' '+curSym()+' saved</span>'
+      + '<span>'+fmt(best.targetAmt)+' '+curSym()+'</span>'
+    + '</div>'
+  + '</div>';
+
+  card.innerHTML = html;
+  setTimeout(function(){
+    var fill = document.getElementById('home-goal-fill');
+    if(fill) fill.style.width = Math.min(100, prog.pct) + '%';
+  }, 80);
 }
 
 function renderHome(){
@@ -3560,8 +3594,14 @@ function openSheet(type,idx){
       '<input class="field-input" id="sh-txn-amt" type="number" placeholder="0"></div>' +
       '<div class="field-group" id="txn-cat-group"><div class="field-label">Category</div>' +
       '<select class="select-input" id="sh-txn-cat">' +
+        '<option value="food">Food</option>' +
+        '<option value="transport">Transport</option>' +
         '<option value="ess">Essential</option>' +
+        '<option value="shopping">Shopping</option>' +
+        '<option value="entertainment">Entertainment</option>' +
+        '<option value="health">Health</option>' +
         '<option value="sub">Subscription</option>' +
+        '<option value="saving">Saving</option>' +
         '<option value="other">Other</option>' +
       '</select></div>' +
       '<div class="field-group"><div class="field-label">Note (optional)</div>' +
@@ -3638,14 +3678,72 @@ function submitSheet(){
   renderHome();
 }
 
-function deleteItem(type,idx){
-  if(type==='income')data.incomeSources.splice(idx,1);
-  else if(type==='expense')data.expenses.splice(idx,1);
-  else if(type==='savings')data.savingsAccounts.splice(idx,1);
-  else if(type==='crypto')data.cryptoHoldings.splice(idx,1);
-  else if(type==='mtg')data.mtgCards.splice(idx,1);
-  else if(type==='poke')data.pokemonCards.splice(idx,1);
-  save();renderTab(currentTab);renderHome();
+var _delPending = null;
+
+function confirmDelete(type, idx, title, sub){
+  _delPending = {type:type, idx:idx};
+  var tEl = document.getElementById('del-title');
+  var sEl = document.getElementById('del-sub');
+  var btn = document.getElementById('del-confirm-btn');
+  if(tEl) tEl.textContent = title || 'Delete?';
+  if(sEl) sEl.textContent = sub || 'This cannot be undone.';
+  if(btn) btn.onclick = function(){ execDelete(); };
+  var overlay = document.getElementById('del-overlay');
+  var sheet   = document.getElementById('del-sheet');
+  if(overlay) overlay.style.display = 'flex';
+  setTimeout(function(){ if(sheet) sheet.style.transform = 'translateY(0)'; }, 20);
+}
+
+function hideDel(){
+  var sheet   = document.getElementById('del-sheet');
+  var overlay = document.getElementById('del-overlay');
+  if(sheet) sheet.style.transform = 'translateY(100%)';
+  setTimeout(function(){ if(overlay) overlay.style.display = 'none'; _delPending = null; }, 320);
+}
+
+function execDelete(){
+  if(!_delPending) return;
+  var type = _delPending.type, idx = _delPending.idx;
+  hideDel();
+  setTimeout(function(){
+    if(type==='income')data.incomeSources.splice(idx,1);
+    else if(type==='expense')data.expenses.splice(idx,1);
+    else if(type==='savings')data.savingsAccounts.splice(idx,1);
+    else if(type==='crypto')data.cryptoHoldings.splice(idx,1);
+    else if(type==='mtg')data.mtgCards.splice(idx,1);
+    else if(type==='poke')data.pokemonCards.splice(idx,1);
+    else if(type==='goal')data.goals.splice(idx,1);
+    save(); renderTab(currentTab); renderHome();
+  }, 340);
+}
+
+function deleteItem(type, idx){
+  var labels = {
+    income:'income source', expense:'bill', savings:'savings account',
+    crypto:'holding', mtg:'card', poke:'card', goal:'goal'
+  };
+  var name = '';
+  if(type==='income' && data.incomeSources[idx]) name = data.incomeSources[idx].name;
+  else if(type==='expense' && data.expenses[idx]) name = data.expenses[idx].name;
+  else if(type==='savings' && data.savingsAccounts[idx]) name = data.savingsAccounts[idx].name;
+  else if(type==='crypto' && data.cryptoHoldings[idx]) name = data.cryptoHoldings[idx].sym;
+  else if(type==='mtg' && data.mtgCards[idx]) name = data.mtgCards[idx].name;
+  else if(type==='poke' && data.pokemonCards[idx]) name = data.pokemonCards[idx].name;
+  else if(type==='goal' && data.goals[idx]) name = data.goals[idx].name;
+  var label = labels[type] || 'item';
+  confirmDelete(type, idx, 'Delete ' + label + '?', name ? 'Remove "' + name + '"? This cannot be undone.' : 'This cannot be undone.');
+}
+
+function deleteTxn(id){
+  confirmDelete('_txn', id, 'Delete transaction?', 'This cannot be undone.');
+  var btn = document.getElementById('del-confirm-btn');
+  if(btn) btn.onclick = function(){
+    hideDel();
+    setTimeout(function(){
+      data.transactions = data.transactions.filter(function(t){ return t.id !== id; });
+      save(); renderTab(currentTab); renderHome();
+    }, 340);
+  };
 }
 
 // ── Currency toggle ────────────────────────────────────────────────────────
