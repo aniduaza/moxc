@@ -539,6 +539,20 @@ body.light .backup-btn{background:#FFFFFF;}
           <!-- breakdown bar -->
           <div id="asset-bar" style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:flex;gap:1px;"></div>
           <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
+
+          <!-- insight ticker (marquee) -->
+          <div class="insight-ticker" id="insight-ticker">
+            <div class="insight-ticker-inner">
+              <span class="insight-ticker-label">Live</span>
+              <div class="insight-ticker-track">
+                <span class="insight-ticker-text" id="insight-ticker-text">Loading insights...</span>
+              </div>
+            </div>
+          </div>
+          <div class="insight-expanded" id="insight-expanded">
+            <div id="insight-expanded-rows"></div>
+            <div class="insight-exp-close" onclick="toggleInsightExpand(event)">Tap to close &#8593;</div>
+          </div>
         </div>
 
         <!-- 2 key stats -->
