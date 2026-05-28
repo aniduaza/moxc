@@ -476,10 +476,50 @@ body.light .backup-btn{background:#FFFFFF;}
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;gap:12px;}
 .empty-state-img{width:80px;height:80px;border-radius:var(--r-md);object-fit:cover;margin-bottom:4px;background:#0D0D0D;mix-blend-mode:lighten;}
 .empty-state-emoji{font-size:44px;line-height:1;margin-bottom:4px;filter:drop-shadow(0 0 12px rgba(168,230,60,.3));}
+.empty-state-icon-wrap{width:60px;height:60px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--brand);margin-bottom:4px;box-shadow:0 0 24px rgba(168,230,60,.12);}
+.search-wrap{position:relative;}
+.search-wrap .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;display:flex;align-items:center;}
 .empty-state-title{font-size:16px;font-weight:600;color:var(--text);}
 .empty-state-sub{font-size:13px;color:var(--text3);line-height:1.5;max-width:240px;}
 .empty-state-btn{margin-top:4px;padding:10px 24px;background:var(--brand);color:var(--brand-dark);border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;touch-action:manipulation;}
 .empty-state-btn:active{transform:scale(0.96);}
+@keyframes emptyIn{0%{opacity:0;transform:translateY(14px) scale(.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.empty-state{animation:emptyIn .36s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes iconPop{0%{transform:scale(0.6);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.empty-state-icon-wrap{animation:iconPop .44s cubic-bezier(0.16,1,0.3,1) .1s both;}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
+
+/* ── Staggered list entrance ─────────────────────────────────────────────── */
+@keyframes itemIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+.item-in{animation:itemIn .32s cubic-bezier(0.16,1,0.3,1) both;}
+.item-in:nth-child(1){animation-delay:0ms}.item-in:nth-child(2){animation-delay:38ms}
+.item-in:nth-child(3){animation-delay:76ms}.item-in:nth-child(4){animation-delay:114ms}
+.item-in:nth-child(5){animation-delay:152ms}.item-in:nth-child(6){animation-delay:190ms}
+.item-in:nth-child(7){animation-delay:228ms}.item-in:nth-child(8){animation-delay:266ms}
+
+/* ── FAB grid entrance ───────────────────────────────────────────────────── */
+@keyframes fabIn{from{opacity:0;transform:scale(.86) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.fab-in{animation:fabIn .26s cubic-bezier(0.16,1,0.3,1) both;}
+.fab-in:nth-child(1){animation-delay:18ms}.fab-in:nth-child(2){animation-delay:42ms}
+.fab-in:nth-child(3){animation-delay:66ms}.fab-in:nth-child(4){animation-delay:90ms}
+.fab-in:nth-child(5){animation-delay:114ms}.fab-in:nth-child(6){animation-delay:138ms}
+.fab-in:nth-child(7){animation-delay:162ms}
+
+/* ── Nav icon tap pop ────────────────────────────────────────────────────── */
+@keyframes navPop{0%{transform:scale(1)}35%{transform:scale(.76)}100%{transform:scale(1)}}
+.nav-item.active .nav-icon{animation:navPop .28s cubic-bezier(0.16,1,0.3,1);}
+
+/* ── Bottom sheet spring ─────────────────────────────────────────────────── */
+@keyframes sheetSpring{from{transform:translateY(108%)}to{transform:translateY(0)}}
+.sheet{animation:sheetSpring .44s cubic-bezier(0.32,0.72,0,1) both!important;}
+
+/* ── Interaction polish ──────────────────────────────────────────────────── */
+.more-item{transition:background .14s,transform .12s;-webkit-transition:background .14s,transform .12s;}
+.more-item:active{transform:scale(.975)!important;opacity:1!important;}
+.holding-row{transition:background .12s;}
+.txn-item{transition:background .12s;}
+.backup-btn{transition:background .12s,transform .1s;}
+.backup-btn:active{transform:scale(.98);}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -755,7 +795,10 @@ body.light .backup-btn{background:#FFFFFF;}
         </div>
 
         <!-- search -->
-        <input class="txn-search slide-up d3" id="act-search" placeholder="&#128269; Search transactions..." oninput="renderActivity()" style="border-radius:var(--r-sm);">
+        <div class="search-wrap slide-up d3">
+          <div class="search-icon"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8.5" r="5"/><path d="M13.5 13.5L17.5 17.5"/></svg></div>
+          <input class="txn-search" id="act-search" placeholder="Search transactions..." oninput="renderActivity()" style="border-radius:var(--r-sm);padding-left:38px;">
+        </div>
 
         <!-- filter pills -->
         <div class="txn-filter-row slide-up d3">
@@ -777,54 +820,72 @@ body.light .backup-btn{background:#FFFFFF;}
         <div style="font-size:18px;font-weight:600;margin-bottom:16px;" class="slide-up d1">More</div>
 
         <div class="slide-up d2">
-          <div class="more-item" onclick="switchTab('goals')">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#127919;</div>
+          <div class="more-item item-in" onclick="switchTab('goals')">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);color:#A8E63C;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><circle cx="10" cy="10" r="4.5"/><circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
-          <div class="more-item" onclick="switchTab('advisor')">
-            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#128172;</div>
+          <div class="more-item item-in" onclick="switchTab('advisor')">
+            <div class="more-item-icon" style="background:rgba(91,155,213,.1);color:#5B9BD5;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">AI Advisor</div><div class="more-item-sub">Ask Claude about your finances</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
-          <div class="more-item" onclick="switchTab('income')">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#128176;</div>
+          <div class="more-item item-in" onclick="switchTab('income')">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);color:#A8E63C;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 13V7M7.5 9.5L10 7L12.5 9.5"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No income sources yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
-          <div class="more-item" onclick="switchTab('expenses')">
-            <div class="more-item-icon" style="background:rgba(224,85,85,.1);">&#128203;</div>
+          <div class="more-item item-in" onclick="switchTab('expenses')">
+            <div class="more-item-icon" style="background:rgba(224,85,85,.1);color:#E24B4A;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3.5h11v11l-1.75 1.75-1.75-1.75-1.75 1.75-1.75-1.75-1.75 1.75-1.75-1.75V3.5Z"/><path d="M7 8h6M7 11h4"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
-          <div class="more-item" onclick="switchTab('savings')">
-            <div class="more-item-icon" style="background:rgba(91,155,213,.1);">&#127974;</div>
+          <div class="more-item item-in" onclick="switchTab('savings')">
+            <div class="more-item-icon" style="background:rgba(91,155,213,.1);color:#5B9BD5;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17.5h16M4.5 17.5V11M8.5 17.5V11M11.5 17.5V11M15.5 17.5V11M2 11h16M10 3.5L2 8.5h16L10 3.5Z"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">Savings accounts</div><div class="more-item-sub" id="more-savings-count">No accounts yet</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
-          <div class="more-item" onclick="switchTab('budget')">
-            <div class="more-item-icon" style="background:rgba(232,216,0,.1);">&#128202;</div>
+          <div class="more-item item-in" onclick="switchTab('budget')">
+            <div class="more-item-icon" style="background:rgba(232,216,0,.1);color:#E8D800;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 10V4.5M10 10l5.3 3.1"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">Budget</div><div class="more-item-sub">Monthly spending breakdown</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
         </div>
 
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d4">Settings</div>
         <div class="slide-up d4">
-          <div class="more-item" onclick="editUserName()">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);">&#128100;</div>
+          <div class="more-item item-in" onclick="editUserName()">
+            <div class="more-item-icon" style="background:rgba(168,230,60,.1);color:#A8E63C;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7.5" r="3.5"/><path d="M3 18.5c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">Your name</div><div class="more-item-sub" id="more-username">Tap to personalise greeting</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
-          <div class="more-item" onclick="toggleTheme()">
-            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#127769;</div>
+          <div class="more-item item-in" onclick="toggleTheme()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);color:var(--text2);">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 12.5A7.5 7.5 0 0 1 7.5 3 8 8 0 1 0 17 12.5Z"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">Theme</div><div class="more-item-sub" id="more-theme">Dark mode</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
-          <div class="more-item" onclick="document.getElementById('currency-toggle').click()">
-            <div class="more-item-icon" style="background:rgba(255,255,255,.06);">&#128178;</div>
+          <div class="more-item item-in" onclick="document.getElementById('currency-toggle').click()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);color:var(--text2);">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 8C5.5 5 8.5 3.5 11.5 4A7 7 0 0 1 17 10"/><path d="M15.5 12C14.5 15 11.5 16.5 8.5 16A7 7 0 0 1 3 10"/><path d="M4.5 5V8H7.5"/><path d="M15.5 15V12H12.5"/></svg>
+            </div>
             <div class="more-item-info"><div class="more-item-title">Currency</div><div class="more-item-sub" id="more-currency">AED</div></div>
-            <span style="color:var(--text3);">&#8250;</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
         </div>
       </div>
@@ -1046,7 +1107,10 @@ body.light .backup-btn{background:#FFFFFF;}
         </div>
 
         <!-- search -->
-        <input class="txn-search slide-up d2" id="txn-search" placeholder="&#128269; Search transactions..." oninput="renderTransactions()">
+        <div class="search-wrap slide-up d2">
+          <div class="search-icon"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8.5" r="5"/><path d="M13.5 13.5L17.5 17.5"/></svg></div>
+          <input class="txn-search" id="txn-search" placeholder="Search transactions..." oninput="renderTransactions()" style="padding-left:38px;">
+        </div>
 
         <!-- filter pills -->
         <div class="txn-filter-row slide-up d2">
@@ -1295,6 +1359,70 @@ function calcBudget(){
   return{inc:inc,subs:subs,ess:ess,tot:tot,rate:rate,sav:netSavings()};
 }
 
+// ── Icon system ────────────────────────────────────────────────────────────
+function getIcon(name, sz) {
+  var s = sz || 20;
+  var d = '';
+  if(name === 'income') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<path d="M10 13V7M7.5 9.5L10 7L12.5 9.5"/>';
+  } else if(name === 'bill') {
+    d = '<path d="M4.5 3.5h11v11l-1.75 1.75-1.75-1.75-1.75 1.75-1.75-1.75-1.75 1.75-1.75-1.75V3.5Z"/>'
+      + '<path d="M7 8h6M7 11h4"/>';
+  } else if(name === 'transaction') {
+    d = '<path d="M3 7h14M13 4.5L16.5 7L13 9.5"/>'
+      + '<path d="M17 13H3M7 10.5L3.5 13L7 15.5"/>';
+  } else if(name === 'crypto') {
+    d = '<path d="M10 2L18 10L10 18L2 10Z"/>'
+      + '<path d="M8.5 8.5h3a1 1 0 0 1 0 2H8.5V8.5Zm0 2h3.25a1 1 0 0 1 0 2H8.5v-2Z"/>';
+  } else if(name === 'card') {
+    d = '<rect x="2.5" y="5.5" width="11" height="13" rx="1.5"/>'
+      + '<path d="M6.5 5.5V4A1.5 1.5 0 0 1 8 2.5h9.5A1.5 1.5 0 0 1 19 4v10.5A1.5 1.5 0 0 1 17.5 16H14"/>';
+  } else if(name === 'goal') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<circle cx="10" cy="10" r="4.5"/>'
+      + '<circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none"/>';
+  } else if(name === 'savings') {
+    d = '<path d="M2 17.5h16M4.5 17.5V11M8.5 17.5V11M11.5 17.5V11M15.5 17.5V11M2 11h16M10 3.5L2 8.5h16L10 3.5Z"/>';
+  } else if(name === 'budget') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<path d="M10 10V4.5M10 10l5.3 3.1"/>';
+  } else if(name === 'advisor') {
+    d = '<path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/>'
+      + '<path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/>';
+  } else if(name === 'user') {
+    d = '<circle cx="10" cy="7.5" r="3.5"/>'
+      + '<path d="M3 18.5c0-3.9 3.1-7 7-7s7 3.1 7 7"/>';
+  } else if(name === 'essential') {
+    d = '<path d="M2.5 10L10 3.5L17.5 10"/>'
+      + '<path d="M5 8.5V17.5h4V13h2v4.5h4V8.5"/>';
+  } else if(name === 'subscription') {
+    d = '<rect x="4.5" y="3.5" width="11" height="14" rx="2"/>'
+      + '<circle cx="10" cy="12" r="2"/>'
+      + '<path d="M10 7V8.5"/>';
+  } else if(name === 'saving-cat') {
+    d = '<ellipse cx="10" cy="5.5" rx="6.5" ry="2"/>'
+      + '<path d="M3.5 5.5V10c0 1.1 2.9 2 6.5 2s6.5-.9 6.5-2V5.5"/>'
+      + '<path d="M3.5 10v4.5c0 1.1 2.9 2 6.5 2s6.5-.9 6.5-2V10"/>';
+  } else if(name === 'other') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<circle cx="10" cy="10" r="1" fill="currentColor" stroke="none"/>'
+      + '<circle cx="6.5" cy="10" r="1" fill="currentColor" stroke="none"/>'
+      + '<circle cx="13.5" cy="10" r="1" fill="currentColor" stroke="none"/>';
+  } else if(name === 'search') {
+    d = '<circle cx="8.5" cy="8.5" r="5"/>'
+      + '<path d="M13.5 13.5L17.5 17.5"/>';
+  } else if(name === 'receipt') {
+    d = '<path d="M5 2.5h10v15l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5V2.5Z"/>'
+      + '<path d="M7.5 7.5h5M7.5 10.5h3.5"/>';
+  } else if(name === 'no-result') {
+    d = '<circle cx="8.5" cy="8.5" r="5"/>'
+      + '<path d="M13.5 13.5L17.5 17.5"/>'
+      + '<path d="M6.5 6.5l4 4M10.5 6.5l-4 4"/>';
+  }
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
+}
+
 // ── PIN Logic ──────────────────────────────────────────────────────────────
 
 
@@ -1394,11 +1522,11 @@ function submitTxnSheet(){
 
 var txnFilter = 'all';
 var TXN_CATS = {
-  income:  {label:'Income',      icon:'💰', bg:'#1A2800', color:'var(--green)'},
-  ess:     {label:'Essential',   icon:'🏠', bg:'#2A0A00', color:'var(--red)'},
-  sub:     {label:'Subscription',icon:'📱', bg:'#001020', color:'var(--blue)'},
-  saving:  {label:'Saving',      icon:'🏦', bg:'#001A2A', color:'var(--blue)'},
-  other:   {label:'Other',       icon:'📋', bg:'#1A1A1A', color:'var(--text2)'},
+  income:  {label:'Income',       iconName:'income',       bg:'#1A2800', color:'var(--green)'},
+  ess:     {label:'Essential',    iconName:'essential',    bg:'#2A0A00', color:'var(--red)'},
+  sub:     {label:'Subscription', iconName:'subscription', bg:'#001020', color:'var(--blue)'},
+  saving:  {label:'Saving',       iconName:'saving-cat',   bg:'#001A2A', color:'var(--blue)'},
+  other:   {label:'Other',        iconName:'other',        bg:'#1A1A1A', color:'var(--text2)'},
 };
 
 function logTransaction(name, amt, type, cat, note){
@@ -1479,8 +1607,8 @@ function renderTransactions(){
       var time = d.toLocaleDateString('en', {day:'numeric', month:'short'}) + ' · ' + d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false});
       var amtColor = isIncome ? 'var(--green)' : 'var(--red)';
       var amtSign  = isIncome ? '+' : '−';
-      html += '<div class="txn-item">'
-        + '<div class="txn-icon" style="background:' + cat.bg + ';">' + cat.icon + '</div>'
+      html += '<div class="txn-item item-in">'
+        + '<div class="txn-icon" style="background:' + cat.bg + ';color:' + cat.color + ';">' + getIcon(cat.iconName, 18) + '</div>'
         + '<div class="txn-detail">'
           + '<div class="txn-detail-name">' + t.name + '</div>'
           + '<div class="txn-detail-sub">' + cat.label + (t.note ? ' · ' + t.note : '') + '</div>'
@@ -1566,11 +1694,7 @@ function renderGoals(){
   if(onEl) onEl.textContent = onTrack;
 
   if(!goals.length){
-    el.innerHTML = '<div style="text-align:center;padding:32px 16px;">'
-      + '<div style="font-size:32px;margin-bottom:10px;">🎯</div>'
-      + '<div style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:6px;">No goals yet</div>'
-      + '<div style="font-size:13px;color:var(--text3);">Tap + Add to set your first financial target</div>'
-      + '</div>';
+    el.innerHTML = emptyState('goal','No goals yet','Tap + Add to set your first financial target.','','');
     return;
   }
 
@@ -1585,7 +1709,7 @@ function renderGoals(){
 
     var etaColor = isComplete ? 'var(--green)' : prog.pct >= 75 ? '#5BCDD5' : prog.pct >= 40 ? col.accent : 'var(--text3)';
 
-    html += '<div class="goal-card" style="border:0.5px solid ' + col.accent + '33;">'
+    html += '<div class="goal-card item-in" style="border:0.5px solid ' + col.accent + '33;">'
       + '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:' + col.accent + ';border-radius:3px 3px 0 0;"></div>'
 
       // header
@@ -1920,13 +2044,13 @@ function renderBudgetAlertBanner(pct, b){
 
 // ── FAB (Floating Action Button) ──────────────────────────────────────────
 var FAB_OPTIONS = [
-  {id:'add-income',      icon:'&#128176;', label:'Income source',     sub:'Salary, freelance, other',   color:'rgba(168,230,60,.08)',  accent:'#A8E63C'},
-  {id:'add-expense',     icon:'&#128203;', label:'Monthly bill',      sub:'Rent, subscriptions, bills', color:'rgba(224,85,85,.08)',   accent:'#E05555'},
-  {id:'add-transaction', icon:'&#128179;', label:'Transaction',       sub:'Log a one-time payment',     color:'rgba(91,155,213,.08)',  accent:'#5B9BD5'},
-  {id:'add-crypto',      icon:'&#8383;',   label:'Crypto holding',    sub:'BTC, ETH, SOL and more',     color:'rgba(247,164,0,.08)',   accent:'#F7A400'},
-  {id:'add-collection',  icon:'&#127183;', label:'Card',              sub:'MTG or Pokémon card',        color:'rgba(181,123,224,.08)', accent:'#B57BE0'},
-  {id:'add-goal',        icon:'&#127919;', label:'Goal',              sub:'Savings target with ETA',    color:'rgba(168,230,60,.06)',  accent:'#A8E63C'},
-  {id:'add-savings',     icon:'&#127974;', label:'Savings account',   sub:'Bank account or cash',       color:'rgba(91,155,213,.06)',  accent:'#5B9BD5'},
+  {id:'add-income',      iconName:'income',       label:'Income source',     sub:'Salary, freelance, other',   color:'rgba(168,230,60,.08)',  accent:'#A8E63C'},
+  {id:'add-expense',     iconName:'bill',          label:'Monthly bill',      sub:'Rent, subscriptions, bills', color:'rgba(224,85,85,.08)',   accent:'#E05555'},
+  {id:'add-transaction', iconName:'transaction',   label:'Transaction',       sub:'Log a one-time payment',     color:'rgba(91,155,213,.08)',  accent:'#5B9BD5'},
+  {id:'add-crypto',      iconName:'crypto',        label:'Crypto holding',    sub:'BTC, ETH, SOL and more',     color:'rgba(247,164,0,.08)',   accent:'#F7A400'},
+  {id:'add-collection',  iconName:'card',          label:'Card',              sub:'MTG or Pokemon card',        color:'rgba(181,123,224,.08)', accent:'#B57BE0'},
+  {id:'add-goal',        iconName:'goal',          label:'Goal',              sub:'Savings target with ETA',    color:'rgba(168,230,60,.06)',  accent:'#A8E63C'},
+  {id:'add-savings',     iconName:'savings',       label:'Savings account',   sub:'Bank account or cash',       color:'rgba(91,155,213,.06)',  accent:'#5B9BD5'},
 ];
 
 function openFAB(){
@@ -1962,12 +2086,15 @@ function openFAB(){
 
   FAB_OPTIONS.forEach(function(opt){
     var card = document.createElement('div');
-    card.style.cssText = 'background:'+opt.color+';border:0.5px solid '+opt.accent+'44;border-radius:var(--r-md);padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
+    card.className = 'fab-in';
+    card.style.cssText = 'background:'+opt.color+';border:0.5px solid '+opt.accent+'44;border-radius:var(--r-md);padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s;';
     card.setAttribute('data-id', opt.id);
+    card.setAttribute('ontouchstart', 'this.style.transform="scale(.95)"');
+    card.setAttribute('ontouchend', 'this.style.transform="scale(1)"');
 
     var ico = document.createElement('div');
-    ico.style.cssText = 'font-size:24px;margin-bottom:8px;';
-    ico.innerHTML = opt.icon;
+    ico.style.cssText = 'width:38px;height:38px;border-radius:var(--r-sm);background:'+opt.accent+'1A;display:flex;align-items:center;justify-content:center;color:'+opt.accent+';margin-bottom:10px;';
+    ico.innerHTML = getIcon(opt.iconName, 22);
     card.appendChild(ico);
 
     var lbl = document.createElement('div');
@@ -1976,7 +2103,7 @@ function openFAB(){
     card.appendChild(lbl);
 
     var desc = document.createElement('div');
-    desc.style.cssText = 'font-size:10px;color:var(--text3);margin-top:2px;line-height:1.4;';
+    desc.style.cssText = 'font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4;';
     desc.textContent = opt.sub;
     card.appendChild(desc);
 
@@ -2069,8 +2196,8 @@ function renderActivity(){
 
   if(!txns.length){
     el.innerHTML = data.transactions.length
-      ? emptyState('&#128269;','No results','Try a different filter or search term.','','')
-      : emptyState('&#128203;','No transactions yet','Tap the + button to log your first income or expense.','+ Add transaction','openFABSheet(\'add-transaction\')');
+      ? emptyState('no-result','No results','Try a different filter or search term.','','')
+      : emptyState('receipt','No transactions yet','Tap the + button to log your first income or expense.','+ Add transaction','openFABSheet(\'add-transaction\')');
     return;
   }
 
@@ -2095,11 +2222,11 @@ function renderActivity(){
   });
 
   var TXN_CATS = {
-    income: {icon:'&#128176;',bg:'rgba(168,230,60,.1)'},
-    ess:    {icon:'&#127968;',bg:'rgba(224,85,85,.1)'},
-    sub:    {icon:'&#128249;',bg:'rgba(0,16,32,.8)'},
-    saving: {icon:'&#128201;',bg:'rgba(91,155,213,.1)'},
-    other:  {icon:'&#128203;',bg:'rgba(255,255,255,.07)'},
+    income: {iconName:'income',       bg:'rgba(168,230,60,.1)',  color:'#A8E63C'},
+    ess:    {iconName:'essential',    bg:'rgba(224,85,85,.1)',   color:'#E24B4A'},
+    sub:    {iconName:'subscription', bg:'rgba(0,16,48,.9)',     color:'#5B9BD5'},
+    saving: {iconName:'saving-cat',   bg:'rgba(91,155,213,.1)',  color:'#5B9BD5'},
+    other:  {iconName:'other',        bg:'rgba(255,255,255,.07)',color:'rgba(255,255,255,.45)'},
   };
 
   var html='';
@@ -2113,8 +2240,8 @@ function renderActivity(){
       var time     = d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false});
       var amtColor = isIncome?'#A8E63C':'#E05555';
       var amtSign  = isIncome?'+':'&#8722;';
-      html+='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border-radius:var(--r-sm);margin-bottom:6px;border:0.5px solid rgba(255,255,255,.05);">'
-        +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+cat.bg+';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">'+cat.icon+'</div>'
+      html+='<div class="item-in" style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border-radius:var(--r-sm);margin-bottom:6px;border:0.5px solid rgba(255,255,255,.05);">'
+        +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+cat.bg+';color:'+cat.color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon(cat.iconName,18)+'</div>'
         +'<div style="flex:1;min-width:0;">'
           +'<div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+t.name+'</div>'
           +'<div style="font-size:10px;color:var(--text3);margin-top:1px;">'+(t.note||t.cat||'')+'</div>'
@@ -2186,11 +2313,11 @@ function renderActivityTxns(){
   });
 
   var TXN_CATS = {
-    income:{label:'Income',icon:'💰',bg:'#1A2800',color:'var(--green)'},
-    ess:{label:'Essential',icon:'🏠',bg:'#2A0A00',color:'var(--red)'},
-    sub:{label:'Subscription',icon:'📱',bg:'#001020',color:'var(--blue)'},
-    saving:{label:'Saving',icon:'🏦',bg:'#001A2A',color:'var(--blue)'},
-    other:{label:'Other',icon:'📋',bg:'#1A1A1A',color:'var(--text2)'},
+    income: {label:'Income',       iconName:'income',       bg:'#1A2800', color:'var(--green)'},
+    ess:    {label:'Essential',    iconName:'essential',    bg:'#2A0A00', color:'var(--red)'},
+    sub:    {label:'Subscription', iconName:'subscription', bg:'#001020', color:'var(--blue)'},
+    saving: {label:'Saving',       iconName:'saving-cat',   bg:'#001A2A', color:'var(--blue)'},
+    other:  {label:'Other',        iconName:'other',        bg:'#1A1A1A', color:'var(--text2)'},
   };
 
   var html = '';
@@ -2204,8 +2331,8 @@ function renderActivityTxns(){
       var time = d.toLocaleDateString('en',{day:'numeric',month:'short'});
       var amtColor = isIncome?'var(--green)':'var(--red)';
       var sign = isIncome?'+':'&#8722;';
-      html += '<div class="txn-item">'
-        +'<div class="txn-icon" style="background:'+cat.bg+';">'+cat.icon+'</div>'
+      html += '<div class="txn-item item-in">'
+        +'<div class="txn-icon" style="background:'+cat.bg+';color:'+cat.color+';">'+getIcon(cat.iconName,18)+'</div>'
         +'<div class="txn-detail"><div class="txn-detail-name">'+t.name+'</div>'
           +'<div class="txn-detail-sub">'+cat.label+(t.note?' · '+t.note:'')+'</div></div>'
         +'<div class="txn-amount-col">'
@@ -2421,8 +2548,11 @@ function emptyState(icon, title, sub, btnLabel, btnAction){
   var btn = btnLabel
     ? '<button class="empty-state-btn" onclick="'+btnAction+'">'+btnLabel+'</button>'
     : '';
+  var iconHtml = (icon.indexOf('&#') === 0)
+    ? '<div class="empty-state-emoji">'+icon+'</div>'
+    : '<div class="empty-state-icon-wrap">'+getIcon(icon, 30)+'</div>';
   return '<div class="empty-state">'
-    +'<div class="empty-state-emoji">'+icon+'</div>'
+    +iconHtml
     +'<div class="empty-state-title">'+title+'</div>'
     +'<div class="empty-state-sub">'+sub+'</div>'
     +btn
@@ -2665,7 +2795,7 @@ function renderMovers(){
     var priceStr=asset.price&&asset.price>=1000?(asset.price/1000).toFixed(2)+'k':asset.price&&asset.price>=1?asset.price.toFixed(2):asset.price?asset.price.toFixed(4):'';
     var upColor=asset.chg==null?'var(--text3)':up?'var(--green)':'var(--red)';
     var barW=asset.chg!=null?Math.min(100,Math.abs(asset.chg)*8)+'%':'0%';
-    html+='<div style="background:var(--surface);border-radius:var(--r-md);padding:11px;border:0.5px solid rgba(255,255,255,.06);position:relative;overflow:hidden;">'
+    html+='<div class="item-in" style="background:var(--surface);border-radius:var(--r-md);padding:11px;border:0.5px solid rgba(255,255,255,.06);position:relative;overflow:hidden;">'
       +'<div style="position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;background:'+asset.color+';"></div>'
       +'<div style="width:28px;height:28px;border-radius:var(--r-sm);background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';margin-bottom:7px;">'+asset.sym+'</div>'
       +'<div style="font-size:11px;font-weight:600;color:var(--text);">'+asset.name+'</div>'
@@ -2744,7 +2874,7 @@ function renderCryptoListTo(elId){
     var val   = h.qty*price*3.6725;
     var chg   = (cryptoChangeCache[h.id]||0).toFixed(2);
     var up    = parseFloat(chg) >= 0;
-    return '<div class="holding-row">'
+    return '<div class="holding-row item-in">'
       +'<div class="holding-icon" style="background:'+holdingColor(h.sym)+';">'+h.sym.slice(0,3)+'</div>'
       +'<div style="flex:1;"><div class="holding-name">'+(h.name||h.sym)+'</div><div class="holding-qty">'+h.qty+' units</div></div>'
       +'<div style="text-align:right;"><div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
@@ -2758,7 +2888,7 @@ function renderCollectionListTo(elId){
   var el = document.getElementById(elId);
   if(!el) return;
   if(!data.mtgCards.length && !data.pokemonCards.length){
-    el.innerHTML = emptyState('&#127183;','No cards yet','Add MTG or Pokémon cards to track your collection value.','+ Add card','openFABSheet(\'add-collection\')'); return;
+    el.innerHTML = emptyState('card','No cards yet','Add MTG or Pokemon cards to track your collection value.','+ Add card','openFABSheet(\'add-collection\')'); return;
     return;
   }
   // Swap element IDs temporarily
@@ -2774,13 +2904,13 @@ function renderSavingsListTo(elId){
   var el = document.getElementById(elId);
   if(!el) return;
   if(!data.savingsAccounts.length){
-    el.innerHTML = emptyState('&#127974;','No savings yet','Add a bank account or cash savings to your portfolio.','+ Add account','openFABSheet(\'add-savings\')'); return;
+    el.innerHTML = emptyState('savings','No savings yet','Add a bank account or cash savings to your portfolio.','+ Add account','openFABSheet(\'add-savings\')'); return;
     return;
   }
   var html = '';
   data.savingsAccounts.forEach(function(a,i){
-    html += '<div class="holding-row">'
-      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
+    html += '<div class="holding-row item-in">'
+      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
       +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
       +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
       +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
@@ -2874,7 +3004,7 @@ function renderCryptoList(){
     var val=h.qty*price*3.6725;
     var chg=(cryptoChangeCache[h.id]||0).toFixed(2);
     var up2=parseFloat(chg)>=0;
-    return '<div class="holding-row">'
+    return '<div class="holding-row item-in">'
       +'<div class="holding-icon" style="background:'+holdingColor(h.sym)+';">'+h.sym.slice(0,3)+'</div>'
       +'<div style="flex:1;"><div class="holding-name">'+(h.name||h.sym)+'</div><div class="holding-qty">'+h.qty+' qty</div></div>'
       +'<div style="text-align:right;"><div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div><div class="holding-chg '+(up2?'txn-positive':'txn-negative')+'">'+(up2?'+':'')+chg+'%</div></div>'
@@ -2928,7 +3058,7 @@ function renderCollectionList(){
     var chgLine=chg?'<div class="holding-chg '+(parseFloat(chg)>=0?'txn-positive':'txn-negative')+'">'+(parseFloat(chg)>=0?'+':'')+chg+'%</div>':'';
     var idxJson=JSON.stringify(s.indices);
     var delType=s.type==='MTG'?'mtg':'poke';
-    html+='<div class="holding-row" style="align-items:flex-start;'+shadow+'">'
+    html+='<div class="holding-row item-in" style="align-items:flex-start;'+shadow+'">'
       +'<div style="position:relative;flex-shrink:0;">'+imgHtml
       +(s.count>1?'<div style="position:absolute;top:-5px;right:-5px;background:var(--green);color:var(--green-dark);font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;">'+s.count+'</div>':'')
       +'</div>'
@@ -2957,8 +3087,8 @@ function renderSavingsPortfolio(){
   }
   var html='';
   data.savingsAccounts.forEach(function(a,i){
-    html+='<div class="holding-row">'
-      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
+    html+='<div class="holding-row item-in">'
+      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
       +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
       +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
       +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
@@ -2976,8 +3106,8 @@ function renderIncome(){
   if(!data.incomeSources.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No income added yet</div>';return;}
   var incHtml='';
   data.incomeSources.forEach(function(s,i){
-    incHtml+='<div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
-      +'<div class="txn-avatar" style="background:#1A2800;color:var(--green);">'+s.name.slice(0,2).toUpperCase()+'</div>'
+    incHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
+      +'<div class="txn-avatar" style="background:#1A2800;color:var(--green);display:flex;align-items:center;justify-content:center;">'+getIcon('income',18)+'</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+s.name+'</div><div style="font-size:11px;color:var(--text3);">'+(s.freq||'monthly')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--green);">+'+fmt(s.amt)+'</div>'
       +'<div onclick="deleteItem(&quot;income&quot;,'+i+')" class="delete-btn">&#10005;</div>'
@@ -3063,9 +3193,10 @@ function renderExpenses(){
   var expHtml='';
   data.expenses.forEach(function(e,i){
     var isRecurring = e.recurring !== false; // default ON for all bills
-    expHtml+='<div class="card" style="margin-bottom:8px;">'
+    var expIcon = e.cat === 'sub' ? getIcon('subscription',18) : getIcon('essential',18);
+    expHtml+='<div class="card item-in" style="margin-bottom:8px;">'
       +'<div style="display:flex;align-items:center;gap:12px;">'
-        +'<div class="txn-avatar" style="background:rgba(224,85,85,.1);color:var(--red);">'+e.name.slice(0,2).toUpperCase()+'</div>'
+        +'<div class="txn-avatar" style="background:rgba(224,85,85,.1);color:var(--red);display:flex;align-items:center;justify-content:center;">'+expIcon+'</div>'
         +'<div style="flex:1;min-width:0;">'
           +'<div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+e.name+'</div>'
           +'<div style="font-size:11px;color:var(--text3);margin-top:1px;display:flex;align-items:center;gap:6px;">'
@@ -3095,8 +3226,8 @@ function renderSavingsTab(){
   if(!data.savingsAccounts.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No accounts yet</div>';return;}
   var savFullHtml='';
   data.savingsAccounts.forEach(function(a,i){
-    savFullHtml+='<div class="card" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
-      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);">&#128176;</div>'
+    savFullHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
+      +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+a.name+'</div><div style="font-size:11px;color:var(--text3);">'+(a.bank||'Account')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--blue);">'+fmt(a.balance)+'</div>'
       +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
@@ -4074,7 +4205,12 @@ function springToIndex(newIdx){
 
 function updateNavActive(idx){
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
-  var el=document.getElementById('nav-'+SWIPE_TABS[idx]); if(el) el.classList.add('active');
+  var el=document.getElementById('nav-'+SWIPE_TABS[idx]);
+  if(el){
+    el.classList.add('active');
+    var ico=el.querySelector('.nav-icon');
+    if(ico){ ico.style.animation='none'; void ico.offsetWidth; ico.style.animation=''; }
+  }
   document.querySelectorAll('.pager-dot').forEach(function(d,i){ d.classList.toggle('active',i===idx); });
 }
 
