@@ -2455,7 +2455,22 @@ function confirmClearData(){
     try{ localStorage.removeItem('moxcoin_v1'); }catch(e){}
     try{ localStorage.removeItem('moxcoin_onboarded'); }catch(e){}
     try{ localStorage.removeItem('moxcoin_alerts'); }catch(e){}
-    location.reload();
+    // Reset in-memory data to defaults
+    data = {
+      currency:'AED', hidden:false,
+      incomeSources:[], expenses:[], cryptoHoldings:[], mtgCards:[],
+      pokemonCards:[], savingsAccounts:[], transactions:[], goals:[], snapshots:[],
+      userName:'', lastAutoLog:''
+    };
+    advisorHistory = [];
+    advisorBriefingDone = false;
+    renderAll();
+    renderMore();
+    springToIndex(0);
+    // Remove any existing onboarding overlay first
+    var existing = document.getElementById('ob-overlay');
+    if(existing && existing.parentNode) existing.parentNode.removeChild(existing);
+    buildOnboarding();
   }, 420);
 }
 
@@ -4620,7 +4635,7 @@ function buildOnboarding(){
   container.appendChild(el);
   // Hide main app content so overlay is clean
   var swipeEl = document.getElementById('swipe-container');
-  var navEl   = document.querySelector('.nav-bar');
+  var navEl   = document.querySelector('.bottom-nav');
   if(swipeEl) swipeEl.style.visibility = 'hidden';
   if(navEl)   navEl.style.visibility   = 'hidden';
   setTimeout(function(){ var f=document.getElementById('ob-name'); if(f)f.focus(); },300);
@@ -4746,7 +4761,7 @@ function obFinish(){
   renderMore();
   // Restore app content
   var swipeEl = document.getElementById('swipe-container');
-  var navEl   = document.querySelector('.nav-bar');
+  var navEl   = document.querySelector('.bottom-nav');
   if(swipeEl) swipeEl.style.visibility = '';
   if(navEl)   navEl.style.visibility   = '';
   var el = document.getElementById('ob-overlay');
