@@ -925,6 +925,24 @@ body.light .backup-btn{background:#FFFFFF;}
             <div class="more-item-info"><div class="more-item-title">Currency</div><div class="more-item-sub" id="more-currency">AED</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
+          <div class="more-item item-in" onclick="exportData()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);color:var(--text2);">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10M6.5 9.5L10 13l3.5-3.5"/><path d="M4 14v2.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V14"/></svg>
+            </div>
+            <div class="more-item-info"><div class="more-item-title">Export data</div><div class="more-item-sub">Download a backup JSON file</div></div>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
+          </div>
+        </div>
+
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d5">Data &amp; Privacy</div>
+        <div class="slide-up d5">
+          <div class="more-item item-in" onclick="showClearDataConfirm()" style="cursor:pointer;">
+            <div class="more-item-icon" style="background:rgba(226,75,74,.1);color:var(--red);">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,6 16,6"/><path d="M7 6V4.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V6"/><path d="M5.5 6l.8 10a1 1 0 0 0 1 .9h5.4a1 1 0 0 0 1-.9L14.5 6"/><line x1="8.5" y1="9.5" x2="8.5" y2="13.5"/><line x1="11.5" y1="9.5" x2="11.5" y2="13.5"/></svg>
+            </div>
+            <div class="more-item-info"><div class="more-item-title" style="color:var(--red);">Clear all data</div><div class="more-item-sub">Erase everything and start fresh</div></div>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
+          </div>
         </div>
       </div>
     </div>
@@ -976,7 +994,7 @@ body.light .backup-btn{background:#FFFFFF;}
           <div class="stat-pill">
             <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5.5" stroke="var(--red)" stroke-width="1"/><path d="M6 9V3M3 6l3 3 3-3" stroke="var(--red)" stroke-width="1.2"/></svg>
-              <span style="font-size:10px;color:var(--red);font-weight:500;">Bills</span>
+              <span style="font-size:10px;color:var(--red);font-weight:500;">Spent</span>
             </div>
             <div class="stat-val" id="bud-expenses">—</div>
             <div class="stat-sub" id="bud-expenses-cur">/ month</div>
@@ -994,6 +1012,10 @@ body.light .backup-btn{background:#FFFFFF;}
             <div>
               <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;color:var(--text2);">Subscriptions</span><span style="font-size:13px;font-weight:500;color:var(--yellow);" id="bud-sub-pct">—</span></div>
               <div class="bar-track"><div class="bar-fill bar-anim" id="bud-sub-bar" style="--w:0%;background:var(--yellow);"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;color:var(--text2);">Transactions</span><span style="font-size:13px;font-weight:500;color:var(--blue);" id="bud-txn-pct">—</span></div>
+              <div class="bar-track"><div class="bar-fill bar-anim" id="bud-txn-bar" style="--w:0%;background:var(--blue);"></div></div>
             </div>
             <div>
               <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:13px;color:var(--text2);">Savings</span><span style="font-size:13px;font-weight:500;color:var(--green);" id="bud-sav-pct">—</span></div>
@@ -1260,6 +1282,20 @@ body.light .backup-btn{background:#FFFFFF;}
     </div>
   </div>
 
+  <!-- ═══ CLEAR DATA CONFIRMATION ═══ -->
+  <div id="clear-data-overlay" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:9998;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;">
+    <div id="clear-data-sheet" style="background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;width:100%;padding:28px 24px 40px;transform:translateY(100%);transition:transform .35s cubic-bezier(0.32,0.72,0,1);">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 24px;"></div>
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(226,75,74,.12);color:var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg width="26" height="26" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,6 16,6"/><path d="M7 6V4.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V6"/><path d="M5.5 6l.8 10a1 1 0 0 0 1 .9h5.4a1 1 0 0 0 1-.9L14.5 6"/><line x1="8.5" y1="9.5" x2="8.5" y2="13.5"/><line x1="11.5" y1="9.5" x2="11.5" y2="13.5"/></svg>
+      </div>
+      <div style="text-align:center;font-size:20px;font-weight:700;margin-bottom:8px;">Clear all data?</div>
+      <div style="text-align:center;font-size:14px;color:var(--text2);line-height:1.5;margin-bottom:28px;">This will permanently erase all your income, bills, transactions, portfolio, goals, and settings. This cannot be undone.</div>
+      <button onclick="confirmClearData()" style="width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:var(--r-md);font-size:16px;font-weight:600;cursor:pointer;margin-bottom:10px;">Yes, clear everything</button>
+      <button onclick="hideClearDataConfirm()" style="width:100%;padding:16px;background:var(--surface2);color:var(--text);border:none;border-radius:var(--r-md);font-size:16px;font-weight:500;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
+
 </div><!-- end app -->
 
 <script>
@@ -1393,8 +1429,16 @@ function calcBudget(){
   var subs=data.expenses.filter(function(e){return e.cat==='sub';}).reduce(function(s,e){return s+e.amt;},0);
   var ess=data.expenses.filter(function(e){return e.cat!=='sub';}).reduce(function(s,e){return s+e.amt;},0);
   var tot=subs+ess;
+  // Sum this month's transactions
+  var now=new Date();
+  var ym=now.getFullYear()+'-'+(now.getMonth()<9?'0':'')+(now.getMonth()+1);
+  var txnSpend=0;
+  (data.transactions||[]).forEach(function(t){
+    if(t.type==='expense' && t.date && t.date.slice(0,7)===ym) txnSpend+=t.amt;
+  });
+  var actual=tot+txnSpend;
   var rate=inc>0?Math.round(netSavings()/inc*100):0;
-  return{inc:inc,subs:subs,ess:ess,tot:tot,rate:rate,sav:netSavings()};
+  return{inc:inc,subs:subs,ess:ess,tot:tot,txnSpend:txnSpend,actual:actual,rate:rate,sav:netSavings()};
 }
 
 // ── Icon system ────────────────────────────────────────────────────────────
@@ -1985,8 +2029,8 @@ function saveAlertState(state){
 
 function checkBudgetAlerts(){
   var b     = calcBudget();
-  var limit = Math.max(b.inc, b.tot * 1.2, 1000);
-  var pct   = b.inc > 0 ? (b.tot / b.inc * 100) : 0;
+  var limit = Math.max(b.inc, b.actual * 1.2, 1000);
+  var pct   = b.inc > 0 ? (b.actual / b.inc * 100) : 0;
 
   // Get which alerts we've already shown this month
   var state    = getAlertState();
@@ -2033,7 +2077,7 @@ function showBudgetAlert(threshold, pct, b){
     '<div style="flex:1;">' +
       '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">Budget alert</div>' +
       '<div style="font-size:12px;color:var(--text2);">You\'re ' + threshold.msg + ' — ' +
-        fmt(b.tot) + ' / ' + fmt(b.inc) + ' ' + curSym() + '</div>' +
+        fmt(b.actual) + ' / ' + fmt(b.inc) + ' ' + curSym() + '</div>' +
     '</div>' +
     '<div onclick="this.parentElement.remove()" style="font-size:18px;color:var(--text3);cursor:pointer;padding:2px 4px;flex-shrink:0;">&#10005;</div>';
 
@@ -2072,7 +2116,7 @@ function renderBudgetAlertBanner(pct, b){
     '<div style="flex:1;">' +
       '<div style="font-size:12px;font-weight:600;color:' + current.color + ';">You\'re ' + current.msg + '</div>' +
       '<div style="font-size:11px;color:var(--text3);margin-top:2px;">' +
-        fmt(b.tot) + ' spent of ' + fmt(b.inc) + ' ' + curSym() + ' · ' + pct.toFixed(0) + '%' +
+        fmt(b.actual) + ' spent of ' + fmt(b.inc) + ' ' + curSym() + ' · ' + pct.toFixed(0) + '%' +
       '</div>' +
     '</div>' +
     '<div style="font-size:11px;font-weight:500;color:' + current.color + ';cursor:pointer;" onclick="switchTab(\'expenses\')">View bills</div>';
@@ -2196,15 +2240,15 @@ function renderActivity(){
   // Stats
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   set('act-income',  fmt(inc)+' '+curSym());
-  set('act-spent',   fmt(b.tot)+' '+curSym());
+  set('act-spent',   fmt(b.actual)+' '+curSym());
   set('act-saved',   fmt(sav > 0 ? sav : 0)+' '+curSym());
   set('act-saved2',  fmt(sav > 0 ? sav : 0));
   set('act-ess',     fmt(b.ess));
   set('act-subs',    fmt(b.subs));
 
   // Progress bar
-  var limit  = Math.max(inc, b.tot*1.2, 1000);
-  var pct    = Math.min(100, Math.round(b.tot/limit*100));
+  var limit  = Math.max(inc, b.actual*1.2, 1000);
+  var pct    = Math.min(100, Math.round(b.actual/limit*100));
   var barEl  = document.getElementById('act-bar');
   var pctEl  = document.getElementById('act-pct');
   var remEl  = document.getElementById('act-remaining');
@@ -2212,7 +2256,7 @@ function renderActivity(){
     setTimeout(function(){ barEl.style.width = pct+'%'; barEl.style.background = pct>=90?'#E05555':pct>=75?'#E0A030':'#A8E63C'; },80);
   }
   if(pctEl) pctEl.textContent = pct+'% of budget used';
-  if(remEl) remEl.textContent = fmt(Math.max(0,limit-b.tot))+' '+curSym()+' remaining';
+  if(remEl) remEl.textContent = fmt(Math.max(0,limit-b.actual))+' '+curSym()+' remaining';
 
   // Transactions list
   var el = document.getElementById('act-txn-list');
@@ -2298,13 +2342,13 @@ function renderActivity(){
 
 function renderActivityBudget(){
   var b    = calcBudget();
-  var limit = Math.max(b.inc, b.tot * 1.2, 1000);
-  var pct  = b.inc > 0 ? Math.min(100, Math.round(b.tot / b.inc * 100)) : 0;
-  var rem  = b.inc - b.tot;
+  var limit = Math.max(b.inc, b.actual * 1.2, 1000);
+  var pct  = b.inc > 0 ? Math.min(100, Math.round(b.actual / b.inc * 100)) : 0;
+  var rem  = b.inc - b.actual;
   var barColor = pct >= 90 ? 'var(--red)' : pct >= 75 ? '#E0A030' : 'var(--green)';
 
   function set(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; }
-  set('act-spent',   fmt(b.tot)  + ' ' + curSym());
+  set('act-spent',   fmt(b.actual)  + ' ' + curSym());
   set('act-budget',  fmt(b.inc)  + ' ' + curSym());
   set('act-pct',     pct + '% used');
   set('act-remaining', fmt(Math.max(0,rem)) + ' ' + curSym() + ' left');
@@ -2391,6 +2435,30 @@ function renderActivityTab(){
 // ── More screen ───────────────────────────────────────────────────────────
 
 // ── Export / Import / Toast ───────────────────────────────────────────────
+function showClearDataConfirm(){
+  var overlay = document.getElementById('clear-data-overlay');
+  var sheet   = document.getElementById('clear-data-sheet');
+  if(!overlay || !sheet) return;
+  overlay.style.display = 'flex';
+  setTimeout(function(){ sheet.style.transform = 'translateY(0)'; }, 20);
+}
+function hideClearDataConfirm(){
+  var overlay = document.getElementById('clear-data-overlay');
+  var sheet   = document.getElementById('clear-data-sheet');
+  if(!sheet) return;
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(function(){ if(overlay) overlay.style.display = 'none'; }, 380);
+}
+function confirmClearData(){
+  hideClearDataConfirm();
+  setTimeout(function(){
+    try{ localStorage.removeItem('moxcoin_v1'); }catch(e){}
+    try{ localStorage.removeItem('moxcoin_onboarded'); }catch(e){}
+    try{ localStorage.removeItem('moxcoin_alerts'); }catch(e){}
+    location.reload();
+  }, 420);
+}
+
 function exportData(){
   try{
     var obj={version:2,exported:new Date().toISOString(),data:data};
@@ -2501,14 +2569,14 @@ function generateInsights(){
   var ins=[],b=calcBudget(),assets=totalAssets();
   var now=new Date(),dayOfMonth=now.getDate(),daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
   var monthPct=dayOfMonth/daysInMonth;
-  if(b.inc>0&&b.tot>0){
-    if(b.tot>monthPct*b.inc*1.15){
-      ins.push({icon:'⚠️',bg:'rgba(224,85,85,.12)',text:'You have spent <strong>'+fmt(b.tot)+' '+curSym()+'</strong> and are ahead of pace. Projected month total: <strong>'+fmt(Math.round(b.tot/monthPct))+' '+curSym()+'</strong>.'});
+  if(b.inc>0&&b.actual>0){
+    if(b.actual>monthPct*b.inc*1.15){
+      ins.push({icon:'⚠️',bg:'rgba(224,85,85,.12)',text:'You have spent <strong>'+fmt(b.actual)+' '+curSym()+'</strong> and are ahead of pace. Projected month total: <strong>'+fmt(Math.round(b.actual/monthPct))+' '+curSym()+'</strong>.'});
     } else if(b.rate>=30){
       ins.push({icon:'✅',bg:'rgba(168,230,60,.1)',text:'Strong savings rate of <strong>'+b.rate+'%</strong> this month — saving <strong>'+fmt(b.sav)+' '+curSym()+'</strong>.'});
     }
-    if(b.subs>0&&b.tot>0&&Math.round(b.subs/b.tot*100)>35){
-      ins.push({icon:'📱',bg:'rgba(91,155,213,.1)',text:'Subscriptions are <strong>'+Math.round(b.subs/b.tot*100)+'%</strong> of bills (<strong>'+fmt(b.subs)+' '+curSym()+'</strong>). Worth reviewing.'});
+    if(b.subs>0&&b.actual>0&&Math.round(b.subs/b.actual*100)>35){
+      ins.push({icon:'📱',bg:'rgba(91,155,213,.1)',text:'Subscriptions are <strong>'+Math.round(b.subs/b.actual*100)+'%</strong> of spending (<strong>'+fmt(b.subs)+' '+curSym()+'</strong>). Worth reviewing.'});
     }
   }
   if(data.cryptoHoldings.length){
@@ -2736,7 +2804,7 @@ function renderHome(){
   // Stat: spent this month
   var spentEl   = document.getElementById('home-spent');
   var spentOfEl = document.getElementById('home-spent-of');
-  if(spentEl)   spentEl.textContent   = fmt(b.tot);
+  if(spentEl)   spentEl.textContent   = fmt(b.actual);
   if(spentOfEl) spentOfEl.textContent = 'of '+fmt(b.inc)+' '+curSym();
 
   renderInsights();
@@ -2853,12 +2921,15 @@ function renderBudget(){
   var b=calcBudget();
   function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   setT('bud-income',fmt(b.inc)+' '+curSym());
-  setT('bud-expenses',fmt(b.tot)+' '+curSym());
-  setT('bud-pl','+'+(Math.random()*500+100).toFixed(0)+' '+curSym());
-  var limit=Math.max(b.inc,b.tot*1.2,1000);
-  var pct=Math.min(100,Math.round(b.tot/limit*100));
+  setT('bud-expenses',fmt(b.actual)+' '+curSym());
+  var net=b.inc-b.actual;
+  setT('bud-pl',(net>=0?'+':'')+fmt(Math.abs(net))+' '+curSym());
+  var plEl=document.getElementById('bud-pl');
+  if(plEl) plEl.style.color=net>=0?'#0D0D00':'#E05555';
+  var limit=Math.max(b.inc,b.actual*1.2,1000);
+  var pct=Math.min(100,Math.round(b.actual/limit*100));
   setT('gauge-pct',pct+'%');
-  setT('gauge-lbl',fmt(b.tot)+' / '+fmt(limit));
+  setT('gauge-lbl',fmt(b.actual)+' / '+fmt(limit));
   setT('gauge-max-lbl',fmt(limit/1000,0)+'k');
   var arc=document.getElementById('gauge-arc');
   if(arc){var dash=220*(pct/100);setTimeout(function(){arc.style.transition='stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)';arc.style.strokeDashoffset=220-dash;},100);}
@@ -2867,9 +2938,11 @@ function renderBudget(){
   var inc=b.inc||1;
   var essPct=Math.round(b.ess/inc*100);
   var subPct=Math.round(b.subs/inc*100);
+  var txnPct=Math.round(b.txnSpend/inc*100);
   var savPct=Math.max(0,Math.round(b.sav/inc*100));
   setT('bud-ess-pct',essPct+'%'); setBW('bud-ess-bar',essPct);
   setT('bud-sub-pct',subPct+'%'); setBW('bud-sub-bar',subPct);
+  setT('bud-txn-pct',txnPct+'%'); setBW('bud-txn-bar',txnPct);
   setT('bud-sav-pct',savPct+'%'); setBW('bud-sav-bar',savPct);
   var mEl=document.getElementById('budget-month-lbl');
   if(mEl){var n=new Date();mEl.textContent=n.toLocaleDateString('en',{month:'long',year:'numeric'});}
@@ -3145,11 +3218,11 @@ function renderIncome(){
   if(!data.incomeSources.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No income added yet</div>';return;}
   var incHtml='';
   data.incomeSources.forEach(function(s,i){
-    incHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
+    incHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openSheet(\'edit-income\','+i+')">'
       +'<div class="txn-avatar" style="background:#1A2800;color:var(--green);display:flex;align-items:center;justify-content:center;">'+getIcon('income',18)+'</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+s.name+'</div><div style="font-size:11px;color:var(--text3);">'+(s.freq||'monthly')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--green);">+'+fmt(s.amt)+'</div>'
-      +'<div onclick="deleteItem(&quot;income&quot;,'+i+')" class="delete-btn">&#10005;</div>'
+      +'<div onclick="event.stopPropagation();deleteItem(\'income\','+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=incHtml;
@@ -3233,14 +3306,14 @@ function renderExpenses(){
   data.expenses.forEach(function(e,i){
     var isRecurring = e.recurring !== false; // default ON for all bills
     var expIcon = e.cat === 'sub' ? getIcon('subscription',18) : getIcon('essential',18);
-    expHtml+='<div class="card item-in" style="margin-bottom:8px;">'
+    expHtml+='<div class="card item-in" style="margin-bottom:8px;cursor:pointer;" onclick="openSheet(\'edit-expense\','+i+')">'
       +'<div style="display:flex;align-items:center;gap:12px;">'
         +'<div class="txn-avatar" style="background:rgba(224,85,85,.1);color:var(--red);display:flex;align-items:center;justify-content:center;">'+expIcon+'</div>'
         +'<div style="flex:1;min-width:0;">'
           +'<div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+e.name+'</div>'
           +'<div style="font-size:11px;color:var(--text3);margin-top:1px;display:flex;align-items:center;gap:6px;">'
             +(e.cat==='sub'?'Subscription':'Essential')
-            +'<span style="display:inline-flex;align-items:center;gap:3px;cursor:pointer;" onclick="toggleRecurring('+i+')">'
+            +'<span style="display:inline-flex;align-items:center;gap:3px;cursor:pointer;" onclick="event.stopPropagation();toggleRecurring('+i+')">'
               +'<span style="width:24px;height:13px;border-radius:7px;background:'+(isRecurring?'var(--green)':'rgba(255,255,255,.15)')+';position:relative;display:inline-block;transition:background .2s;">'
                 +'<span style="width:9px;height:9px;border-radius:50%;background:#fff;position:absolute;top:2px;'+(isRecurring?'right:2px':'left:2px')+';transition:left .2s,right .2s;"></span>'
               +'</span>'
@@ -3249,7 +3322,7 @@ function renderExpenses(){
           +'</div>'
         +'</div>'
         +'<div style="font-size:13px;font-weight:600;color:var(--red);white-space:nowrap;">&#8722;'+fmt(e.amt)+' '+curSym()+'</div>'
-        +'<div onclick="deleteItem(&quot;expense&quot;,'+i+')" class="delete-btn">&#10005;</div>'
+        +'<div onclick="event.stopPropagation();deleteItem(\'expense\','+i+')" class="delete-btn">&#10005;</div>'
       +'</div>'
     +'</div>';
   });
@@ -3277,7 +3350,9 @@ function renderSavingsTab(){
 
 // ── SHEETS ─────────────────────────────────────────────────────────────────
 var currentSheet='';
-function openSheet(type){
+var currentSheetIdx=0;
+function openSheet(type,idx){
+  currentSheetIdx=idx||0;
   var overlay = document.getElementById('sheet-overlay');
   var title   = document.getElementById('sheet-title');
   var body    = document.getElementById('sheet-body');
@@ -3309,6 +3384,39 @@ function openSheet(type){
       '<option value="ess">Essential</option><option value="sub">Subscription</option>' +
       '</select></div>' +
       '<button class="btn-primary" onclick="submitSheet()">Add bill</button>';
+
+  } else if(type === 'edit-income'){
+    var s = data.incomeSources[currentSheetIdx];
+    if(!s) return;
+    title.textContent = 'Edit income source';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Name</div>' +
+      '<input class="field-input" id="sh-name" value="'+s.name+'"></div>' +
+      '<div class="field-group"><div class="field-label">Amount (AED/month)</div>' +
+      '<input class="field-input" id="sh-amt" type="number" value="'+s.amt+'"></div>' +
+      '<div class="field-group"><div class="field-label">Frequency</div>' +
+      '<select class="select-input" id="sh-freq">' +
+      '<option value="monthly"'+(s.freq==='monthly'?' selected':'')+'>Monthly</option>' +
+      '<option value="weekly"'+(s.freq==='weekly'?' selected':'')+'>Weekly</option>' +
+      '<option value="annual"'+(s.freq==='annual'?' selected':'')+'>Annual</option>' +
+      '</select></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Save changes</button>';
+
+  } else if(type === 'edit-expense'){
+    var ex = data.expenses[currentSheetIdx];
+    if(!ex) return;
+    title.textContent = 'Edit bill';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Name</div>' +
+      '<input class="field-input" id="sh-name" value="'+ex.name+'"></div>' +
+      '<div class="field-group"><div class="field-label">Amount (AED/month)</div>' +
+      '<input class="field-input" id="sh-amt" type="number" value="'+ex.amt+'"></div>' +
+      '<div class="field-group"><div class="field-label">Category</div>' +
+      '<select class="select-input" id="sh-cat">' +
+      '<option value="ess"'+(ex.cat==='ess'||ex.cat==='essential'?' selected':'')+'>Essential</option>' +
+      '<option value="sub"'+(ex.cat==='sub'?' selected':'')+'>Subscription</option>' +
+      '</select></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Save changes</button>';
 
   } else if(type === 'add-savings'){
     title.textContent = 'Add savings account';
@@ -3469,6 +3577,15 @@ function submitSheet(){
     data.expenses.push({name:name,amt:amt,cat:cat});
     logTransaction(name, amt, 'expense', cat, '');
     setTimeout(checkBudgetAlerts, 200);
+  } else if(currentSheet==='edit-income'){
+    var name=gv('sh-name'),amt=gn('sh-amt'),freq=gv('sh-freq');
+    if(!name||!amt)return;
+    data.incomeSources[currentSheetIdx]={name:name,amt:amt,freq:freq};
+  } else if(currentSheet==='edit-expense'){
+    var name=gv('sh-name'),amt=gn('sh-amt'),cat=gv('sh-cat');
+    if(!name||!amt)return;
+    var ex=data.expenses[currentSheetIdx]||{};
+    data.expenses[currentSheetIdx]={name:name,amt:amt,cat:cat,recurring:ex.recurring};
   } else if(currentSheet==='add-savings'){
     var name=gv('sh-name'),bank=gv('sh-bank'),balance=gn('sh-bal');
     if(!name||!balance)return;
