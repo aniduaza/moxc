@@ -4063,13 +4063,15 @@ function saveAdvisorSettings(){
   if(key.startsWith('sk-')){
     try{ localStorage.setItem('moxcoin_apikey', key); }catch(e){}
   }
-  document.getElementById('sheet-overlay').classList.remove('open');
-  appendMessage('assistant', 'Settings saved! Try asking a question now.');
+  closeAdvisorSettings();
+  advisorBriefingDone = false;
+  appendMessage('assistant', 'Settings saved! Ask me anything about your finances.');
 }
 
 function clearAdvisorSettings(){
   try{ localStorage.removeItem('moxcoin_apikey'); localStorage.removeItem('moxcoin_worker'); }catch(e){}
-  document.getElementById('sheet-overlay').classList.remove('open');
+  closeAdvisorSettings();
+  advisorBriefingDone = false;
   appendMessage('assistant', 'Settings cleared.');
 }
 
@@ -4090,14 +4092,70 @@ function promptApiKey(){
   return null;
 }
 
-async function callClaude(userMsg){
+function appendMessage(role, text){
+  var msgs = document.getElementById('chat-messages');
+  if(!msgs) return;
+  var div = document.createElement('div');
+  div.className = 'chat-bubble ' + role;
+  div.innerHTML = text.replace(/\n/g,'<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendChat(){
+  var input = document.getElementById('chat-input');
+  if(!input) return;
+  var msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  input.style.height = 'auto';
+  appendMessage('user', msg);
+  var btn = document.getElementById('chat-send-btn');
+  if(btn) btn.disabled = true;
+  var msgs = document.getElementById('chat-messages');
+  var thinking = document.createElement('div');
+  thinking.className = 'chat-bubble assistant';
+  thinking.id = 'chat-thinking';
+  thinking.textContent = 'Thinking...';
+  thinking.style.opacity = '0.6';
+  if(msgs){ msgs.appendChild(thinking); msgs.scrollTop = msgs.scrollHeight; }
+  callClaude(msg).then(function(reply){
+    var t = document.getElementById('chat-thinking');
+    if(t) t.remove();
+    appendMessage('assistant', reply);
+    if(btn) btn.disabled = false;
+  }).catch(function(err){
+    var t = document.getElementById('chat-thinking');
+    if(t) t.remove();
+    appendMessage('assistant', 'Error: ' + err.message);
+    if(btn) btn.disabled = false;
+  });
+}
+
+function generateBriefing(){
+  if(advisorBriefingDone) return;
+  advisorBriefingDone = true;
+  var el = document.getElementById('advisor-briefing');
+  if(!el) return;
+  el.innerHTML = '<div class="briefing-card" style="color:var(--text3);font-size:13px;font-style:italic;">Generating your daily briefing...</div>';
+  callClaude('Give me a brief 2-3 sentence summary of my current financial situation and one specific recommendation for today. Be direct and use my actual numbers.').then(function(reply){
+    el.innerHTML = '<div class="briefing-card">'
+      + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--brand);margin-bottom:8px;">Daily briefing</div>'
+      + '<div style="font-size:13px;color:var(--text);line-height:1.6;">' + reply.replace(/\n/g,'<br>') + '</div>'
+      + '</div>';
+  }).catch(function(){
+    el.innerHTML = '';
+  });
+}
+
+function callClaude(userMsg){
   var apiKey = getApiKey();
-  if(!apiKey) throw new Error('No API key. Tap API Settings.');
+  if(!apiKey) return Promise.reject(new Error('No API key. Tap the settings icon to add one.'));
 
   advisorHistory.push({role:'user', content:userMsg});
 
   var payload = JSON.stringify({
-    model:'claude-sonnet-4-5-20250929',
+    model:'claude-haiku-4-5-20251001',
     max_tokens:1000,
     system: buildSystemPrompt(),
     messages: advisorHistory.slice(-10)
