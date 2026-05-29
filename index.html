@@ -262,7 +262,6 @@ body{transition:background .3s,color .3s;}
 
 /* ── Advisor screen ─────────────────────────────────────────────────── */
 .advisor-header{background:linear-gradient(135deg,#131D00,#1A2800);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;}
-.advisor-header::after{content:'';position:absolute;right:-16px;top:-16px;width:100px;height:100px;border-radius:50%;background:rgba(168,230,60,.07);}
 .chat-wrap{display:flex;flex-direction:column;gap:10px;min-height:200px;}
 .chat-bubble{max-width:88%;padding:11px 14px;border-radius:var(--r-md);font-size:13px;line-height:1.55;word-break:break-word;}
 .chat-bubble.user{background:var(--green);color:var(--green-dark);align-self:flex-end;border-bottom-right-radius:4px;font-weight:500;}
@@ -296,6 +295,8 @@ body.light #bg-canvas{opacity:.25;}
 .txn-search{width:100%;background:var(--surface);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:11px 16px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
 .txn-search:focus{border-color:rgba(168,230,60,.4);}
 .txn-month-hdr{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;padding:12px 0 6px;}
+.txn-group-hdr{font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 5px;}
+body.light .txn-group-hdr{color:rgba(0,0,0,.35);}
 .txn-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--surface);border-radius:var(--r-md);margin-bottom:6px;}
 .txn-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
 .txn-detail{flex:1;min-width:0;}
@@ -652,13 +653,10 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
             <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 12px;border-radius:var(--r-md);cursor:pointer;">AED</div>
-            <div id="briefing-btn" onclick="openBriefing()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(168,230,60,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
+            <div id="briefing-btn" onclick="onBriefingBtnTap()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(168,230,60,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
               <div id="briefing-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--green);"></div>
-            </div>
-            <div id="alerts-btn" onclick="openAlertsSheet()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;position:relative;">
-              <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5a6 6 0 0 1 6 6v3.5l1.5 2H2.5L4 12V8.5a6 6 0 0 1 6-6Z"/><path d="M8 16.5a2 2 0 0 0 4 0"/></svg>
-              <div id="alerts-home-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:#E24B4A;"></div>
+              <div id="alerts-home-dot" style="display:none;position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#E24B4A;border:1.5px solid var(--bg);"></div>
             </div>
             <div id="theme-toggle" onclick="toggleTheme()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
           </div>
@@ -1198,19 +1196,31 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- setup form shown when not configured -->
-        <div id="advisor-setup-form" style="display:none;background:var(--surface);border-radius:var(--r-lg);padding:18px;margin-bottom:0;">
-          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Connect the AI Advisor</div>
-          <div style="font-size:12px;color:var(--text3);margin-bottom:16px;">Enter your Cloudflare Worker URL and Anthropic API key to get started.</div>
-          <div class="field-group">
-            <div class="field-label">Cloudflare Worker URL</div>
-            <input class="field-input" id="setup-worker-input" placeholder="https://moxcoin-worker.aniduaza.workers.dev" type="url">
+        <div id="advisor-setup-form" style="display:none;">
+          <div onclick="toggleAdvisorSetupExpand()" style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-radius:var(--r-md);padding:12px 14px;cursor:pointer;border:0.5px solid rgba(255,255,255,.06);">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:28px;height:28px;border-radius:var(--r-sm);background:rgba(168,230,60,.1);color:var(--green);display:flex;align-items:center;justify-content:center;">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v1.8M10 15.7v1.8M2.5 10h1.8M15.7 10h1.8M4.7 4.7l1.3 1.3M14 14l1.3 1.3M4.7 15.3l1.3-1.3M14 6l1.3-1.3"/></svg>
+              </div>
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--text);">Connect AI Advisor</div>
+                <div style="font-size:11px;color:var(--text3);">Tap to add your API key</div>
+              </div>
+            </div>
+            <svg id="setup-expand-arrow" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--text3);transition:transform .25s;"><path d="M5 8l5 5 5-5"/></svg>
           </div>
-          <div class="field-group">
-            <div class="field-label">Anthropic API key</div>
-            <input class="field-input" id="setup-key-input" placeholder="sk-ant-..." type="password">
+          <div id="advisor-setup-fields" style="display:none;background:var(--surface);border-radius:0 0 var(--r-md) var(--r-md);padding:14px;border:0.5px solid rgba(255,255,255,.06);border-top:none;margin-top:-2px;">
+            <div class="field-group">
+              <div class="field-label">Cloudflare Worker URL</div>
+              <input class="field-input" id="setup-worker-input" placeholder="https://moxcoin-worker.aniduaza.workers.dev" type="url">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Anthropic API key</div>
+              <input class="field-input" id="setup-key-input" placeholder="sk-ant-..." type="password">
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">Get a free key at console.anthropic.com</div>
+            <button class="btn-primary" onclick="saveAdvisorSetup()">Save &amp; connect</button>
           </div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Get a free key at console.anthropic.com</div>
-          <button class="btn-primary" onclick="saveAdvisorSetup()">Save &amp; connect</button>
         </div>
 
         <!-- daily briefing -->
@@ -1287,7 +1297,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
     <!-- ═══ GOALS SCREEN ═══ -->
     <div class="screen" id="screen-goals">
-      <div class="pg">
+      <div class="pg" style="padding-top:20px;">
 
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
           <div>
@@ -2122,9 +2132,6 @@ function updateAlertsDot(){
   var hasNew = log.length > 0 && log[0].ts > lastSeen;
   var dot = document.getElementById('alerts-home-dot');
   if(dot) dot.style.display = hasNew ? 'block' : 'none';
-  var btn = document.getElementById('alerts-btn');
-  if(btn) btn.style.color = hasNew ? '#E24B4A' : '';
-  if(btn) btn.style.background = hasNew ? 'rgba(224,85,85,.1)' : '';
 }
 
 function openAlertsSheet(){
@@ -2715,7 +2722,7 @@ function renderActivity(){
   var html='';
   groupOrder.forEach(function(key){
     var g = groups[key];
-    html+='<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 5px;">'+g.label+'</div>';
+    html+='<div class="txn-group-hdr">'+g.label+'</div>';
     g.items.forEach(function(t){
       var isIncome = t.type==='income';
       var cat      = TXN_CATS[t.cat]||TXN_CATS.other;
@@ -4791,6 +4798,32 @@ function closeAdvisorSettings(){
   if(p)p.remove();
 }
 
+function toggleAdvisorSetupExpand(){
+  var fields = document.getElementById('advisor-setup-fields');
+  var arrow  = document.getElementById('setup-expand-arrow');
+  if(!fields) return;
+  var open = fields.style.display !== 'none';
+  fields.style.display = open ? 'none' : 'block';
+  if(arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function saveAdvisorSetup(){
+  var worker = (document.getElementById('setup-worker-input')||{}).value||'';
+  var key    = (document.getElementById('setup-key-input')||{}).value||'';
+  worker = worker.trim(); key = key.trim();
+  if(worker.startsWith('https://')){
+    try{ localStorage.setItem('moxcoin_worker', worker); }catch(e){}
+  }
+  if(key.startsWith('sk-')){
+    try{ localStorage.setItem('moxcoin_apikey', key); }catch(e){}
+  }
+  var sub = document.getElementById('more-apikey-sub');
+  if(sub) sub.textContent = getApiKey() ? 'API key configured ✓' : 'Tap to configure';
+  renderAdvisor();
+  advisorBriefingDone = false;
+  appendMessage('assistant', 'Connected! Ask me anything about your finances.');
+}
+
 function saveAdvisorSettings(){
   var worker = (document.getElementById('set-worker')||{}).value||'';
   var key    = (document.getElementById('set-apikey')||{}).value||'';
@@ -4923,6 +4956,14 @@ function getBriefingState(){
 }
 function saveBriefingState(s){
   try{ localStorage.setItem(BRIEFING_KEY, JSON.stringify(s)); }catch(e){}
+}
+
+function onBriefingBtnTap(){
+  var log = getAlertLog();
+  var lastSeen = 0;
+  try{ lastSeen = parseInt(localStorage.getItem('moxcoin_alerts_seen')||'0'); }catch(e){}
+  var hasNew = log.length > 0 && log[0].ts > lastSeen;
+  if(hasNew){ openAlertsSheet(); } else { openBriefing(); }
 }
 
 function openBriefing(){
