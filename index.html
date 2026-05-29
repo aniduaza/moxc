@@ -559,6 +559,9 @@ body.light [style*="font-size:18px;font-weight:600"]{color:var(--text);}
 /* Theme toggle button bg */
 body.light #theme-toggle{background:rgba(0,0,0,.06);}
 body.light #briefing-btn{background:rgba(245,158,11,.12);}
+/* Avatar always gold gradient regardless of theme */
+#home-avatar{box-shadow:0 2px 8px rgba(245,158,11,.3);}
+body.light #home-level-pill{background:rgba(245,158,11,.1);}
 
 /* Insight expanded panel */
 body.light .insight-expanded{background:#FEF9EC;border-color:rgba(245,158,11,.25);}
@@ -680,15 +683,23 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
     <!-- ═══ HOME SCREEN ═══ -->
     <div class="screen active" id="screen-home" data-swipe-index="0">
-      <div class="pg">
+      <div class="pg" style="gap:12px;">
 
         <!-- top row: greeting + controls -->
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
-          <div>
-            <div id="home-timegreeting" style="font-size:11px;color:var(--text3);"></div>
-            <div id="home-greeting" style="font-size:17px;font-weight:600;color:var(--text);">Moxcoin</div>
+          <!-- left: avatar + greeting -->
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="home-avatar" onclick="editUserName()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer;letter-spacing:-.5px;"></div>
+            <div>
+              <div id="home-timegreeting" style="font-size:11px;color:var(--text3);"></div>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                <div id="home-greeting" style="font-size:16px;font-weight:600;color:var(--text);line-height:1.2;"></div>
+                <div id="home-level-pill" style="display:inline-flex;align-items:center;gap:3px;background:rgba(245,158,11,.12);border-radius:20px;padding:2px 8px;cursor:default;"></div>
+              </div>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px;">
+          <!-- right: actions -->
+          <div style="display:flex;align-items:center;gap:6px;">
             <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(245,158,11,.1);padding:5px 12px;border-radius:var(--r-md);cursor:pointer;">AED</div>
             <div id="briefing-btn" onclick="onBriefingBtnTap()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(245,158,11,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
@@ -757,7 +768,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- XP widget -->
-        <div class="card slide-up d3" id="xp-widget" style="padding:14px 16px;"></div>
+        <div class="card slide-up d3" id="xp-widget" style="padding:16px 18px;"></div>
 
         <!-- top goal -->
         <div class="slide-up d4" id="home-goal-section" style="display:none;">
@@ -1619,16 +1630,16 @@ var currentRange='3m';
 
 // ── XP & Level system ─────────────────────────────────────────────────────
 var XP_LEVELS = [
-  {min:0,     title:'Rookie Saver',     icon:'🌱'},
-  {min:100,   title:'Budget Apprentice', icon:'📖'},
-  {min:300,   title:'Money Conscious',  icon:'💡'},
-  {min:600,   title:'Smart Spender',    icon:'🎯'},
-  {min:1000,  title:'Savvy Saver',      icon:'⚡'},
-  {min:1500,  title:'Financial Pro',    icon:'🏆'},
-  {min:2500,  title:'Wealth Builder',   icon:'💎'},
-  {min:4000,  title:'Money Master',     icon:'🔥'},
-  {min:6000,  title:'Financial Legend', icon:'👑'},
-  {min:10000, title:'Moxcoin Elite',    icon:'🌟'},
+  {min:0,     title:'Rookie Saver',     icon:'level-sprout'},
+  {min:100,   title:'Budget Apprentice', icon:'level-book'},
+  {min:300,   title:'Money Conscious',  icon:'level-bulb'},
+  {min:600,   title:'Smart Spender',    icon:'level-target'},
+  {min:1000,  title:'Savvy Saver',      icon:'level-bolt'},
+  {min:1500,  title:'Financial Pro',    icon:'level-trophy'},
+  {min:2500,  title:'Wealth Builder',   icon:'level-gem'},
+  {min:4000,  title:'Money Master',     icon:'level-flame'},
+  {min:6000,  title:'Financial Legend', icon:'level-crown'},
+  {min:10000, title:'Moxcoin Elite',    icon:'level-star'},
 ];
 
 var XP_ACTIONS = {
@@ -1710,10 +1721,10 @@ function showXPLevelUp(lvl) {
   launchConfetti('gold');
   var el = document.getElementById('xp-levelup');
   if (!el) return;
-  el.innerHTML = '<span style="font-size:32px;line-height:1;">' + lvl.icon + '</span>'
-    + '<div style="font-weight:700;font-size:17px;color:#F59E0B;margin-top:4px;">Level ' + lvl.level + ' reached!</div>'
+  el.innerHTML = '<div style="width:48px;height:48px;border-radius:14px;background:rgba(245,158,11,.12);border:1.5px solid #F59E0B;display:flex;align-items:center;justify-content:center;color:#F59E0B;">' + getIcon(lvl.icon, 24) + '</div>'
+    + '<div style="font-weight:700;font-size:17px;color:#F59E0B;margin-top:8px;">Level ' + lvl.level + ' reached!</div>'
     + '<div style="font-size:13px;color:var(--text2);margin-top:2px;">' + lvl.title + '</div>'
-    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">Keep going 🚀</div>';
+    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">Keep building your streak</div>';
   el.style.display = 'flex';
   el.style.opacity = '0';
   el.style.transform = 'translateY(16px) scale(0.9)';
@@ -1732,6 +1743,7 @@ function showXPLevelUp(lvl) {
 
 // ── Confetti engine ───────────────────────────────────────────────────────
 var _confettiAnim = null;
+var _confettiLastFired = 0;
 
 var CONFETTI_PALETTES = {
   gold:   ['#F59E0B','#FCD34D','#FBBF24','#10B981','#3B82F6','#EF4444','#8B5CF6'],
@@ -1740,6 +1752,11 @@ var CONFETTI_PALETTES = {
 };
 
 function launchConfetti(palette) {
+  // Cooldown: ignore if confetti fired within the last 3.5 seconds
+  var now = Date.now();
+  if (now - _confettiLastFired < 3500) return;
+  _confettiLastFired = now;
+
   var colors = CONFETTI_PALETTES[palette] || CONFETTI_PALETTES.gold;
   var app = document.getElementById('app');
   if (!app) return;
@@ -1852,61 +1869,64 @@ function renderXPWidget() {
   // Streak chip
   var streakHtml = '';
   if (st.status === 'active') {
-    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:rgba(239,68,68,.1);border-radius:20px;padding:3px 10px;">'
-      + '<span style="font-size:14px;">🔥</span>'
+    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:rgba(239,68,68,.1);border-radius:20px;padding:3px 10px;color:#EF4444;">'
+      + getIcon('streak-fire', 13)
       + '<span style="font-size:12px;font-weight:700;color:#EF4444;">' + st.streak + '</span>'
       + '<span style="font-size:11px;color:#EF4444;">' + (st.streak === 1 ? 'day' : 'days') + '</span>'
       + '</div>';
   } else if (st.status === 'at-risk') {
-    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:rgba(245,158,11,.1);border-radius:20px;padding:3px 10px;">'
-      + '<span style="font-size:14px;">⏳</span>'
+    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:rgba(245,158,11,.1);border-radius:20px;padding:3px 10px;color:#F59E0B;">'
+      + getIcon('streak-clock', 13)
       + '<span style="font-size:12px;font-weight:700;color:#F59E0B;">' + st.streak + '</span>'
-      + '<span style="font-size:11px;color:#F59E0B;">day streak — log today!</span>'
+      + '<span style="font-size:11px;color:#F59E0B;">day — log today!</span>'
       + '</div>';
   } else {
-    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--surface3);border-radius:20px;padding:3px 10px;">'
-      + '<span style="font-size:13px;">🔥</span>'
+    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--surface3);border-radius:20px;padding:3px 10px;color:var(--text3);">'
+      + getIcon('streak-none', 13)
       + '<span style="font-size:11px;color:var(--text3);">No streak yet</span>'
       + '</div>';
   }
 
   el.innerHTML =
-    // Top row: level + streak
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
-      + '<div style="display:flex;align-items:center;gap:8px;">'
-        + '<div style="width:32px;height:32px;border-radius:var(--r-sm);background:rgba(245,158,11,.15);display:flex;align-items:center;justify-content:center;font-size:18px;">' + lvl.icon + '</div>'
+    // Top row: big level icon + info + streak chip
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
+      + '<div style="display:flex;align-items:center;gap:12px;">'
+        + '<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,rgba(217,119,6,.25),rgba(245,158,11,.15));border:1.5px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;color:#F59E0B;flex-shrink:0;">' + getIcon(lvl.icon, 22) + '</div>'
         + '<div>'
-          + '<div style="font-size:13px;font-weight:600;color:var(--text);">Lv.' + lvl.level + ' — ' + lvl.title + '</div>'
-          + '<div style="font-size:11px;color:var(--text3);">' + (data.xp || 0) + ' XP · best streak: ' + (data.longestStreak || 0) + 'd</div>'
+          + '<div style="font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.2px;">Level ' + lvl.level + ' <span style="color:#F59E0B;">·</span> ' + lvl.title + '</div>'
+          + '<div style="font-size:11px;color:var(--text3);margin-top:1px;">' + (data.xp || 0) + ' XP total · best streak ' + (data.longestStreak || 0) + ' days</div>'
         + '</div>'
       + '</div>'
       + streakHtml
     + '</div>'
-    // XP bar
-    + '<div style="height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;">'
-      + '<div id="xp-bar-fill" style="height:6px;border-radius:3px;background:linear-gradient(90deg,#D97706,#F59E0B);width:0%;transition:width .9s cubic-bezier(0.16,1,0.3,1);"></div>'
+    // XP bar — taller, more vivid
+    + '<div style="height:8px;background:var(--surface3);border-radius:4px;overflow:hidden;position:relative;">'
+      + '<div id="xp-bar-fill" style="height:8px;border-radius:4px;background:linear-gradient(90deg,#D97706,#F59E0B,#FCD34D);width:0%;transition:width .9s cubic-bezier(0.16,1,0.3,1);"></div>'
     + '</div>'
+    + '<div id="xp-bar-glow" style="height:4px;margin-top:-4px;border-radius:4px;background:transparent;filter:blur(4px);transition:width .9s cubic-bezier(0.16,1,0.3,1);width:0%;background:rgba(245,158,11,.5);pointer-events:none;"></div>'
     // XP progress labels
-    + '<div style="display:flex;justify-content:space-between;margin-top:5px;">'
-      + '<div style="font-size:10px;color:var(--text3);">' + lvl.xpInLevel + ' XP into level</div>'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">'
+      + '<div style="font-size:11px;color:var(--text3);">' + lvl.xpInLevel + ' XP into level</div>'
       + (lvl.maxed
-        ? '<div style="font-size:10px;font-weight:600;color:#F59E0B;">MAX LEVEL</div>'
-        : '<div style="font-size:10px;color:var(--text3);">' + lvl.xpToNext + ' XP to ' + lvl.nextTitle + '</div>')
+        ? '<div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#F59E0B;">' + getIcon('level-star',12) + 'MAX LEVEL</div>'
+        : '<div style="font-size:11px;font-weight:600;color:#F59E0B;">' + lvl.xpToNext + ' XP → ' + lvl.nextTitle + '</div>')
     + '</div>';
 
   setTimeout(function() {
     var fill = document.getElementById('xp-bar-fill');
+    var glow = document.getElementById('xp-bar-glow');
     if (fill) fill.style.width = lvl.pct + '%';
+    if (glow) glow.style.width = lvl.pct + '%';
   }, 80);
 }
 
 // ── Streak system ─────────────────────────────────────────────────────────
 var STREAK_MILESTONES = [
-  {days:3,   xp:30,  label:'3-day streak!',   icon:'🔥'},
-  {days:7,   xp:75,  label:'7-day streak!',   icon:'⚡'},
-  {days:14,  xp:150, label:'2-week streak!',  icon:'💪'},
-  {days:30,  xp:300, label:'30-day streak!',  icon:'👑'},
-  {days:100, xp:500, label:'100-day streak!', icon:'🌟'},
+  {days:3,   xp:30,  label:'3-day streak!',   icon:'streak-fire'},
+  {days:7,   xp:75,  label:'7-day streak!',   icon:'level-bolt'},
+  {days:14,  xp:150, label:'2-week streak!',  icon:'level-trophy'},
+  {days:30,  xp:300, label:'30-day streak!',  icon:'level-crown'},
+  {days:100, xp:500, label:'100-day streak!', icon:'level-star'},
 ];
 
 function todayStr() {
@@ -1941,7 +1961,7 @@ function updateStreak() {
   for (var i = 0; i < STREAK_MILESTONES.length; i++) {
     var m = STREAK_MILESTONES[i];
     if (data.streak === m.days) {
-      earnXP('add-transaction', m.icon + ' ' + m.label); // piggyback XP
+      earnXP('add-transaction', m.label); // piggyback XP
       data.xp = (data.xp || 0) + (m.xp - 10); // add bonus on top (earnXP already gave +10)
       showStreakMilestone(m);
       break;
@@ -1965,10 +1985,10 @@ function showStreakMilestone(m) {
   launchConfetti('fire');
   var el = document.getElementById('xp-levelup');
   if (!el) return;
-  el.innerHTML = '<span style="font-size:32px;line-height:1;">' + m.icon + '</span>'
-    + '<div style="font-weight:700;font-size:17px;color:#EF4444;margin-top:4px;">' + m.label + '</div>'
+  el.innerHTML = '<div style="width:48px;height:48px;border-radius:14px;background:rgba(239,68,68,.12);border:1.5px solid #EF4444;display:flex;align-items:center;justify-content:center;color:#EF4444;">' + getIcon(m.icon, 24) + '</div>'
+    + '<div style="font-weight:700;font-size:17px;color:#EF4444;margin-top:8px;">' + m.label + '</div>'
     + '<div style="font-size:13px;color:var(--text2);margin-top:2px;">+' + m.xp + ' bonus XP</div>'
-    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">You\'re on fire! 🔥</div>';
+    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">Keep the momentum going!</div>';
   el.style.display = 'flex';
   el.style.opacity = '0';
   el.style.transform = 'translateY(16px) scale(0.9)';
@@ -2178,8 +2198,12 @@ function initTheme(){
 }
 
 // ── Persistence ────────────────────────────────────────────────────────────
-function save(){
+function saveWithBadgeCheck(){
   checkBadges();
+  save();
+}
+
+function save(){
   updateMoreBadgeCount();
   try{
     var json = JSON.stringify(data);
@@ -2377,6 +2401,48 @@ function getIcon(name, sz) {
       + '<path d="M10 2.5c-2.5 2-4 4.5-4 7.5s1.5 5.5 4 7.5"/>'
       + '<path d="M10 2.5c2.5 2 4 4.5 4 7.5s-1.5 5.5-4 7.5"/>'
       + '<path d="M2.5 10h15"/>';
+  } else if(name === 'level-sprout') {
+    d = '<path d="M10 17V9"/>'
+      + '<path d="M10 9C10 9 10 4.5 5.5 4.5C5.5 4.5 5.5 9 10 9Z"/>'
+      + '<path d="M10 12C10 12 10 7 15 7C15 7 15 12 10 12Z"/>';
+  } else if(name === 'level-book') {
+    d = '<path d="M4 3.5h6.5a2 2 0 0 1 2 2v11a2 2 0 0 0-2-2H4V3.5Z"/>'
+      + '<path d="M16 3.5H9.5a2 2 0 0 0-2 2v11a2 2 0 0 1 2-2H16V3.5Z"/>';
+  } else if(name === 'level-bulb') {
+    d = '<path d="M10 2.5a5 5 0 0 1 3 9l-.5.5v2a1 1 0 0 1-1 1H8.5a1 1 0 0 1-1-1v-2l-.5-.5a5 5 0 0 1 3-9Z"/>'
+      + '<path d="M8.5 15h3"/>';
+  } else if(name === 'level-target') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<circle cx="10" cy="10" r="4"/>'
+      + '<circle cx="10" cy="10" r="1.2" fill="currentColor" stroke="none"/>';
+  } else if(name === 'level-bolt') {
+    d = '<path d="M12.5 2.5L6 11h5l-1.5 6.5L18 8.5h-5.5L12.5 2.5Z" fill="currentColor" stroke="none" opacity=".15"/>'
+      + '<path d="M12.5 2.5L6 11h5l-1.5 6.5L18 8.5h-5.5L12.5 2.5Z"/>';
+  } else if(name === 'level-trophy') {
+    d = '<path d="M6 3.5h8v6a4 4 0 0 1-8 0V3.5Z"/>'
+      + '<path d="M6 7.5H4a2 2 0 0 1-2-2v-2h4"/>'
+      + '<path d="M14 7.5h2a2 2 0 0 0 2-2v-2h-4"/>'
+      + '<path d="M10 13.5v3M7 16.5h6"/>';
+  } else if(name === 'level-gem') {
+    d = '<polygon points="10,2 17,7 14,18 6,18 3,7"/>'
+      + '<polyline points="3,7 10,14 17,7"/>'
+      + '<line x1="6" y1="7" x2="14" y2="7"/>';
+  } else if(name === 'level-flame') {
+    d = '<path d="M10 17.5c-2.8 0-5-1.9-5-4.5 0-2.5 2-4 2.5-6 0 0 .5 2 2 3 0-2 1-4.5 2.5-6 0 0 3 3.5 3 7 .5-.5 1-2 .5-3.5 0 0 2.5 2.5 2.5 5.5 0 2.6-2.2 4.5-5 4.5Z"/>'
+      + '<path d="M10 17.5c-1.4 0-2.5-.8-2.5-2 0-1.2 1-2 1.5-3 0 0 .5 1 1.5 1.5 0-1 .5-2 1-2.5 0 0 1.5 1.5 1.5 3 0 1.2-1.1 2-2.5 2Z" fill="currentColor" stroke="none" opacity=".2"/>';
+  } else if(name === 'level-crown') {
+    d = '<path d="M3 15.5h14"/>'
+      + '<path d="M3 6l3.5 5 3.5-7 3.5 7 3.5-5v9.5H3V6Z"/>';
+  } else if(name === 'level-star') {
+    d = '<path d="M10 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L10 14.4l-4.8 2.5.9-5.4L2.2 7.7l5.4-.8L10 2Z" fill="currentColor" stroke="none" opacity=".15"/>'
+      + '<path d="M10 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L10 14.4l-4.8 2.5.9-5.4L2.2 7.7l5.4-.8L10 2Z"/>';
+  } else if(name === 'streak-fire') {
+    d = '<path d="M10 17.5c-2.8 0-5-1.9-5-4.5 0-2.5 2-4 2.5-6 0 0 .5 2 2 3 0-2 1-4.5 2.5-6 0 0 3 3.5 3 7 .5-.5 1-2 .5-3.5 0 0 2.5 2.5 2.5 5.5 0 2.6-2.2 4.5-5 4.5Z"/>';
+  } else if(name === 'streak-clock') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<path d="M10 6v4l2.5 2.5"/>';
+  } else if(name === 'streak-none') {
+    d = '<path d="M10 17.5c-2.8 0-5-1.9-5-4.5 0-2.5 2-4 2.5-6 0 0 .5 2 2 3 0-2 1-4.5 2.5-6 0 0 3 3.5 3 7 .5-.5 1-2 .5-3.5 0 0 2.5 2.5 2.5 5.5 0 2.6-2.2 4.5-5 4.5Z"/>';
   }
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
 }
@@ -2458,7 +2524,7 @@ function submitGoalSheet(){
     createdAt:  new Date().toISOString()
   });
   earnXP('add-goal', 'Set goal: '+name.trim());
-  save();
+  saveWithBadgeCheck();
   document.getElementById('sheet-overlay').classList.remove('open');
   renderTab(currentTab);
 }
@@ -2485,6 +2551,7 @@ function submitTxnSheet(){
   logTransaction(name.trim(), amt, currentTxnType, cat, note.trim());
   updateStreak();
   earnXP('add-transaction', 'Logged: '+name.trim());
+  checkBadges();
   document.getElementById('sheet-overlay').classList.remove('open');
   renderTab(currentTab);
   renderHome();
@@ -3868,6 +3935,33 @@ function renderHome(){
   }
   if(greetName) greetName.textContent = data.userName || 'Moxcoin';
 
+  // Avatar — initials from username
+  var avatarEl = document.getElementById('home-avatar');
+  if(avatarEl){
+    var name = data.userName || '';
+    var parts = name.trim().split(/\s+/);
+    var initials = parts.length >= 2
+      ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+      : name.slice(0,2).toUpperCase();
+    if(initials){
+      avatarEl.textContent = '';
+      avatarEl.style.fontSize = '15px';
+      avatarEl.textContent = initials;
+    } else {
+      avatarEl.textContent = '';
+      avatarEl.style.color = '#fff';
+      avatarEl.innerHTML = getIcon('user', 20);
+    }
+  }
+
+  // Level pill — icon + number only, title lives in XP card
+  var pillEl = document.getElementById('home-level-pill');
+  if(pillEl){
+    var lvl = getLevel(data.xp || 0);
+    pillEl.innerHTML = '<span style="display:inline-flex;align-items:center;color:#F59E0B;">' + getIcon(lvl.icon, 12) + '</span>'
+      + '<span style="font-size:11px;font-weight:700;color:#F59E0B;">Lv.' + lvl.level + '</span>';
+  }
+
   // Date
   var dateEl = document.getElementById('home-date');
   if(dateEl){
@@ -3944,13 +4038,13 @@ function renderHome(){
   var spentLblEl = document.getElementById('home-spent-lbl');
   if(spentLblEl) spentLblEl.textContent = overBudget ? 'Over budget' : 'Spent this month';
   if(spentEl){
-    spentEl.textContent = fmt(b.actual);
+    spentEl.innerHTML = fmt(b.actual) + '<span style="font-size:12px;font-weight:500;color:var(--text3);margin-left:3px;">' + curSym() + '</span>';
     spentEl.style.color = overBudget ? 'var(--red)' : 'var(--text)';
   }
   if(spentOfEl){
     spentOfEl.textContent = overBudget
-      ? fmt(b.actual - b.inc)+' '+curSym()+' over budget'
-      : 'of '+fmt(b.inc)+' '+curSym();
+      ? fmt(b.actual - b.inc) + ' ' + curSym() + ' over budget'
+      : 'of ' + fmt(b.inc) + ' ' + curSym();
     spentOfEl.style.color = overBudget ? 'var(--red)' : '';
   }
 
@@ -4030,7 +4124,12 @@ function renderMovers(){
   }
 
   if(!assets.length){
-    el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text3);font-size:13px;">No assets yet — add some in Portfolio</div>';
+    el.innerHTML='<div style="grid-column:1/-1;background:var(--surface2);border-radius:var(--r-md);padding:24px 16px;text-align:center;">'
+      +'<div style="font-size:32px;margin-bottom:8px;">📈</div>'
+      +'<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">No assets tracked yet</div>'
+      +'<div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Add crypto or cards in Portfolio to see daily movers</div>'
+      +'<button onclick="switchTab(\'portfolio\')" style="background:var(--green);color:#fff;border:none;border-radius:20px;padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer;">Go to Portfolio</button>'
+      +'</div>';
     return;
   }
 
@@ -4050,13 +4149,13 @@ function renderMovers(){
     var priceStr=asset.price&&asset.price>=1000?(asset.price/1000).toFixed(2)+'k':asset.price&&asset.price>=1?asset.price.toFixed(2):asset.price?asset.price.toFixed(4):'';
     var upColor=asset.chg==null?'var(--text3)':up?'var(--green)':'var(--red)';
     var barW=asset.chg!=null?Math.min(100,Math.abs(asset.chg)*8)+'%':'0%';
-    html+='<div class="item-in" style="background:var(--surface);border-radius:var(--r-md);padding:11px;border:0.5px solid rgba(255,255,255,.06);position:relative;overflow:hidden;">'
+    html+='<div class="item-in" style="background:var(--surface);border-radius:var(--r-md);padding:11px;border:0.5px solid var(--stone2);position:relative;overflow:hidden;">'
       +'<div style="position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;background:'+asset.color+';"></div>'
       +'<div style="width:28px;height:28px;border-radius:var(--r-sm);background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';margin-bottom:7px;">'+asset.sym+'</div>'
       +'<div style="font-size:11px;font-weight:600;color:var(--text);">'+asset.name+'</div>'
       +'<div style="font-size:9px;color:var(--text3);margin-top:1px;">'+(priceStr?'$'+priceStr:'&nbsp;')+'</div>'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">'
-        +'<div style="font-size:11px;font-weight:600;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums;">'+valStr+'</div>'
+        +'<div style="font-size:11px;font-weight:600;color:var(--text2);font-variant-numeric:tabular-nums;">'+valStr+'</div>'
         +'<div style="font-size:13px;font-weight:700;color:'+upColor+';">'+chgStr+'</div>'
       +'</div>'
     +'</div>';
@@ -4315,7 +4414,27 @@ function renderPortfolio(){
   function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   setT('port-total',fmt(total)+' '+curSym());
   var plEl=document.getElementById('port-pl-badge');
-  if(plEl){var p=(Math.random()*4-1).toFixed(2);var up=parseFloat(p)>=0;plEl.innerHTML='<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'+':'')+p+'%</div>';}
+  if(plEl){
+    // Use real snapshot delta: compare current total vs earliest snapshot in selected range
+    var snaps=data.snapshots||[];
+    var pHtml='';
+    if(snaps.length>=2 && total>0){
+      var rangeMs={'1W':7,'1M':30,'3M':90,'6M':180,'1Y':365,'ALL':36500}[currentRange]||30;
+      var cutoff=Date.now()-rangeMs*86400000;
+      var older=null;
+      for(var si=0;si<snaps.length;si++){
+        if(new Date(snaps[si].date).getTime()>=cutoff){ older=snaps[si]; break; }
+      }
+      if(!older) older=snaps[0];
+      var prev=older.totalAssets||older.net||0;
+      if(prev>0){
+        var delta=((total-prev)/prev*100);
+        var up=delta>=0;
+        pHtml='<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'+':'')+delta.toFixed(2)+'%</div>';
+      }
+    }
+    plEl.innerHTML=pHtml;
+  }
   drawSparkline();
   renderCryptoList();
   renderCollectionList();
@@ -4956,7 +5075,7 @@ function submitSheet(){
     }
     selectedScryfallCard=null;
   }
-  save();
+  saveWithBadgeCheck();
   document.getElementById('sheet-overlay').classList.remove('open');
   renderTab(currentTab);
   renderHome();
