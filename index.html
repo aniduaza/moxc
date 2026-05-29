@@ -1096,7 +1096,7 @@ body.light .backup-btn{background:#FFFFFF;}
 
 
     <!-- ═══ ADVISOR SCREEN ═══ -->
-    <div class="screen" id="screen-advisor" style="display:flex;flex-direction:column;">
+    <div class="screen" id="screen-advisor" style="flex-direction:column;">
       <div class="pg" style="padding-bottom:8px;flex-shrink:0;overflow-y:auto;max-height:42vh;">
 
         <!-- header -->
@@ -1271,7 +1271,7 @@ body.light .backup-btn{background:#FFFFFF;}
       <span class="nav-label">Activity</span>
     </div>
 
-    <div class="nav-item" id="nav-more" onclick="switchTab('more')" style="flex:1;">
+    <div class="nav-item" id="nav-more" onclick="MORE_TABS.indexOf(currentTab)>=0&&currentTab!=='more'?closeMoreScreen():switchTab('more')" style="flex:1;">
       <svg class="nav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="11" r="1.5" fill="currentColor" stroke="none"/><circle cx="11" cy="11" r="1.5" fill="currentColor" stroke="none"/><circle cx="17" cy="11" r="1.5" fill="currentColor" stroke="none"/></svg>
       <span class="nav-label">More</span>
     </div>
@@ -4701,8 +4701,11 @@ function onSwipeTouchEnd(e){
 
 function closeMoreScreen(){
   document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
-    sc.style.transform='translateX(100%)';
-    setTimeout(function(){ sc.style.display='none'; sc.style.transform=''; }, 320);
+    sc.style.transform = 'translateX(100%)';
+    setTimeout(function(){
+      sc.style.cssText = '';          // wipe ALL inline styles — CSS class takes over
+      sc.classList.remove('non-swipe-screen');
+    }, 320);
   });
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
   var activeNav = document.getElementById('nav-' + SWIPE_TABS[swipeIndex]);
@@ -4712,9 +4715,22 @@ function closeMoreScreen(){
 
 function switchTab(tab){
   var idx = SWIPE_TABS.indexOf(tab);
-  if(idx >= 0){ springToIndex(idx); closeFAB(); return; }
+  if(idx >= 0){
+    // Close any open more screen before switching to a swipe tab
+    document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
+      sc.style.transform = 'translateX(100%)';
+      setTimeout(function(){
+        sc.style.cssText = '';
+        sc.classList.remove('non-swipe-screen');
+      }, 320);
+    });
+    springToIndex(idx); closeFAB(); return;
+  }
   // Dismiss any open more screen instantly before showing new one
-  document.querySelectorAll('.non-swipe-screen').forEach(function(sc){ sc.style.display='none'; sc.style.transform=''; });
+  document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
+    sc.style.cssText = '';
+    sc.classList.remove('non-swipe-screen');
+  });
   var el = document.getElementById('screen-' + tab);
   if(el){
     el.classList.add('non-swipe-screen');
