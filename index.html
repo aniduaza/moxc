@@ -4699,13 +4699,18 @@ function onSwipeTouchEnd(e){
   springToIndex(newIdx);
 }
 
+function hideMoreScreens(){
+  document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
+    sc.classList.remove('non-swipe-screen');
+    sc.style.cssText = 'display:none;';
+  });
+}
+
 function closeMoreScreen(){
   document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
+    sc.style.transition = 'transform .32s cubic-bezier(0.32,0.72,0,1)';
     sc.style.transform = 'translateX(100%)';
-    setTimeout(function(){
-      sc.style.cssText = '';          // wipe ALL inline styles — CSS class takes over
-      sc.classList.remove('non-swipe-screen');
-    }, 320);
+    setTimeout(function(){ sc.classList.remove('non-swipe-screen'); sc.style.cssText = 'display:none;'; }, 340);
   });
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
   var activeNav = document.getElementById('nav-' + SWIPE_TABS[swipeIndex]);
@@ -4716,21 +4721,11 @@ function closeMoreScreen(){
 function switchTab(tab){
   var idx = SWIPE_TABS.indexOf(tab);
   if(idx >= 0){
-    // Close any open more screen before switching to a swipe tab
-    document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
-      sc.style.transform = 'translateX(100%)';
-      setTimeout(function(){
-        sc.style.cssText = '';
-        sc.classList.remove('non-swipe-screen');
-      }, 320);
-    });
+    hideMoreScreens();
     springToIndex(idx); closeFAB(); return;
   }
-  // Dismiss any open more screen instantly before showing new one
-  document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
-    sc.style.cssText = '';
-    sc.classList.remove('non-swipe-screen');
-  });
+  // Instantly dismiss any open more screen before showing new one
+  hideMoreScreens();
   var el = document.getElementById('screen-' + tab);
   if(el){
     el.classList.add('non-swipe-screen');
