@@ -183,7 +183,7 @@ body.light .greeting-card{background:#F0F8E0;border-color:rgba(168,230,60,.2);}
 .delete-btn{background:#2A0000;color:var(--red);border:none;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
 /* ── Page padding wrapper ── */
-.pg{padding:16px;display:flex;flex-direction:column;gap:16px;flex:1;}
+.pg{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;}
 
 /* ── Modal sheet ── */
 .sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:flex-end;}
@@ -237,7 +237,14 @@ body.light{
 }
 body.light #app{background:#F5F5F0;}
 body.light .greeting-card{background:linear-gradient(135deg,#E8F5D0,#D4ECA8);animation:none;box-shadow:none;}
-body.light .greeting-title{color:rgba(30,60,0,.6);}
+body.light .greeting-title{color:rgba(30,60,0,.65);}
+/* Hero card date + currency labels */
+.home-date-lbl{font-size:10px;color:rgba(168,230,60,.5);}
+.home-cur-lbl{font-size:14px;color:rgba(255,255,255,.35);}
+.balance-amount{color:#fff;}
+body.light .home-date-lbl{color:rgba(40,80,0,.45);}
+body.light .home-cur-lbl{color:rgba(0,0,0,.35);}
+body.light .balance-amount{color:#1A3200 !important;}
 body.light .greeting-name{color:#2A5000;}
 body.light .greeting-sub{color:rgba(30,60,0,.45);}
 body.light .card-yellow{background:#F5DE00;}
@@ -302,7 +309,7 @@ body.light .txn-item{background:#FFFFFF;}
 body.light .txn-filter-btn:not(.active){background:#EFEFEB;color:#666;}
 
 /* ── Goals ───────────────────────────────────────────────────────────── */
-.goal-card{background:var(--surface);border-radius:var(--r-lg);padding:16px;margin-bottom:10px;position:relative;overflow:hidden;}
+.goal-card{background:var(--surface);border-radius:var(--r-lg);padding:16px;position:relative;overflow:hidden;}
 .goal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0;}
 .goal-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
 .goal-sub{font-size:11px;color:var(--text3);margin-bottom:10px;}
@@ -442,10 +449,12 @@ body.light .more-item{background:#FFFFFF;}
 .pager-dot.active{width:16px;border-radius:3px;background:#A8E63C;}
 
 /* ── Spacing rhythm ──────────────────────────────────────────────────── */
-.pg{ gap:16px; }
 .sec-hdr{ margin-bottom:8px; }
 .holding-row{ margin-bottom:6px; }
 .stat-row{ gap:10px; }
+/* goal section and daily movers section both use flex-col with uniform inner gap */
+#home-goal-section{ gap:8px; }
+#home-goal-section .sec-hdr{ margin-bottom:0; }
 
 /* ── Goal progress card ─────────────────────────────────────────────── */
 .goal-progress-card{background:var(--surface);border-radius:var(--r-md);padding:14px;border:0.5px solid rgba(255,255,255,.06);}
@@ -469,6 +478,66 @@ body.light .more-item{background:#FFFFFF;}
 .backup-btn-title{font-size:16px;font-weight:500;color:var(--text);}
 .backup-btn-sub{font-size:11px;color:var(--text3);margin-top:2px;}
 body.light .backup-btn{background:#FFFFFF;}
+
+/* ── Activity summary card ──────────────────────────────────────────── */
+.act-summary-card{background:#131D00;border-radius:var(--r-md);padding:16px;}
+.act-month-lbl{font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;}
+.act-stat-pill{flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;}
+.act-stat-lbl{font-size:10px;color:rgba(255,255,255,.38);margin-bottom:3px;}
+.act-stat-val{font-size:18px;font-weight:600;letter-spacing:-.5px;}
+.act-spent-val{color:#fff;}
+.act-bar-track{height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-bottom:7px;}
+.act-remaining-lbl{color:rgba(255,255,255,.38);}
+.act-mini-pill{flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;}
+.act-mini-lbl{font-size:9px;color:rgba(255,255,255,.38);}
+.act-mini-val{font-size:13px;font-weight:600;color:#fff;}
+
+/* ── Light mode: fix hardcoded dark colours ─────────────────────────── */
+
+/* Activity month summary card */
+body.light .act-summary-card{background:#D8EDBC;}
+body.light .act-month-lbl{color:rgba(30,60,0,.5);}
+body.light .act-stat-pill{background:rgba(255,255,255,.6);}
+body.light .act-stat-lbl{color:rgba(0,0,0,.4);}
+body.light .act-spent-val{color:#0D0D0D;}
+body.light .act-bar-track{background:rgba(0,0,0,.1);}
+body.light .act-remaining-lbl{color:rgba(0,0,0,.38);}
+body.light .act-mini-pill{background:rgba(255,255,255,.5);}
+body.light .act-mini-lbl{color:rgba(0,0,0,.4);}
+body.light .act-mini-val{color:#0D0D0D;}
+
+/* Home hero card — fix hardcoded #fff / rgba(255,255,255,...) */
+body.light #home-balance{color:#1A3000 !important;}
+body.light #home-bal-cur{color:rgba(0,0,0,.38) !important;}
+body.light #home-date{color:rgba(60,100,0,.4) !important;}
+body.light #asset-bar{background:rgba(0,0,0,.07) !important;}
+body.light .balance-amount{color:#1A3000;}
+
+/* Portfolio header total */
+body.light #port-total{color:var(--text);}
+
+/* Section titles / screen headers that may use #fff */
+body.light .screen h1,
+body.light .screen h2,
+body.light [style*="font-size:18px;font-weight:600"]{color:var(--text);}
+
+/* Theme toggle button bg */
+body.light #theme-toggle{background:rgba(0,0,0,.06);}
+body.light #briefing-btn{background:rgba(80,140,0,.08);}
+
+/* Insight expanded panel */
+body.light .insight-expanded{background:#E4F0D4;border-color:rgba(80,140,0,.2);}
+
+/* Bar tracks */
+body.light .bar-track{background:rgba(0,0,0,.08);}
+body.light .goal-prog-track{background:rgba(0,0,0,.08);}
+
+/* stat-pill & card */
+body.light .stat-pill{background:var(--surface2);}
+body.light .card{background:var(--surface);}
+
+/* log snapshot sheet inputs */
+body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rgba(0,0,0,.12);color:#0D0D0D;}
 .back-btn{display:flex;align-items:center;gap:6px;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:16px;padding:4px 0;}
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;gap:12px;}
 .empty-state-img{width:80px;height:80px;border-radius:var(--r-md);object-fit:cover;margin-bottom:4px;background:#0D0D0D;mix-blend-mode:lighten;}
@@ -587,6 +656,10 @@ body.light .backup-btn{background:#FFFFFF;}
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
               <div id="briefing-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--green);"></div>
             </div>
+            <div id="alerts-btn" onclick="openAlertsSheet()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;position:relative;">
+              <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5a6 6 0 0 1 6 6v3.5l1.5 2H2.5L4 12V8.5a6 6 0 0 1 6-6Z"/><path d="M8 16.5a2 2 0 0 0 4 0"/></svg>
+              <div id="alerts-home-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:#E24B4A;"></div>
+            </div>
             <div id="theme-toggle" onclick="toggleTheme()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
           </div>
         </div>
@@ -600,13 +673,13 @@ body.light .backup-btn{background:#FFFFFF;}
               <div class="live-dot"></div>
               <div class="greeting-title" style="margin-bottom:0;">Total assets</div>
             </div>
-            <div style="font-size:10px;color:rgba(168,230,60,.4);" id="home-date"></div>
+            <div id="home-date" class="home-date-lbl"></div>
           </div>
 
           <!-- big balance -->
           <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
-            <div class="balance-amount count-up-num" id="home-balance" style="font-size:40px;font-weight:700;color:#fff;letter-spacing:-2px;line-height:1;">—</div>
-            <div style="font-size:14px;color:rgba(255,255,255,.35);" id="home-bal-cur">AED</div>
+            <div class="balance-amount count-up-num" id="home-balance" style="font-size:40px;font-weight:700;letter-spacing:-2px;line-height:1;">—</div>
+            <div id="home-bal-cur" class="home-cur-lbl">AED</div>
           </div>
 
           <!-- change badge -->
@@ -658,8 +731,8 @@ body.light .backup-btn{background:#FFFFFF;}
         </div>
 
         <!-- daily movers -->
-        <div class="slide-up d4">
-          <div class="sec-hdr">
+        <div class="slide-up d4" style="display:flex;flex-direction:column;gap:8px;">
+          <div class="sec-hdr" style="margin-bottom:0;">
             <span class="sec-title">Daily movers</span>
             <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
           </div>
@@ -742,13 +815,18 @@ body.light .backup-btn{background:#FFFFFF;}
 
         <!-- HISTORY section -->
         <div id="port-section-history" style="display:none;">
-          <div style="display:flex;gap:6px;margin-bottom:12px;">
-            <span class="toggle-btn active" onclick="setHistRange(this,'3m')">3M</span>
-            <span class="toggle-btn" onclick="setHistRange(this,'6m')">6M</span>
-            <span class="toggle-btn" onclick="setHistRange(this,'1y')">1Y</span>
-            <span class="toggle-btn" onclick="setHistRange(this,'all')">All</span>
+          <!-- range + log button -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="display:flex;gap:6px;">
+              <span class="toggle-btn active" onclick="setHistRange(this,'3m')">3M</span>
+              <span class="toggle-btn" onclick="setHistRange(this,'6m')">6M</span>
+              <span class="toggle-btn" onclick="setHistRange(this,'1y')">1Y</span>
+              <span class="toggle-btn" onclick="setHistRange(this,'all')">All</span>
+            </div>
+            <div onclick="openLogSnapshot()" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 14px;border-radius:var(--r-md);cursor:pointer;">+ Log</div>
           </div>
-          <div class="card" style="padding:16px;margin-bottom:12px;">
+          <!-- chart card -->
+          <div id="hist-chart-card" class="card" style="padding:16px;margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
               <div>
                 <div style="font-size:11px;color:var(--text3);margin-bottom:2px;">Net worth</div>
@@ -765,17 +843,23 @@ body.light .backup-btn{background:#FFFFFF;}
               <span id="hist-date-end">—</span>
             </div>
           </div>
-          <div class="stat-row" style="margin-bottom:12px;">
-            <div class="stat-pill"><div class="stat-lbl">Peak value</div><div class="stat-val" id="hist-peak" style="color:var(--green);">—</div></div>
-            <div class="stat-pill"><div class="stat-lbl">Lowest value</div><div class="stat-val" id="hist-low">—</div></div>
+          <!-- stats -->
+          <div id="hist-stats">
+            <div class="stat-row" style="margin-bottom:12px;">
+              <div class="stat-pill"><div class="stat-lbl">Peak value</div><div class="stat-val" id="hist-peak" style="color:var(--green);">—</div></div>
+              <div class="stat-pill"><div class="stat-lbl">Lowest value</div><div class="stat-val" id="hist-low">—</div></div>
+            </div>
+            <div class="stat-row" style="margin-bottom:16px;">
+              <div class="stat-pill"><div class="stat-lbl">Avg monthly gain</div><div class="stat-val" id="hist-avg-gain">—</div></div>
+              <div class="stat-pill"><div class="stat-lbl">Days tracked</div><div class="stat-val" id="hist-days">—</div></div>
+            </div>
           </div>
-          <div class="stat-row">
-            <div class="stat-pill"><div class="stat-lbl">Avg monthly gain</div><div class="stat-val" id="hist-avg-gain">—</div></div>
-            <div class="stat-pill"><div class="stat-lbl">Days tracked</div><div class="stat-val" id="hist-days">—</div></div>
+          <!-- no data -->
+          <div id="hist-no-data" style="display:none;text-align:center;padding:28px 16px 12px;color:var(--text3);font-size:13px;line-height:1.5;">
+            No history yet.<br>Tap <strong style="color:var(--green);">+ Log</strong> to record your first net worth entry, or the app auto-saves a snapshot each day you open it.
           </div>
-          <div id="hist-no-data" style="display:none;text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;">
-            No history yet — the app saves a daily snapshot. Check back tomorrow!
-          </div>
+          <!-- snapshot log -->
+          <div id="snapshot-list" style="display:flex;flex-direction:column;gap:6px;"></div>
         </div>
 
       </div>
@@ -788,47 +872,47 @@ body.light .backup-btn{background:#FFFFFF;}
         <div style="font-size:18px;font-weight:600;" class="slide-up d1">Activity</div>
 
         <!-- month summary card -->
-        <div style="background:#131D00;border-radius:var(--r-md);padding:16px;" class="slide-up d2">
-          <div id="act-month-label" style="font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;"></div>
+        <div class="act-summary-card slide-up d2">
+          <div id="act-month-label" class="act-month-lbl"></div>
 
           <!-- 3 stats -->
           <div style="display:flex;gap:6px;margin-bottom:12px;">
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Income</div>
-              <div style="font-size:18px;font-weight:600;color:#A8E63C;letter-spacing:-.5px;" id="act-income">—</div>
+            <div class="act-stat-pill">
+              <div class="act-stat-lbl">Income</div>
+              <div class="act-stat-val" style="color:#A8E63C;" id="act-income">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Spent</div>
-              <div style="font-size:18px;font-weight:600;color:#fff;letter-spacing:-.5px;" id="act-spent">—</div>
+            <div class="act-stat-pill">
+              <div class="act-stat-lbl">Spent</div>
+              <div class="act-stat-val act-spent-val" id="act-spent">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:3px;">Saved</div>
-              <div style="font-size:18px;font-weight:600;color:#5B9BD5;letter-spacing:-.5px;" id="act-saved">—</div>
+            <div class="act-stat-pill">
+              <div class="act-stat-lbl">Saved</div>
+              <div class="act-stat-val" style="color:var(--blue);" id="act-saved">—</div>
             </div>
           </div>
 
           <!-- budget progress -->
-          <div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:7px;">
+          <div class="act-bar-track">
             <div id="act-bar" style="height:5px;border-radius:3px;background:#A8E63C;width:0%;transition:width .8s cubic-bezier(0.16,1,0.3,1);"></div>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px;">
             <span id="act-pct" style="color:#A8E63C;font-weight:600;"></span>
-            <span id="act-remaining" style="color:rgba(255,255,255,.35);"></span>
+            <span id="act-remaining" class="act-remaining-lbl"></span>
           </div>
 
           <!-- breakdown pills -->
           <div style="display:flex;gap:6px;">
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Essentials</div>
-              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-ess">—</div>
+            <div class="act-mini-pill">
+              <div class="act-mini-lbl">Essentials</div>
+              <div class="act-mini-val" id="act-ess">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Subscriptions</div>
-              <div style="font-size:13px;font-weight:600;color:#fff;" id="act-subs">—</div>
+            <div class="act-mini-pill">
+              <div class="act-mini-lbl">Subscriptions</div>
+              <div class="act-mini-val" id="act-subs">—</div>
             </div>
-            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;">
-              <div style="font-size:9px;color:rgba(255,255,255,.35);">Saved</div>
-              <div style="font-size:13px;font-weight:600;color:#A8E63C;" id="act-saved2">—</div>
+            <div class="act-mini-pill">
+              <div class="act-mini-lbl">Saved</div>
+              <div class="act-mini-val" style="color:#A8E63C;" id="act-saved2">—</div>
             </div>
           </div>
         </div>
@@ -1231,6 +1315,13 @@ body.light .backup-btn{background:#FFFFFF;}
       </div>
     </div>
 
+    <!-- ═══ ALERTS SCREEN ═══ -->
+    <div class="screen" id="screen-alerts">
+      <div class="pg">
+        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Alerts</div>
+        <div id="alerts-list" class="slide-up d2"></div>
+      </div>
+    </div>
 
       </div><!-- end page -->
 
@@ -1280,6 +1371,38 @@ body.light .backup-btn{background:#FFFFFF;}
       <div class="sheet-handle"></div>
       <div class="sheet-title" id="sheet-title"></div>
       <div id="sheet-body"></div>
+    </div>
+  </div>
+
+  <!-- Log net worth sheet -->
+  <div class="sheet-overlay" id="log-snap-overlay" onclick="closeLogSnapshot(event)">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Log net worth</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Date</div>
+          <input type="date" id="snap-date" style="width:100%;background:var(--surface2);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-sm);padding:10px 14px;font-size:15px;color:var(--text);font-family:'DM Sans',sans-serif;-webkit-appearance:none;">
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Total net worth (<span id="snap-cur-label">AED</span>)</div>
+          <input type="number" id="snap-amount" placeholder="0" style="width:100%;background:var(--surface2);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-sm);padding:10px 14px;font-size:15px;color:var(--text);font-family:'DM Sans',sans-serif;">
+        </div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.5;">This records your total net worth for the selected date and adds it to your history chart. Existing entries for that date will be overwritten.</div>
+        <button onclick="submitLogSnapshot()" style="width:100%;background:var(--green);color:#000;border:none;border-radius:var(--r-md);padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">Save entry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ALERTS SHEET ═══ -->
+  <div id="alerts-sheet-overlay" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:9984;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);align-items:flex-start;justify-content:center;">
+    <div id="alerts-sheet" style="background:var(--surface);border-radius:0 0 var(--r-xl) var(--r-xl);width:100%;padding:16px 20px 24px;transform:translateY(-100%);transition:transform .38s cubic-bezier(0.32,0.72,0,1);max-height:75vh;overflow-y:auto;">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 18px;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:600;">Alerts</div>
+        <div onclick="clearAlerts()" style="font-size:12px;color:var(--text3);cursor:pointer;padding:4px 8px;border-radius:var(--r-sm);background:var(--surface2);">Clear all</div>
+      </div>
+      <div id="alerts-sheet-list" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
   </div>
 
@@ -1552,6 +1675,44 @@ function getIcon(name, sz) {
     d = '<circle cx="8.5" cy="8.5" r="5"/>'
       + '<path d="M13.5 13.5L17.5 17.5"/>'
       + '<path d="M6.5 6.5l4 4M10.5 6.5l-4 4"/>';
+  } else if(name === 'goal-target') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<circle cx="10" cy="10" r="4.5"/>'
+      + '<circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none"/>';
+  } else if(name === 'goal-home') {
+    d = '<path d="M2.5 10L10 3.5L17.5 10"/>'
+      + '<path d="M5 8.5V17.5h4V13h2v4.5h4V8.5"/>';
+  } else if(name === 'goal-plane') {
+    d = '<path d="M17.5 10L3 15.5l2-5.5-2-5.5L17.5 10Z"/>'
+      + '<path d="M5 10h7"/>';
+  } else if(name === 'goal-edu') {
+    d = '<path d="M2 8.5L10 5l8 3.5-8 3.5L2 8.5Z"/>'
+      + '<path d="M5.5 10.5v4c0 0 2 2 4.5 2s4.5-2 4.5-2v-4"/>'
+      + '<path d="M18 8.5V13"/>';
+  } else if(name === 'goal-gem') {
+    d = '<polygon points="10,2 17,7 14,18 6,18 3,7"/>'
+      + '<polyline points="3,7 10,14 17,7"/>'
+      + '<line x1="6" y1="7" x2="14" y2="7"/>';
+  } else if(name === 'goal-car') {
+    d = '<rect x="2" y="9" width="16" height="7" rx="1.5"/>'
+      + '<path d="M5 9l2-4h6l2 4"/>'
+      + '<circle cx="6" cy="16" r="1.5"/>'
+      + '<circle cx="14" cy="16" r="1.5"/>';
+  } else if(name === 'goal-phone') {
+    d = '<rect x="6" y="2" width="8" height="16" rx="1.5"/>'
+      + '<circle cx="10" cy="15" r="0.8" fill="currentColor" stroke="none"/>';
+  } else if(name === 'goal-money') {
+    d = '<ellipse cx="10" cy="6" rx="6.5" ry="2.5"/>'
+      + '<path d="M3.5 6v3c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5V6"/>'
+      + '<path d="M3.5 9v3c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5V9"/>'
+      + '<path d="M3.5 12v2c0 1.4 2.9 2.5 6.5 2.5S16.5 15.4 16.5 14v-2"/>';
+  } else if(name === 'goal-fitness') {
+    d = '<path d="M2 10h2.5M15.5 10H18M5 7H7v6H5V7Zm8-1h2v8h-2V6ZM7 10h6"/>';
+  } else if(name === 'goal-globe') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<path d="M10 2.5c-2.5 2-4 4.5-4 7.5s1.5 5.5 4 7.5"/>'
+      + '<path d="M10 2.5c2.5 2 4 4.5 4 7.5s-1.5 5.5-4 7.5"/>'
+      + '<path d="M2.5 10h15"/>';
   }
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
 }
@@ -1562,7 +1723,7 @@ function getIcon(name, sz) {
 
 
 // ── Navigation ─────────────────────────────────────────────────────────────
-var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','advisor','activity','more'];
+var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','alerts','advisor','activity','more'];
 
 
 
@@ -1578,6 +1739,7 @@ function renderTab(tab){
   else if(tab==='transactions')renderTransactionsTab();
   else if(tab==='goals')renderGoalsTab();
   else if(tab==='activity')renderActivityTab();
+  else if(tab==='alerts')renderAlertsTab();
   else if(tab==='more')renderMore();
 }
 
@@ -1612,7 +1774,7 @@ function submitGoalSheet(){
   var track  = (g('sh-goal-track')||{}).value||'';
   var current= parseFloat((g('sh-goal-current')||{}).value)||0;
   var desc   = (g('sh-goal-desc')||{}).value||'';
-  var icon   = (g('sh-goal-icon')||{}).value||'🎯';
+  var icon   = (g('sh-goal-icon')||{}).value||'goal-target';
   if(!name.trim() || !target) return;
   data.goals.push({
     name:       name.trim(),
@@ -1839,7 +2001,11 @@ function renderGoals(){
     var eta  = calcGoalETA(g, prog);
     var pct  = prog.pct.toFixed(1);
     var isComplete = prog.pct >= 100;
-    var icon = g.icon || '🎯';
+    var gIconName = g.icon || 'goal-target';
+    var gIconIsEmoji = gIconName.length <= 4 && gIconName.charCodeAt(0) > 127;
+    var gIconHtml = gIconIsEmoji
+      ? '<div style="width:32px;height:32px;border-radius:var(--r-sm);background:' + col.bg + ';display:flex;align-items:center;justify-content:center;font-size:16px;">' + gIconName + '</div>'
+      : '<div style="width:32px;height:32px;border-radius:var(--r-sm);background:' + col.bg + ';color:' + col.accent + ';display:flex;align-items:center;justify-content:center;">' + getIcon(gIconName, 17) + '</div>';
 
     var etaColor = isComplete ? 'var(--green)' : prog.pct >= 75 ? '#5BCDD5' : prog.pct >= 40 ? col.accent : 'var(--text3)';
 
@@ -1849,7 +2015,7 @@ function renderGoals(){
       // header
       + '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">'
         + '<div style="display:flex;align-items:center;gap:8px;">'
-          + '<div style="width:32px;height:32px;border-radius:var(--r-sm);background:' + col.bg + ';display:flex;align-items:center;justify-content:center;font-size:16px;">' + icon + '</div>'
+          + gIconHtml
           + '<div>'
             + '<div class="goal-title">' + g.name + '</div>'
             + '<div class="goal-sub">' + (g.desc || (g.autoTrack ? 'Auto-tracked' : 'Manual')) + '</div>'
@@ -1902,17 +2068,163 @@ function deleteGoal(idx){
 function updateGoalAmt(idx){
   var g   = data.goals[idx];
   if(!g) return;
-  var val = window.prompt('Current saved amount for "' + g.name + '" (AED):', g.currentAmt || 0);
+  var val = window.prompt('Current saved amount for "' + g.name + '" (' + curSym() + '):', g.currentAmt || 0);
   if(val === null) return;
   var num = parseFloat(val);
   if(isNaN(num)) return;
+  var prevPct = g.targetAmt > 0 ? (g.currentAmt||0) / g.targetAmt * 100 : 0;
   g.currentAmt = num;
   save();
+  checkGoalMilestone(g, prevPct);
   renderGoals();
+  renderTopGoal();
+}
+
+var GOAL_MILESTONES = [
+  {pct:25,  label:'25%',  color:'#5B9BD5', iconName:'alert-goal',     msg:'a quarter of the way there'},
+  {pct:50,  label:'50%',  color:'#A8E63C', iconName:'alert-goal',     msg:'halfway to your goal'},
+  {pct:75,  label:'75%',  color:'#A8E63C', iconName:'alert-goal',     msg:'75% of the way there'},
+  {pct:100, label:'100%', color:'#A8E63C', iconName:'alert-complete', msg:'reached your goal'},
+];
+
+function checkGoalMilestone(g, prevPct){
+  var newPct = g.targetAmt > 0 ? g.currentAmt / g.targetAmt * 100 : 0;
+  if(!g._milestones) g._milestones = {};
+  for(var i = 0; i < GOAL_MILESTONES.length; i++){
+    var m = GOAL_MILESTONES[i];
+    if(newPct >= m.pct && prevPct < m.pct && !g._milestones[m.label]){
+      g._milestones[m.label] = true;
+      var title = m.pct === 100 ? 'Goal reached! 🎉' : 'Goal milestone';
+      var body  = '"' + g.name + '" — you\'re ' + m.msg + '!';
+      logAlert('goal', title, body);
+      showToast(m.iconName, m.color, title, body, 'goal-toast');
+      break;
+    }
+  }
+}
+
+function checkAllGoalMilestones(){
+  if(!data.goals) return;
+  data.goals.forEach(function(g){
+    var prog = calcGoalProgress(g);
+    checkGoalMilestone(g, prog.pct - 0.01); // pass slightly lower to avoid re-triggering
+  });
 }
 
 function renderGoalsTab(){
   renderGoals();
+}
+
+function updateAlertsDot(){
+  var log = getAlertLog();
+  var lastSeen = 0;
+  try{ lastSeen = parseInt(localStorage.getItem('moxcoin_alerts_seen')||'0'); }catch(e){}
+  var hasNew = log.length > 0 && log[0].ts > lastSeen;
+  var dot = document.getElementById('alerts-home-dot');
+  if(dot) dot.style.display = hasNew ? 'block' : 'none';
+  var btn = document.getElementById('alerts-btn');
+  if(btn) btn.style.color = hasNew ? '#E24B4A' : '';
+  if(btn) btn.style.background = hasNew ? 'rgba(224,85,85,.1)' : '';
+}
+
+function openAlertsSheet(){
+  var overlay = document.getElementById('alerts-sheet-overlay'); if(!overlay) return;
+  var sheet   = document.getElementById('alerts-sheet');
+  // Stop overlay above pager dots + bottom nav
+  var off = getMoreOffsets();
+  overlay.style.bottom = off.bottom + 'px';
+  // Mark as seen
+  try{ localStorage.setItem('moxcoin_alerts_seen', String(Date.now())); }catch(e){}
+  updateAlertsDot();
+  renderAlertsSheetList();
+  overlay.style.display = 'flex';
+  setTimeout(function(){ if(sheet) sheet.style.transform = 'translateY(0)'; }, 20);
+  overlay.onclick = function(e){ if(e.target === overlay) closeAlertsSheet(); };
+}
+
+function closeAlertsSheet(){
+  var overlay = document.getElementById('alerts-sheet-overlay');
+  var sheet   = document.getElementById('alerts-sheet');
+  if(sheet) sheet.style.transform = 'translateY(-100%)';
+  setTimeout(function(){ if(overlay) overlay.style.display = 'none'; }, 390);
+}
+
+function clearAlerts(){
+  try{ localStorage.removeItem(ALERT_LOG_KEY); }catch(e){}
+  updateAlertsDot();
+  renderAlertsSheetList();
+}
+
+function renderAlertsSheetList(){
+  var el = document.getElementById('alerts-sheet-list'); if(!el) return;
+  var log = getAlertLog();
+  if(!log.length){
+    el.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;">No alerts yet</div>';
+    return;
+  }
+  function timeAgo(ts){
+    var s=Math.floor((Date.now()-ts)/1000);
+    if(s<60) return 'just now';
+    if(s<3600) return Math.floor(s/60)+'m ago';
+    if(s<86400) return Math.floor(s/3600)+'h ago';
+    return Math.floor(s/86400)+'d ago';
+  }
+  var alertColors = {budget:'#E05555', goal:'#A8E63C'};
+  var alertIcons  = {budget:'alert-crit', goal:'alert-goal'};
+  el.innerHTML = log.map(function(a){
+    var col  = alertColors[a.type]  || 'var(--text3)';
+    var icon = alertIcons[a.type]   || 'alert-crit';
+    return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--surface2);border-radius:var(--r-md);">'
+      + '<div style="width:34px;height:34px;border-radius:8px;background:'+col+'18;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+        + getAlertIcon(icon, col, 16)
+      + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">'+a.title+'</div>'
+        + '<div style="font-size:11px;color:var(--text2);line-height:1.4;">'+a.msg+'</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:4px;">'+timeAgo(a.ts)+'</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function renderAlertsTab(){
+  var el = document.getElementById('alerts-list'); if(!el) return;
+  var log = getAlertLog();
+  if(!log.length){
+    el.innerHTML = '<div style="text-align:center;padding:40px 24px;color:var(--text3);font-size:13px;line-height:1.6;">'
+      + '<div style="width:48px;height:48px;border-radius:var(--r-md);background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--text3);margin:0 auto 12px;">'
+      + getAlertIcon('alert-crit','var(--text3)',22)+'</div>'
+      + 'No alerts yet<br><span style="font-size:11px;">Alerts appear here when you hit budget or goal milestones.</span></div>';
+    return;
+  }
+  function timeAgo(ts){
+    var s = Math.floor((Date.now()-ts)/1000);
+    if(s < 60) return 'just now';
+    if(s < 3600) return Math.floor(s/60)+'m ago';
+    if(s < 86400) return Math.floor(s/3600)+'h ago';
+    return Math.floor(s/86400)+'d ago';
+  }
+  var alertColors = {budget:'#E05555', goal:'#A8E63C'};
+  var alertIcons  = {budget:'alert-crit', goal:'alert-goal'};
+  el.innerHTML = log.map(function(a){
+    var col  = alertColors[a.type] || 'var(--text3)';
+    var icon = alertIcons[a.type]  || 'alert-crit';
+    return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--surface);border-radius:var(--r-md);">'
+      + '<div style="width:34px;height:34px;border-radius:8px;background:'+col+'18;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+        + getAlertIcon(icon, col, 16)
+      + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">'+a.title+'</div>'
+        + '<div style="font-size:11px;color:var(--text2);line-height:1.4;">'+a.msg+'</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:4px;">'+timeAgo(a.ts)+'</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+  // Update More menu badge + sub
+  var sub = document.getElementById('more-alerts-sub');
+  if(sub) sub.textContent = log.length + ' alert' + (log.length!==1?'s':'') + ' · last: ' + timeAgo(log[0].ts);
+  var badge = document.getElementById('alerts-badge');
+  if(badge) badge.style.display = 'block';
 }
 
 
@@ -1982,11 +2294,11 @@ function drawRealSparkline(canvasId, range, options){
 
   var pts = getSnapshotRange(range || currentRange);
 
-  // Need at least 2 points to draw a line
+  // Need at least 2 points — if only 1, draw a flat honest line at current value
   if(pts.length < 2){
-    // Draw a flat line at current value
     var cur = totalAssets();
-    pts = [{date:'', total: cur * 0.95}, {date: todayKey(), total: cur}];
+    if(cur <= 0){ ctx.clearRect(0,0,W,H); return; }
+    pts = [{date:'', total: cur}, {date: todayKey(), total: cur}];
   }
 
   var vals  = pts.map(function(p){ return p.total; });
@@ -2057,14 +2369,48 @@ function hexToRgba(hex, alpha){
 
 // ── Budget alerts ──────────────────────────────────────────────────────────
 var ALERT_STORAGE_KEY = 'moxcoin_alerts';
+var ALERT_LOG_KEY     = 'moxcoin_alert_log';
 
 // Alert thresholds
 var BUDGET_THRESHOLDS = [
-  {pct: 50,  label: '50%',  color: '#E8D800', icon: '⚠️',  msg: 'halfway through your budget'},
-  {pct: 75,  label: '75%',  color: '#E0905A', icon: '🔶',  msg: 'at 75% of your budget'},
-  {pct: 90,  label: '90%',  color: '#E05555', icon: '🔴',  msg: 'almost at your limit'},
-  {pct: 100, label: '100%', color: '#E05555', icon: '🚨',  msg: 'over your budget!'},
+  {pct: 50,  label: '50%',  color: '#E8D800', iconName: 'alert-warn',  msg: 'halfway through your budget'},
+  {pct: 75,  label: '75%',  color: '#E0905A', iconName: 'alert-high',  msg: 'at 75% of your budget'},
+  {pct: 90,  label: '90%',  color: '#E05555', iconName: 'alert-crit',  msg: 'almost at your spending limit'},
+  {pct: 100, label: '100%', color: '#E05555', iconName: 'alert-over',  msg: 'over your budget this month'},
 ];
+
+function getAlertIcon(name, color, sz){
+  var s = sz || 18;
+  var d = '';
+  if(name === 'alert-warn' || name === 'alert-high'){
+    d = '<path d="M10 3L18 17H2L10 3Z"/><path d="M10 9v4"/><circle cx="10" cy="14.5" r=".8" fill="currentColor" stroke="none"/>';
+  } else if(name === 'alert-crit' || name === 'alert-over'){
+    d = '<circle cx="10" cy="10" r="7.5"/><path d="M10 7v4"/><circle cx="10" cy="13.5" r=".8" fill="currentColor" stroke="none"/>';
+  } else if(name === 'alert-goal'){
+    d = '<circle cx="10" cy="10" r="7.5"/><circle cx="10" cy="10" r="4"/><circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none"/>';
+  } else if(name === 'alert-complete'){
+    d = '<circle cx="10" cy="10" r="7.5"/><path d="M6.5 10l2.5 2.5 4.5-5"/>';
+  }
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 20 20" fill="none" stroke="'+color+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
+}
+
+function logAlert(type, title, msg){
+  try{
+    var raw = localStorage.getItem(ALERT_LOG_KEY);
+    var log = raw ? JSON.parse(raw) : [];
+    log.unshift({type:type, title:title, msg:msg, ts:Date.now()});
+    if(log.length > 50) log = log.slice(0,50);
+    localStorage.setItem(ALERT_LOG_KEY, JSON.stringify(log));
+  }catch(e){}
+  setTimeout(updateAlertsDot, 50);
+}
+
+function getAlertLog(){
+  try{
+    var raw = localStorage.getItem(ALERT_LOG_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ return []; }
+}
 
 function getAlertState(){
   try{
@@ -2107,39 +2453,44 @@ function checkBudgetAlerts(){
   renderBudgetAlertBanner(pct, b);
 }
 
-function showBudgetAlert(threshold, pct, b){
-  // Create a toast notification
-  var existing = document.getElementById('budget-toast');
+function showToast(iconName, iconColor, title, body, id){
+  var toastId = id || 'mox-toast';
+  var existing = document.getElementById(toastId);
   if(existing) existing.remove();
 
   var toast = document.createElement('div');
-  toast.id  = 'budget-toast';
+  toast.id  = toastId;
   toast.style.cssText =
-    'position:fixed;top:20px;left:16px;right:16px;z-index:200;' +
-    'background:var(--surface);border-radius:var(--r-md);padding:14px 16px;' +
-    'border-left:4px solid ' + threshold.color + ';' +
-    'box-shadow:0 8px 32px rgba(0,0,0,.4);' +
+    'position:absolute;top:16px;left:12px;right:12px;z-index:200;' +
+    'background:var(--surface);border-radius:var(--r-md);padding:13px 14px;' +
+    'border-left:3px solid ' + iconColor + ';' +
+    'box-shadow:0 8px 32px rgba(0,0,0,.35);' +
     'animation:slideDown .35s cubic-bezier(0.16,1,0.3,1) both;' +
-    'display:flex;align-items:flex-start;gap:12px;';
+    'display:flex;align-items:flex-start;gap:12px;cursor:pointer;';
 
   toast.innerHTML =
-    '<div style="font-size:22px;flex-shrink:0;">' + threshold.icon + '</div>' +
-    '<div style="flex:1;">' +
-      '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">Budget alert</div>' +
-      '<div style="font-size:12px;color:var(--text2);">You\'re ' + threshold.msg + ' — ' +
-        fmt(b.actual) + ' / ' + fmt(b.inc) + ' ' + curSym() + '</div>' +
+    '<div style="width:32px;height:32px;border-radius:8px;background:'+iconColor+'18;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+      + getAlertIcon(iconName, iconColor, 16) +
     '</div>' +
-    '<div onclick="this.parentElement.remove()" style="font-size:18px;color:var(--text3);cursor:pointer;padding:2px 4px;flex-shrink:0;">&#10005;</div>';
+    '<div style="flex:1;min-width:0;">' +
+      '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:1px;">'+title+'</div>' +
+      '<div style="font-size:11px;color:var(--text2);line-height:1.4;">'+body+'</div>' +
+    '</div>' +
+    '<div onclick="event.stopPropagation();this.parentElement.style.animation=\'slideToast .25s ease forwards\';setTimeout(function(){var t=document.getElementById(\''+toastId+'\');if(t)t.remove();},260);" style="color:var(--text3);cursor:pointer;font-size:16px;padding:2px 0 0 4px;flex-shrink:0;">&#10005;</div>';
 
   document.getElementById('app').appendChild(toast);
 
-  // Auto-dismiss after 6 seconds
   setTimeout(function(){
-    if(document.getElementById('budget-toast')){
-      toast.style.animation = 'slideToast .3s ease forwards';
-      setTimeout(function(){ if(toast.parentNode) toast.remove(); }, 300);
-    }
+    var t = document.getElementById(toastId);
+    if(t){ t.style.animation='slideToast .3s ease forwards'; setTimeout(function(){ if(t.parentNode)t.remove(); },310); }
   }, 6000);
+}
+
+function showBudgetAlert(threshold, pct, b){
+  var title = 'Budget alert';
+  var body  = 'You\'re ' + threshold.msg + ' — ' + fmt(b.actual) + ' / ' + fmt(b.inc) + ' ' + curSym();
+  logAlert('budget', title, body);
+  showToast(threshold.iconName, threshold.color, title, body, 'budget-toast');
 }
 
 function renderBudgetAlertBanner(pct, b){
@@ -2162,7 +2513,7 @@ function renderBudgetAlertBanner(pct, b){
   el.style.borderColor = current.color + '44';
   el.style.background  = current.color + '11';
   el.innerHTML =
-    '<span style="font-size:18px;">' + current.icon + '</span>' +
+    '<div style="flex-shrink:0;">' + getAlertIcon(current.iconName, current.color, 18) + '</div>' +
     '<div style="flex:1;">' +
       '<div style="font-size:12px;font-weight:600;color:' + current.color + ';">You\'re ' + current.msg + '</div>' +
       '<div style="font-size:11px;color:var(--text3);margin-top:2px;">' +
@@ -2625,6 +2976,13 @@ function renderMore(){
   set('more-username', data.userName||'Tap to personalise greeting');
   set('more-theme', document.body.classList.contains('light')?'Light mode':'Dark mode');
   updateBackupSize();
+  // Update alerts badge
+  var log = getAlertLog();
+  var sub = document.getElementById('more-alerts-sub');
+  function timeAgoShort(ts){ var s=Math.floor((Date.now()-ts)/1000); if(s<3600)return Math.floor(s/60)+'m ago'; if(s<86400)return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; }
+  if(sub) sub.textContent = log.length ? log.length+' alert'+(log.length!==1?'s':'')+' · '+timeAgoShort(log[0].ts) : 'No recent alerts';
+  var badge = document.getElementById('alerts-badge');
+  if(badge) badge.style.display = log.length ? 'block' : 'none';
 }
 
 
@@ -2745,17 +3103,22 @@ function renderHomeGoal(){
   });
   if(!best){ section.style.display='none'; return; }
 
-  section.style.display = 'block';
+  section.style.display = 'flex';
+  section.style.flexDirection = 'column';
   var col  = getGoalColor(bestIdx);
   var prog = calcGoalProgress(best);
   var eta  = calcGoalETA(best, prog);
   var pct  = prog.pct.toFixed(1);
-  var icon = best.icon || '&#127919;';
+  var iconName = best.icon || 'goal-target';
+  var iconIsEmoji = iconName.length <= 4 && iconName.charCodeAt(0) > 127;
+  var iconHtml = iconIsEmoji
+    ? '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+iconName+'</div>'
+    : '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';color:'+col.accent+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon(iconName,18)+'</div>';
 
   var html = '<div class="goal-card item-in" style="border:0.5px solid '+col.accent+'33;cursor:pointer;" onclick="switchTab(\'goals\')">'
     + '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+col.accent+';border-radius:3px 3px 0 0;"></div>'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
-      + '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+icon+'</div>'
+      + iconHtml
       + '<div style="flex:1;min-width:0;">'
         + '<div class="goal-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+best.name+'</div>'
         + '<div style="font-size:11px;color:var(--text3);">ETA: '+eta+'</div>'
@@ -3050,8 +3413,7 @@ function renderCryptoListTo(elId){
   var el = document.getElementById(elId);
   if(!el) return;
   if(!data.cryptoHoldings.length){
-    el.innerHTML = emptyStateImg('https://d8j0ntlcm91z4.cloudfront.net/user_36e8qbN78xBUvrF3aCKVXAvoIYY/hf_20260527_153752_6ccdc73b-bdc2-45e9-aad8-c7f2f8e426d9.png','No crypto yet','Add Bitcoin, Ethereum or any coin to start tracking.','+ Add crypto','openFABSheet(\'add-crypto\')'); return;
-    return;
+    el.innerHTML = emptyState('crypto','No crypto yet','Add Bitcoin, Ethereum or any coin to start tracking.','+ Add crypto','openFABSheet(\'add-crypto\')'); return;
   }
   el.innerHTML = data.cryptoHoldings.map(function(h,i){
     var price = cryptoCache[h.id]||0;
@@ -3145,9 +3507,16 @@ function drawHistChart(pts){
 }
 function renderHistory(){
   var pts=getHistoryPoints(histRange);
-  var noData=document.getElementById('hist-no-data'),canvas=document.getElementById('hist-canvas');
-  if(pts.length<2){ if(noData)noData.style.display='block'; if(canvas)canvas.style.display='none'; return; }
-  if(noData)noData.style.display='none'; if(canvas)canvas.style.display='block';
+  var noData=document.getElementById('hist-no-data');
+  var canvas=document.getElementById('hist-canvas');
+  var chartCard=document.getElementById('hist-chart-card');
+  var statsEl=document.getElementById('hist-stats');
+  var hasData = pts.length >= 2;
+  if(noData)  noData.style.display   = hasData ? 'none' : 'block';
+  if(chartCard) chartCard.style.display = hasData ? 'block' : 'none';
+  if(statsEl)  statsEl.style.display  = hasData ? 'block' : 'none';
+  renderSnapshotList();
+  if(!hasData) return;
   var vals=pts.map(function(p){return p.total;}),first=vals[0],last=vals[vals.length-1];
   var change=last-first,changePct=first>0?((change/first)*100).toFixed(1):'0.0',isUp=change>=0;
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
@@ -3156,12 +3525,77 @@ function renderHistory(){
   setC('hist-change',(isUp?'+':'')+fmt(change)+' '+curSym()+' ('+changePct+'%)',isUp?'var(--green)':'var(--red)');
   set('hist-peak',fmt(Math.max.apply(null,vals))+' '+curSym());
   set('hist-low',fmt(Math.min.apply(null,vals))+' '+curSym());
-  set('hist-days',pts.length+' days');
+  set('hist-days',(data.snapshots||[]).length+' days');
   var avgMonthly=change/Math.max(1,pts.length/30);
   setC('hist-avg-gain',(avgMonthly>=0?'+':'')+fmt(Math.round(avgMonthly))+' '+curSym(),avgMonthly>=0?'var(--green)':'var(--red)');
-  function fmtD(str){var d=new Date(str);return d.toLocaleDateString('en',{day:'numeric',month:'short',year:'2-digit'});}
+  function fmtD(str){var d=new Date(str+'T00:00:00');return d.toLocaleDateString('en',{day:'numeric',month:'short',year:'2-digit'});}
   set('hist-date-start',fmtD(pts[0].date)); set('hist-date-end',fmtD(pts[pts.length-1].date));
   setTimeout(function(){drawHistChart(pts);},50);
+}
+
+function renderSnapshotList(){
+  var el=document.getElementById('snapshot-list'); if(!el) return;
+  var snaps=(data.snapshots||[]).slice().reverse(); // newest first
+  if(!snaps.length){ el.innerHTML=''; return; }
+  function fmtD(str){
+    var d=new Date(str+'T00:00:00');
+    return d.toLocaleDateString('en',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  }
+  var today=todayKey();
+  el.innerHTML='<div style="font-size:12px;color:var(--text3);font-weight:500;margin-bottom:6px;margin-top:4px;">Recorded entries</div>'
+    + snaps.map(function(s){
+      var isToday = s.date === today;
+      return '<div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:var(--r-sm);padding:10px 14px;">'
+        + '<div>'
+          + '<div style="font-size:13px;font-weight:500;color:var(--text);">'+fmt(s.total)+' '+curSym()+'</div>'
+          + '<div style="font-size:11px;color:var(--text3);margin-top:1px;">'+fmtD(s.date)+(isToday?' · today':' ')+'</div>'
+        + '</div>'
+        + '<div onclick="deleteSnapshot(\''+s.date+'\')" style="padding:6px 10px;border-radius:var(--r-sm);color:var(--text3);font-size:18px;cursor:pointer;line-height:1;">&times;</div>'
+      + '</div>';
+    }).join('');
+}
+
+function openLogSnapshot(){
+  var overlay=document.getElementById('log-snap-overlay'); if(!overlay) return;
+  var dateIn=document.getElementById('snap-date');
+  var amtIn=document.getElementById('snap-amount');
+  var curLbl=document.getElementById('snap-cur-label');
+  if(dateIn) dateIn.value = todayKey();
+  if(amtIn){ amtIn.value = totalAssets() > 0 ? Math.round(totalAssets()) : ''; }
+  if(curLbl) curLbl.textContent = curSym();
+  overlay.classList.add('open');
+}
+
+function closeLogSnapshot(e){
+  if(e && e.target !== document.getElementById('log-snap-overlay')) return;
+  document.getElementById('log-snap-overlay').classList.remove('open');
+}
+
+function submitLogSnapshot(){
+  var dateIn=document.getElementById('snap-date');
+  var amtIn=document.getElementById('snap-amount');
+  var dateVal=(dateIn||{}).value||'';
+  var amtVal=parseFloat((amtIn||{}).value)||0;
+  if(!dateVal || amtVal<=0) return;
+  if(!data.snapshots) data.snapshots=[];
+  var idx=-1;
+  for(var i=0;i<data.snapshots.length;i++){
+    if(data.snapshots[i].date===dateVal){idx=i;break;}
+  }
+  if(idx>=0){ data.snapshots[idx].total=amtVal; }
+  else { data.snapshots.push({date:dateVal,total:amtVal}); }
+  data.snapshots.sort(function(a,b){return a.date<b.date?-1:1;});
+  if(data.snapshots.length>365) data.snapshots=data.snapshots.slice(data.snapshots.length-365);
+  save();
+  document.getElementById('log-snap-overlay').classList.remove('open');
+  renderHistory();
+}
+
+function deleteSnapshot(dateKey){
+  if(!data.snapshots) return;
+  data.snapshots=data.snapshots.filter(function(s){return s.date!==dateKey;});
+  save();
+  renderHistory();
 }
 function renderPortfolio(){
   var total=totalAssets();
@@ -3182,7 +3616,7 @@ function drawSparkline(){
 function renderCryptoList(){
   var el=document.getElementById('crypto-list');
   if(!el)return;
-  if(!data.cryptoHoldings.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No holdings yet</div>';return;}
+  if(!data.cryptoHoldings.length){el.innerHTML=emptyState('crypto','No holdings yet','Add your crypto to track values in real time.','','openFABSheet(\'add-crypto\')');return;}
   el.innerHTML=data.cryptoHoldings.map(function(h,i){
     var price=cryptoCache[h.id]||0;
     var val=h.qty*price*3.6725;
@@ -3566,16 +4000,27 @@ function openSheet(type,idx){
 
   } else if(type === 'add-goal'){
     title.textContent = 'Add goal';
-    var iconOpts = ['🎯','🏠','✈️','🎓','💎','🚗','📱','💰','🏋️','🌍'];
+    var iconOpts = [
+      {name:'goal-target', label:'Target'},
+      {name:'goal-home',   label:'Home'},
+      {name:'goal-plane',  label:'Travel'},
+      {name:'goal-edu',    label:'Education'},
+      {name:'goal-gem',    label:'Luxury'},
+      {name:'goal-car',    label:'Car'},
+      {name:'goal-phone',  label:'Device'},
+      {name:'goal-money',  label:'Savings'},
+      {name:'goal-fitness',label:'Fitness'},
+      {name:'goal-globe',  label:'World'}
+    ];
     var iconBtns = iconOpts.map(function(ic){
-      return '<div onclick="selectGoalIcon(this,\'' + ic + '\')" style="width:36px;height:36px;border-radius:var(--r-sm);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;border:1.5px solid transparent;" data-icon="' + ic + '">' + ic + '</div>';
+      return '<div onclick="selectGoalIcon(this,\'' + ic.name + '\')" style="width:36px;height:36px;border-radius:var(--r-sm);background:var(--surface2);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid transparent;" data-icon="' + ic.name + '">' + getIcon(ic.name, 18) + '</div>';
     }).join('');
     body.innerHTML =
       '<div class="field-group"><div class="field-label">Goal name</div>' +
       '<input class="field-input" id="sh-goal-name" placeholder="House deposit, Trip to Japan..."></div>' +
       '<div class="field-group"><div class="field-label">Icon</div>' +
       '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;" id="goal-icon-row">' + iconBtns + '</div>' +
-      '<input type="hidden" id="sh-goal-icon" value="🎯"></div>' +
+      '<input type="hidden" id="sh-goal-icon" value="goal-target"></div>' +
       '<div class="field-group"><div class="field-label">Target amount (AED)</div>' +
       '<input class="field-input" id="sh-goal-target" type="number" placeholder="50000"></div>' +
       '<div class="field-group"><div class="field-label">Track automatically</div>' +
@@ -4793,7 +5238,7 @@ function addBackButton(el){
 load();
 initTheme();
 initSwipe();
-setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); autoLogRecurring(); checkAutoBriefing(); }, 200);
+setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); autoLogRecurring(); checkAutoBriefing(); updateAlertsDot(); }, 200);
 
 // ── Persistent save triggers for Android PWA ─────────────────────────────
 function emergencySave(){
