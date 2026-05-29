@@ -665,6 +665,33 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .txn-item{transition:background .12s;}
 .backup-btn{transition:background .12s,transform .1s;}
 .backup-btn:active{transform:scale(.98);}
+
+/* ── Splash screen ──────────────────────────────────────────────────────── */
+#splash-screen{
+  position:absolute;inset:0;z-index:99999;
+  background:#110F0F;
+  pointer-events:none;
+  overflow:hidden;
+}
+#splash-screen.splash-out{
+  animation:splash-fade-out .6s cubic-bezier(0.4,0,1,1) forwards;
+}
+@keyframes splash-fade-out{
+  0%{opacity:1;}100%{opacity:0;}
+}
+/* Phase 1 — wordmark */
+#sp-p1{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  transition:opacity .4s ease;
+}
+#sp-p1.sp-hidden{opacity:0;}
+#splash-wordmark{
+  font-size:46px;font-weight:800;letter-spacing:-2px;color:#F59E0B;
+  animation:splash-word-in .65s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes splash-word-in{
+  0%{opacity:0;transform:scale(0.88);}100%{opacity:1;transform:scale(1);}
+}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -675,6 +702,13 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 <!-- ── App Shell ── -->
 <canvas id="bg-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.85;"></canvas>
 <div id="app" style="display:flex;flex-direction:column;position:relative;z-index:1;">
+
+<!-- ── Splash screen ── -->
+<div id="splash-screen">
+  <div id="sp-p1">
+    <span id="splash-wordmark">Moxcoin</span>
+  </div>
+</div>
 
 
   <div class="page" id="page-content">
@@ -6214,6 +6248,16 @@ function addBackButton(el){
 load();
 initTheme();
 initSwipe();
+
+// ── Splash dismiss ──────────────────────────────────────────────────────────
+(function(){
+  var sp = document.getElementById('splash-screen');
+  if(!sp) return;
+  setTimeout(function(){
+    sp.classList.add('splash-out');
+    setTimeout(function(){ sp.style.display = 'none'; }, 620);
+  }, 1500);
+})();
 setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); autoLogRecurring(); checkAutoBriefing(); updateAlertsDot(); }, 200);
 
 // ── Persistent save triggers for Android PWA ─────────────────────────────
