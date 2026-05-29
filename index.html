@@ -1306,6 +1306,9 @@ body.light .backup-btn{background:#FFFFFF;}
     </div>
   </div>
 
+  <!-- ═══ MORE SCREEN BACKDROP ═══ -->
+  <div id="more-backdrop" onclick="closeMoreScreen()" style="display:none;pointer-events:none;position:absolute;top:0;left:0;right:0;z-index:45;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);transition:opacity .3s ease;opacity:0;"></div>
+
   <!-- ═══ DELETE CONFIRMATION ═══ -->
   <div id="del-overlay" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:9990;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;">
     <div id="del-sheet" style="background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;width:100%;padding:20px 20px 36px;transform:translateY(100%);transition:transform .3s cubic-bezier(0.32,0.72,0,1);">
@@ -4699,19 +4702,52 @@ function onSwipeTouchEnd(e){
   springToIndex(newIdx);
 }
 
+function getMoreOffsets(){
+  var dots = document.getElementById('pager-dots');
+  var nav  = document.querySelector('.bottom-nav');
+  var dotsH = dots ? dots.offsetHeight : 20;
+  var navH  = nav  ? nav.offsetHeight  : 64;
+  return { bottom: dotsH + navH, topInset: 52 };
+}
+
+function showMoreBackdrop(bottomPx){
+  var bd = document.getElementById('more-backdrop');
+  if(!bd) return;
+  bd.style.bottom        = bottomPx + 'px';
+  bd.style.display       = 'block';
+  bd.style.pointerEvents = 'auto';
+  setTimeout(function(){ bd.style.opacity = '1'; }, 20);
+}
+
+function hideMoreBackdrop(animate){
+  var bd = document.getElementById('more-backdrop');
+  if(!bd) return;
+  bd.style.pointerEvents = 'none';
+  if(animate){
+    bd.style.opacity = '0';
+    setTimeout(function(){ bd.style.display = 'none'; }, 320);
+  } else {
+    bd.style.opacity = '0';
+    bd.style.display = 'none';
+  }
+}
+
 function hideMoreScreens(){
   document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
     sc.classList.remove('non-swipe-screen');
     sc.style.cssText = 'display:none;';
   });
+  hideMoreBackdrop(false);
+  currentTab = SWIPE_TABS[swipeIndex];
 }
 
 function closeMoreScreen(){
   document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
     sc.style.transition = 'transform .32s cubic-bezier(0.32,0.72,0,1)';
-    sc.style.transform = 'translateX(100%)';
+    sc.style.transform  = 'translateX(100%)';
     setTimeout(function(){ sc.classList.remove('non-swipe-screen'); sc.style.cssText = 'display:none;'; }, 340);
   });
+  hideMoreBackdrop(true);
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
   var activeNav = document.getElementById('nav-' + SWIPE_TABS[swipeIndex]);
   if(activeNav) activeNav.classList.add('active');
@@ -4724,15 +4760,19 @@ function switchTab(tab){
     hideMoreScreens();
     springToIndex(idx); closeFAB(); return;
   }
-  // Instantly dismiss any open more screen before showing new one
   hideMoreScreens();
   var el = document.getElementById('screen-' + tab);
   if(el){
+    var off = getMoreOffsets();
     el.classList.add('non-swipe-screen');
-    var bg = document.body.classList.contains('light') ? '#F5F5F0' : '#0D0D0D';
-    var navH = document.querySelector('.bottom-nav') ? document.querySelector('.bottom-nav').offsetHeight : 64;
-    el.style.cssText = 'display:flex;flex-direction:column;position:absolute;top:0;left:0;right:0;bottom:'+navH+'px;z-index:46;background:'+bg+';overflow:hidden;transform:translateX(100%);transition:transform .32s cubic-bezier(0.32,0.72,0,1);';
+    var bg = document.body.classList.contains('light') ? '#F0F0EC' : '#181818';
+    el.style.cssText = 'display:flex;flex-direction:column;position:absolute;'
+      + 'top:'+off.topInset+'px;left:8px;right:8px;bottom:'+(off.bottom+8)+'px;'
+      + 'z-index:46;background:'+bg+';border-radius:20px;overflow:hidden;'
+      + 'transform:translateX(110%);transition:transform .34s cubic-bezier(0.32,0.72,0,1);'
+      + 'box-shadow:0 8px 40px rgba(0,0,0,.6);';
     addBackButton(el);
+    showMoreBackdrop(off.bottom);
     setTimeout(function(){ el.style.transform = 'translateX(0)'; }, 20);
   }
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
