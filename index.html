@@ -3616,7 +3616,7 @@ function drawSparkline(){
 function renderCryptoList(){
   var el=document.getElementById('crypto-list');
   if(!el)return;
-  if(!data.cryptoHoldings.length){el.innerHTML=emptyState('crypto','No holdings yet','Add your crypto to track values in real time.','','openFABSheet(\'add-crypto\')');return;}
+  if(!data.cryptoHoldings.length){el.innerHTML='<div style="text-align:center;padding:12px 0;color:var(--text3);font-size:13px;">No crypto yet. Tap + to add.</div>';return;}
   el.innerHTML=data.cryptoHoldings.map(function(h,i){
     var price=cryptoCache[h.id]||0;
     var val=h.qty*price*3.6725;
@@ -3656,7 +3656,7 @@ function renderCollectionList(){
   }
   data.mtgCards.forEach(function(card,i){addToStack(card,'MTG',i);});
   data.pokemonCards.forEach(function(card,i){addToStack(card,'PKM',i);});
-  if(!order.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No cards yet. Tap + Add.</div>';return;}
+  if(!order.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No cards yet. Tap + to add.</div>';return;}
   var html='';
   order.forEach(function(key){
     var s=stacks[key];
@@ -3700,7 +3700,7 @@ function renderSavingsPortfolio(){
   var el=document.getElementById('savings-list');
   if(!el)return;
   if(!data.savingsAccounts.length){
-    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No savings yet — tap + to add</div>';
+    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No savings yet. Tap + to add.</div>';
     return;
   }
   var html='';
