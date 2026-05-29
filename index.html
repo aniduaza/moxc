@@ -183,7 +183,7 @@ body.light .greeting-card{background:#F0F8E0;border-color:rgba(168,230,60,.2);}
 .delete-btn{background:#2A0000;color:var(--red);border:none;border-radius:var(--r-sm);padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
 /* ── Page padding wrapper ── */
-.pg{padding:16px;display:flex;flex-direction:column;gap:0;flex:1;}
+.pg{padding:16px;display:flex;flex-direction:column;gap:16px;flex:1;}
 
 /* ── Modal sheet ── */
 .sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:flex-end;}
@@ -442,12 +442,8 @@ body.light .more-item{background:#FFFFFF;}
 .pager-dot.active{width:16px;border-radius:3px;background:#A8E63C;}
 
 /* ── Spacing rhythm ──────────────────────────────────────────────────── */
-.pg > *{ margin-bottom:12px; }
-.pg > .greeting-card{ margin-bottom:16px; }
-.pg > .stat-row{ margin-bottom:16px; }
-.pg > [id$="-section"]{ margin-bottom:16px; }
-.pg > .slide-up:last-child{ margin-bottom:0; }
-.sec-hdr{ margin-bottom:8px; margin-top:4px; }
+.pg{ gap:16px; }
+.sec-hdr{ margin-bottom:8px; }
 .holding-row{ margin-bottom:6px; }
 .stat-row{ gap:10px; }
 
