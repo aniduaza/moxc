@@ -25,8 +25,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
   --green:#A8E63C;
   --green-dark:#1A2800;
   --green-mid:#3B6D11;
-  --yellow:#E8D800;
-  --yellow-dark:#3A3000;
+  --yellow:#C89A00;
+  --yellow-dark:#1C1400;
+  --stone:#1E1D1A;
+  --stone2:#252320;
   --black:#0D0D0D;
   --surface:#181818;
   --surface2:#222;
@@ -62,7 +64,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 
 /* ── Cards ── */
 .card{background:var(--surface);border-radius:var(--r-lg);padding:18px;}
-.card-yellow{background:var(--yellow);border-radius:var(--r-lg);padding:18px;}
+.card-yellow{background:linear-gradient(135deg,#1C1400,#261900);border-radius:var(--r-lg);padding:18px;}
 .card-green{background:var(--green);border-radius:var(--r-lg);padding:18px;}
 
 /* ── Section header ── */
@@ -229,6 +231,8 @@ body.light{
   --surface:#FFFFFF;
   --surface2:#F0F0EC;
   --surface3:#E4E4DF;
+  --stone:#EDECEA;
+  --stone2:#E4E2DF;
   --text:#0D0D0D;
   --text2:rgba(0,0,0,.65);
   --text3:rgba(0,0,0,.38);
@@ -236,10 +240,20 @@ body.light{
   --blue:#1A6EC0;
 }
 body.light #app{background:#F5F5F0;}
-body.light .greeting-card{background:linear-gradient(135deg,#E8F5D0,#D4ECA8);animation:none;box-shadow:none;}
+body.light .greeting-card{background:linear-gradient(135deg,#D8EDB8,#C6E494);animation:none;box-shadow:0 4px 24px rgba(80,140,0,.15);border-color:rgba(120,180,0,.2);}
+/* Sub-screen hero cards in light mode */
+body.light #income-hero{background:linear-gradient(135deg,#D8EDB8,#C6E494) !important;}
+body.light #income-hero *{color:rgba(30,60,0,.7) !important;}
+body.light #income-hero [id]{color:#1A3200 !important;}
+body.light #expenses-hero{background:linear-gradient(135deg,#F5D5D5,#EDB8B8) !important;}
+body.light #expenses-hero *{color:rgba(80,10,10,.6) !important;}
+body.light #expenses-hero [id]{color:#5A0808 !important;}
+body.light #savings-hero{background:linear-gradient(135deg,#D0E4F5,#B8D0ED) !important;}
+body.light #savings-hero *{color:rgba(10,40,80,.6) !important;}
+body.light #savings-hero [id]{color:#0A2850 !important;}
 body.light .greeting-title{color:rgba(30,60,0,.65);}
 /* Hero card date + currency labels */
-.home-date-lbl{font-size:10px;color:rgba(168,230,60,.5);}
+.home-date-lbl{font-size:10px;color:rgba(255,255,255,.4);}
 .home-cur-lbl{font-size:14px;color:rgba(255,255,255,.35);}
 .balance-amount{color:#fff;}
 body.light .home-date-lbl{color:rgba(40,80,0,.45);}
@@ -247,7 +261,8 @@ body.light .home-cur-lbl{color:rgba(0,0,0,.35);}
 body.light .balance-amount{color:#1A3200 !important;}
 body.light .greeting-name{color:#2A5000;}
 body.light .greeting-sub{color:rgba(30,60,0,.45);}
-body.light .card-yellow{background:#F5DE00;}
+body.light .card-yellow{background:linear-gradient(135deg,#F5E8C0,#EDD898);}
+body.light #bud-portfolio-card{background:linear-gradient(135deg,#F0E4B8,#E8D898) !important;}
 body.light .bottom-nav{background:#FFFFFF;border-top:0.5px solid rgba(0,0,0,.1);}
 body.light .field-input{background:#EFEFEB;border-color:rgba(0,0,0,.1);color:#0D0D0D;}
 body.light .select-input{background:#EFEFEB;border-color:rgba(0,0,0,.1);color:#0D0D0D;}
@@ -392,7 +407,7 @@ body.light .more-item{background:#FFFFFF;}
   font-weight:700;
   letter-spacing:.1em;
   text-transform:uppercase;
-  color:var(--green);
+  color:rgba(255,255,255,.4);
   flex-shrink:0;
 }
 .insight-ticker-track{
@@ -425,9 +440,9 @@ body.light .more-item{background:#FFFFFF;}
 .insight-expanded.open{display:flex;}
 .insight-exp-row{display:flex;align-items:flex-start;gap:8px;}
 .insight-exp-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
-.insight-exp-text{font-size:13px;color:rgba(168,230,60,.8);line-height:1.5;}
+.insight-exp-text{font-size:13px;color:var(--text2);line-height:1.5;}
 .insight-exp-text b{color:var(--green);font-weight:600;}
-.insight-exp-close{font-size:11px;color:rgba(168,230,60,.4);text-align:right;margin-top:4px;cursor:pointer;}
+.insight-exp-close{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;cursor:pointer;}
 
 
 /* ── Asset bar legend ────────────────────────────────────────────────── */
@@ -481,8 +496,8 @@ body.light .more-item{background:#FFFFFF;}
 body.light .backup-btn{background:#FFFFFF;}
 
 /* ── Activity summary card ──────────────────────────────────────────── */
-.act-summary-card{background:#131D00;border-radius:var(--r-md);padding:16px;}
-.act-month-lbl{font-size:11px;color:rgba(168,230,60,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;}
+.act-summary-card{background:var(--stone);border-radius:var(--r-md);padding:16px;}
+.act-month-lbl{font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;}
 .act-stat-pill{flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;}
 .act-stat-lbl{font-size:10px;color:rgba(255,255,255,.38);margin-bottom:3px;}
 .act-stat-val{font-size:18px;font-weight:600;letter-spacing:-.5px;}
@@ -496,7 +511,8 @@ body.light .backup-btn{background:#FFFFFF;}
 /* ── Light mode: fix hardcoded dark colours ─────────────────────────── */
 
 /* Activity month summary card */
-body.light .act-summary-card{background:#D8EDBC;}
+body.light .act-summary-card{background:#EDECEA;}
+body.light .act-month-lbl{color:rgba(0,0,0,.4);}
 body.light .act-month-lbl{color:rgba(30,60,0,.5);}
 body.light .act-stat-pill{background:rgba(255,255,255,.6);}
 body.light .act-stat-lbl{color:rgba(0,0,0,.4);}
@@ -778,7 +794,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div class="sec-hdr" style="margin-top:8px;">
             <span class="sec-title">Cards</span>
             <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
+              <span id="cards-refresh-btn" style="font-size:13px;color:var(--text3);cursor:pointer;display:none;" onclick="refreshAllCardPrices()">&#8635;</span>
               <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
             </div>
           </div>
@@ -798,7 +814,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div class="sec-hdr">
             <span class="sec-title">Card collection</span>
             <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text3);cursor:pointer;" onclick="refreshAllCardPrices()">&#8635;</span>
+              <span id="cards-refresh-btn-2" style="font-size:13px;color:var(--text3);cursor:pointer;display:none;" onclick="refreshAllCardPrices()">&#8635;</span>
               <span class="sec-link" onclick="openFABSheet('add-collection')">+ Add</span>
             </div>
           </div>
@@ -922,12 +938,15 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- filter pills -->
-        <div class="txn-filter-row slide-up d3">
-          <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
-          <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
-          <button class="txn-filter-btn" onclick="setActFilter(this,'expense')">Expenses</button>
-          <button class="txn-filter-btn" onclick="setActFilter(this,'ess')">Essentials</button>
-          <button class="txn-filter-btn" onclick="setActFilter(this,'sub')">Subscriptions</button>
+        <div style="position:relative;" class="slide-up d3">
+          <div class="txn-filter-row">
+            <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
+            <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
+            <button class="txn-filter-btn" onclick="setActFilter(this,'expense')">Expenses</button>
+            <button class="txn-filter-btn" onclick="setActFilter(this,'ess')">Essentials</button>
+            <button class="txn-filter-btn" onclick="setActFilter(this,'sub')">Subs</button>
+          </div>
+          <div style="position:absolute;right:0;top:0;height:100%;width:32px;background:linear-gradient(to right,transparent,var(--black));pointer-events:none;"></div>
         </div>
 
         <div id="act-txn-list" class="slide-up d4"></div>
@@ -1054,20 +1073,20 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
         <!-- gauge card -->
         <div class="card-yellow slide-up d2">
-          <div style="font-size:12px;font-weight:500;color:var(--yellow-dark);margin-bottom:8px;">Spending limit</div>
+          <div style="font-size:11px;font-weight:600;color:rgba(200,154,0,.6);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Spending limit</div>
           <div class="gauge-wrap">
             <svg width="172" height="90" viewBox="0 0 172 90" style="overflow:visible;">
-              <path d="M16 82 A70 70 0 0 1 156 82" stroke="#1A1200" stroke-width="10" stroke-linecap="round" fill="none" opacity=".18"/>
-              <path id="gauge-arc" d="M16 82 A70 70 0 0 1 156 82" stroke="#1A1200" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="220" stroke-dashoffset="220"/>
-              <line id="gauge-needle" x1="86" y1="82" x2="86" y2="24" stroke="#1A1200" stroke-width="3" stroke-linecap="round" transform="rotate(-120,86,82)"/>
-              <circle cx="86" cy="82" r="5" fill="#1A1200"/>
-              <text x="12" y="90" font-size="9" fill="var(--yellow-dark)" font-family="DM Sans,sans-serif">0</text>
-              <text x="148" y="90" font-size="9" fill="var(--yellow-dark)" font-family="DM Sans,sans-serif" id="gauge-max-lbl">12k</text>
+              <path d="M16 82 A70 70 0 0 1 156 82" stroke="rgba(255,255,255,.1)" stroke-width="10" stroke-linecap="round" fill="none"/>
+              <path id="gauge-arc" d="M16 82 A70 70 0 0 1 156 82" stroke="#C89A00" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="220" stroke-dashoffset="220"/>
+              <line id="gauge-needle" x1="86" y1="82" x2="86" y2="24" stroke="#C89A00" stroke-width="3" stroke-linecap="round" transform="rotate(-120,86,82)"/>
+              <circle cx="86" cy="82" r="5" fill="#C89A00"/>
+              <text x="12" y="90" font-size="9" fill="rgba(255,255,255,.3)" font-family="DM Sans,sans-serif">0</text>
+              <text x="148" y="90" font-size="9" fill="rgba(255,255,255,.3)" font-family="DM Sans,sans-serif" id="gauge-max-lbl">12k</text>
             </svg>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;">
-            <div style="font-size:12px;color:var(--yellow-dark);" id="gauge-lbl">8,900 / 12,000</div>
-            <div style="font-size:32px;font-weight:600;color:#0D0D00;letter-spacing:-1px;" id="gauge-pct">74%</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.38);" id="gauge-lbl">8,900 / 12,000</div>
+            <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="gauge-pct">74%</div>
           </div>
         </div>
 
@@ -1115,13 +1134,13 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- portfolio daily -->
-        <div style="background:var(--yellow);border-radius:var(--r-lg);padding:16px;display:flex;align-items:center;justify-content:space-between;" class="slide-up d5">
+        <div id="bud-portfolio-card" style="background:linear-gradient(135deg,#1C1400,#261900);border-radius:var(--r-lg);padding:16px;display:flex;align-items:center;justify-content:space-between;" class="slide-up d5">
           <div>
-            <div style="font-size:11px;color:var(--yellow-dark);margin-bottom:3px;font-weight:500;">Portfolio today</div>
-            <div style="font-size:20px;font-weight:600;color:#0D0D00;" id="bud-pl">—</div>
+            <div style="font-size:11px;color:rgba(200,154,0,.6);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;font-weight:600;">Portfolio today</div>
+            <div style="font-size:20px;font-weight:600;color:#fff;" id="bud-pl">—</div>
           </div>
-          <div style="background:#0D0D00;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--yellow)" stroke-width="1.8"><path d="M2 12l3.5-4 3 2.5 4-6"/></svg>
+          <div style="background:rgba(200,154,0,.15);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#C89A00" stroke-width="1.8"><path d="M2 12l3.5-4 3 2.5 4-6"/></svg>
           </div>
         </div>
 
@@ -1135,9 +1154,23 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div style="font-size:18px;font-weight:600;">Income</div>
           <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-income')">+ Add</div>
         </div>
-        <div class="card slide-up d2">
-          <div style="font-size:12px;color:var(--text3);margin-bottom:4px;">Monthly total</div>
-          <div style="font-size:28px;font-weight:600;color:var(--green);" id="income-total">—</div>
+        <div id="income-hero" class="slide-up d2" style="background:linear-gradient(135deg,#131D00,#1E2E00);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
+          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Monthly total</div>
+          <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="income-total">—</div>
+          <div style="margin-top:14px;display:flex;gap:16px;">
+            <div>
+              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">Sources</div>
+              <div style="font-size:14px;font-weight:600;color:var(--green);" id="income-source-count">0</div>
+            </div>
+            <div>
+              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">After bills</div>
+              <div style="font-size:14px;font-weight:600;color:var(--green);" id="income-after-bills">—</div>
+            </div>
+            <div>
+              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">Savings rate</div>
+              <div style="font-size:14px;font-weight:600;color:var(--green);" id="income-savings-rate">—</div>
+            </div>
+          </div>
         </div>
         <div id="income-list" class="slide-up d3"></div>
       </div>
@@ -1150,14 +1183,29 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div style="font-size:18px;font-weight:600;">Monthly bills</div>
           <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-expense')">+ Add</div>
         </div>
-        <div class="stat-row slide-up d2">
-          <div class="stat-pill">
-            <div class="stat-lbl">Total</div>
-            <div class="stat-val" id="exp-total">—</div>
+        <div id="expenses-hero" class="slide-up d2" style="background:linear-gradient(135deg,#1D0A0A,#2A0F0F);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
+          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total monthly bills</div>
+          <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="exp-total">—</div>
+          <div style="margin-top:10px;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;">
+            <div id="exp-bar" style="height:100%;border-radius:2px;background:var(--red);transition:width .5s;width:0%;"></div>
           </div>
-          <div class="stat-pill">
-            <div class="stat-lbl">of income</div>
-            <div class="stat-val" id="exp-ratio" style="color:var(--red);">—</div>
+          <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:11px;color:rgba(255,255,255,.35);" id="exp-ratio-lbl">0% of income</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.35);" id="exp-remaining-lbl">— remaining</div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:12px;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Essentials</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="exp-ess-total">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Subscriptions</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="exp-sub-total">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Bills</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="exp-bill-count">0</div>
+            </div>
           </div>
         </div>
         <div id="expense-list" class="slide-up d3"></div>
@@ -1171,9 +1219,23 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div style="font-size:18px;font-weight:600;">Savings</div>
           <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-savings')">+ Add</div>
         </div>
-        <div class="card slide-up d2">
-          <div style="font-size:12px;color:var(--text3);margin-bottom:4px;">Total saved</div>
-          <div style="font-size:28px;font-weight:600;color:var(--blue);" id="sav-total">—</div>
+        <div id="savings-hero" class="slide-up d2" style="background:linear-gradient(135deg,#001520,#00202E);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
+          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total saved</div>
+          <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="sav-total">—</div>
+          <div style="margin-top:14px;display:flex;gap:16px;">
+            <div>
+              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">Accounts</div>
+              <div style="font-size:14px;font-weight:600;color:var(--blue);" id="sav-account-count">0</div>
+            </div>
+            <div>
+              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">of income saved</div>
+              <div style="font-size:14px;font-weight:600;color:var(--blue);" id="sav-income-pct">—</div>
+            </div>
+            <div>
+              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">vs bills</div>
+              <div style="font-size:14px;font-weight:600;color:var(--blue);" id="sav-vs-bills">—</div>
+            </div>
+          </div>
         </div>
         <div id="savings-list-full" class="slide-up d3"></div>
       </div>
@@ -1188,9 +1250,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <div class="advisor-header slide-up d1">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
             <div>
-              <div style="font-size:11px;color:rgba(168,230,60,.5);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">AI Financial Advisor</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">AI Financial Advisor</div>
               <div style="font-size:18px;font-weight:600;color:var(--green);">Ask me anything</div>
-              <div style="font-size:12px;color:rgba(168,230,60,.45);margin-top:3px;">Powered by Claude · based on your real data</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Powered by Claude · based on your real data</div>
             </div>
           </div>
         </div>
@@ -1238,7 +1300,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
       </div>
 
       <!-- chat messages -->
-      <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;justify-content:flex-end;"></div>
 
       <!-- input row -->
       <div class="chat-input-row">
@@ -1268,12 +1330,15 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- filter pills -->
-        <div class="txn-filter-row slide-up d2">
-          <button class="txn-filter-btn active" onclick="setTxnFilter(this,'all')">All</button>
-          <button class="txn-filter-btn" onclick="setTxnFilter(this,'income')">Income</button>
-          <button class="txn-filter-btn" onclick="setTxnFilter(this,'expense')">Expenses</button>
-          <button class="txn-filter-btn" onclick="setTxnFilter(this,'ess')">Essentials</button>
-          <button class="txn-filter-btn" onclick="setTxnFilter(this,'sub')">Subscriptions</button>
+        <div style="position:relative;" class="slide-up d2">
+          <div class="txn-filter-row">
+            <button class="txn-filter-btn active" onclick="setTxnFilter(this,'all')">All</button>
+            <button class="txn-filter-btn" onclick="setTxnFilter(this,'income')">Income</button>
+            <button class="txn-filter-btn" onclick="setTxnFilter(this,'expense')">Expenses</button>
+            <button class="txn-filter-btn" onclick="setTxnFilter(this,'ess')">Essentials</button>
+            <button class="txn-filter-btn" onclick="setTxnFilter(this,'sub')">Subs</button>
+          </div>
+          <div style="position:absolute;right:0;top:0;height:100%;width:32px;background:linear-gradient(to right,transparent,var(--black));pointer-events:none;"></div>
         </div>
 
         <!-- summary row -->
@@ -1315,7 +1380,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           </div>
           <div class="stat-pill">
             <div class="stat-lbl">On track</div>
-            <div class="stat-val" id="goals-ontrack" style="color:var(--green);">0</div>
+            <div class="stat-val" id="goals-ontrack">0</div>
           </div>
         </div>
 
@@ -1325,13 +1390,8 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
       </div>
     </div>
 
-    <!-- ═══ ALERTS SCREEN ═══ -->
-    <div class="screen" id="screen-alerts">
-      <div class="pg">
-        <div style="font-size:18px;font-weight:600;" class="slide-up d1">Alerts</div>
-        <div id="alerts-list" class="slide-up d2"></div>
-      </div>
-    </div>
+    <!-- alerts-list kept in DOM for logAlert() but screen is unused -->
+    <div style="display:none;" id="screen-alerts"><div id="alerts-list"></div></div>
 
       </div><!-- end page -->
 
@@ -1608,7 +1668,7 @@ function calcBudget(){
     if(t.type==='expense' && t.date && t.date.slice(0,7)===ym) txnSpend+=t.amt;
   });
   var actual=tot+txnSpend;
-  var rate=inc>0?Math.round(netSavings()/inc*100):0;
+  var rate=inc>0?Math.max(0,Math.round((inc-actual)/inc*100)):0;
   return{inc:inc,subs:subs,ess:ess,tot:tot,txnSpend:txnSpend,actual:actual,rate:rate,sav:netSavings()};
 }
 
@@ -1733,7 +1793,7 @@ function getIcon(name, sz) {
 
 
 // ── Navigation ─────────────────────────────────────────────────────────────
-var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','alerts','advisor','activity','more'];
+var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','advisor','activity','more'];
 
 
 
@@ -1976,7 +2036,7 @@ function calcGoalETA(goal, prog){
   if(monthlySav <= 0) return 'Set a savings rate to see ETA';
   var months = Math.ceil(remaining / monthlySav);
   if(months > 120) return 'Long-term goal';
-  if(months <= 1)  return 'Almost there!';
+  if(months <= 1 && prog.pct >= 80)  return 'Almost there!';
   var target = new Date();
   target.setMonth(target.getMonth() + months);
   var label = target.toLocaleDateString('en', {month:'short', year:'numeric'});
@@ -1997,7 +2057,7 @@ function renderGoals(){
     var p = calcGoalProgress(g);
     if(p.pct >= 50) onTrack++;
   });
-  if(onEl) onEl.textContent = onTrack;
+  if(onEl){ onEl.textContent = onTrack; onEl.style.color = onTrack > 0 ? 'var(--green)' : 'var(--text2)'; }
 
   if(!goals.length){
     el.innerHTML = emptyState('goal','No goals yet','Tap + Add to set your first financial target.','','');
@@ -3664,6 +3724,9 @@ function renderCollectionList(){
   }
   data.mtgCards.forEach(function(card,i){addToStack(card,'MTG',i);});
   data.pokemonCards.forEach(function(card,i){addToStack(card,'PKM',i);});
+  var hasCards = order.length > 0;
+  var rb1=document.getElementById('cards-refresh-btn'); if(rb1)rb1.style.display=hasCards?'':'none';
+  var rb2=document.getElementById('cards-refresh-btn-2'); if(rb2)rb2.style.display=hasCards?'':'none';
   if(!order.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;">No cards yet. Tap + to add.</div>';return;}
   var html='';
   order.forEach(function(key){
@@ -3726,8 +3789,15 @@ function renderSavingsPortfolio(){
 // ── INCOME ─────────────────────────────────────────────────────────────────
 function renderIncome(){
   var el=document.getElementById('income-list');
+  var inc=totalIncome(), exp=totalExpenses(), sav=totalSavings();
   var tot=document.getElementById('income-total');
-  if(tot)tot.textContent=fmt(totalIncome())+' '+curSym();
+  if(tot)tot.textContent=fmt(inc)+' '+curSym();
+  var sc=document.getElementById('income-source-count');
+  if(sc)sc.textContent=data.incomeSources.length;
+  var ab=document.getElementById('income-after-bills');
+  if(ab)ab.textContent=fmt(Math.max(0,inc-exp))+' '+curSym();
+  var sr=document.getElementById('income-savings-rate');
+  if(sr)sr.textContent=inc>0?Math.round(sav/inc*100)+'%':'—';
   if(!el)return;
   if(!data.incomeSources.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No income added yet</div>';return;}
   var incHtml='';
@@ -3809,11 +3879,24 @@ function autoLogRecurring(){
 
 function renderExpenses(){
   var el=document.getElementById('expense-list');
+  var exp=totalExpenses(), inc=totalIncome();
   var tot=document.getElementById('exp-total');
-  var ratio=document.getElementById('exp-ratio');
-  var exp=totalExpenses(),inc=totalIncome();
   if(tot)tot.textContent=fmt(exp)+' '+curSym();
-  if(ratio)ratio.textContent=inc>0?Math.round(exp/inc*100)+'%':'—';
+  var pct=inc>0?Math.min(100,Math.round(exp/inc*100)):0;
+  var bar=document.getElementById('exp-bar');
+  if(bar)bar.style.width=pct+'%';
+  var rl=document.getElementById('exp-ratio-lbl');
+  if(rl)rl.textContent=pct+'% of income';
+  var rem=document.getElementById('exp-remaining-lbl');
+  if(rem)rem.textContent=fmt(Math.max(0,inc-exp))+' '+curSym()+' remaining';
+  var essTot=0, subTot=0;
+  data.expenses.forEach(function(e){ if(e.cat==='sub') subTot+=e.amt; else essTot+=e.amt; });
+  var et=document.getElementById('exp-ess-total');
+  if(et)et.textContent=fmt(essTot)+' '+curSym();
+  var st=document.getElementById('exp-sub-total');
+  if(st)st.textContent=fmt(subTot)+' '+curSym();
+  var bc=document.getElementById('exp-bill-count');
+  if(bc)bc.textContent=data.expenses.length;
   if(!el)return;
   if(!data.expenses.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No bills yet</div>';return;}
   var expHtml='';
@@ -3846,8 +3929,15 @@ function renderExpenses(){
 // ── SAVINGS TAB ────────────────────────────────────────────────────────────
 function renderSavingsTab(){
   var el=document.getElementById('savings-list-full');
+  var sav=totalSavings(), inc=totalIncome(), exp=totalExpenses();
   var tot=document.getElementById('sav-total');
-  if(tot)tot.textContent=fmt(totalSavings())+' '+curSym();
+  if(tot)tot.textContent=fmt(sav)+' '+curSym();
+  var ac=document.getElementById('sav-account-count');
+  if(ac)ac.textContent=data.savingsAccounts.length;
+  var ip=document.getElementById('sav-income-pct');
+  if(ip)ip.textContent=inc>0?Math.round((inc-exp)/inc*100)+'%':'—';
+  var vb=document.getElementById('sav-vs-bills');
+  if(vb)vb.textContent=exp>0?fmt(sav/Math.max(1,exp)).replace(/\.00$/,'')+'× bills':'—';
   if(!el)return;
   if(!data.savingsAccounts.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No accounts yet</div>';return;}
   var savFullHtml='';
