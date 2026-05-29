@@ -756,8 +756,11 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           </div>
         </div>
 
+        <!-- XP widget -->
+        <div class="card slide-up d3" id="xp-widget" style="padding:14px 16px;"></div>
+
         <!-- top goal -->
-        <div class="slide-up d3" id="home-goal-section" style="display:none;">
+        <div class="slide-up d4" id="home-goal-section" style="display:none;">
           <div class="sec-hdr">
             <span class="sec-title">Top goal</span>
             <span class="sec-link" onclick="switchTab('goals')">All goals &#8250;</span>
@@ -766,7 +769,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- daily movers -->
-        <div class="slide-up d4" style="display:flex;flex-direction:column;gap:8px;">
+        <div class="slide-up d5" style="display:flex;flex-direction:column;gap:8px;">
           <div class="sec-hdr" style="margin-bottom:0;">
             <span class="sec-title">Daily movers</span>
             <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
@@ -986,6 +989,13 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><circle cx="10" cy="10" r="4.5"/><circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none"/></svg>
             </div>
             <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
+          </div>
+          <div class="more-item item-in" onclick="switchTab('badges');renderBadges();">
+            <div class="more-item-icon" style="background:rgba(245,158,11,.12);color:#F59E0B;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l1.8 4.7L17 9l-4 3.8 1 5.2L10 15.5 6 18l1-5.2L3 9l5.2-2.3L10 2Z"/></svg>
+            </div>
+            <div class="more-item-info"><div class="more-item-title">Achievements</div><div class="more-item-sub" id="more-badges-sub">0 badges unlocked</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
           <div class="more-item item-in" onclick="switchTab('advisor')">
@@ -1381,6 +1391,28 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
     </div>
 
 
+    <!-- ═══ BADGES SCREEN ═══ -->
+    <div class="screen" id="screen-badges">
+      <div class="pg" style="padding-top:20px;">
+        <div class="slide-up d1" style="margin-bottom:16px;">
+          <div style="font-size:18px;font-weight:600;">Achievements</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px;">Unlock badges as you build better habits</div>
+        </div>
+        <!-- progress summary -->
+        <div class="card slide-up d2" style="padding:14px 16px;margin-bottom:4px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">🏆 Badges earned</div>
+            <div style="font-size:13px;font-weight:700;color:#F59E0B;" id="badges-count">0 / 0</div>
+          </div>
+          <div style="height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;">
+            <div id="badges-bar" style="height:6px;border-radius:3px;background:linear-gradient(90deg,#D97706,#F59E0B);width:0%;transition:width .9s cubic-bezier(0.16,1,0.3,1);"></div>
+          </div>
+        </div>
+        <!-- badge grid -->
+        <div id="badges-grid" class="slide-up d3"></div>
+      </div>
+    </div>
+
     <!-- ═══ GOALS SCREEN ═══ -->
     <div class="screen" id="screen-goals">
       <div class="pg" style="padding-top:20px;">
@@ -1516,6 +1548,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
     </div>
   </div>
 
+  <!-- ═══ XP TOAST ═══ -->
+  <div id="xp-toast" style="position:absolute;top:56px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1A1814;color:#F59E0B;font-size:12px;font-weight:600;padding:7px 16px;border-radius:20px;z-index:9000;pointer-events:none;opacity:0;transition:opacity .3s ease,transform .3s ease;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25);"></div>
+
+  <!-- ═══ XP LEVEL-UP CARD ═══ -->
+  <div id="xp-levelup" style="display:none;position:absolute;top:80px;left:50%;transform:translateX(-50%) translateY(-12px) scale(0.95);background:var(--surface);border:1.5px solid #F59E0B;border-radius:var(--r-lg);padding:20px 28px;z-index:9001;pointer-events:none;opacity:0;transition:opacity .4s ease,transform .4s ease;flex-direction:column;align-items:center;gap:6px;text-align:center;box-shadow:0 8px 32px rgba(245,158,11,.25);min-width:200px;"></div>
+
   <!-- ═══ MORE SCREEN BACKDROP ═══ -->
   <div id="more-backdrop" onclick="closeMoreScreen()" style="display:none;pointer-events:none;position:absolute;top:0;left:0;right:0;z-index:45;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);transition:opacity .3s ease;opacity:0;"></div>
 
@@ -1568,10 +1606,543 @@ var data={
   goals:[],
   snapshots:[],
   userName:'',
-  lastAutoLog:  '',
+  lastAutoLog:'',
+  xp:0,
+  xpLog:[],
+  streak:0,
+  longestStreak:0,
+  lastStreakDate:'',
+  unlockedBadges:[],
 };
 var currentTab='home';
 var currentRange='3m';
+
+// ── XP & Level system ─────────────────────────────────────────────────────
+var XP_LEVELS = [
+  {min:0,     title:'Rookie Saver',     icon:'🌱'},
+  {min:100,   title:'Budget Apprentice', icon:'📖'},
+  {min:300,   title:'Money Conscious',  icon:'💡'},
+  {min:600,   title:'Smart Spender',    icon:'🎯'},
+  {min:1000,  title:'Savvy Saver',      icon:'⚡'},
+  {min:1500,  title:'Financial Pro',    icon:'🏆'},
+  {min:2500,  title:'Wealth Builder',   icon:'💎'},
+  {min:4000,  title:'Money Master',     icon:'🔥'},
+  {min:6000,  title:'Financial Legend', icon:'👑'},
+  {min:10000, title:'Moxcoin Elite',    icon:'🌟'},
+];
+
+var XP_ACTIONS = {
+  'add-income':     {label:'Added income source',    xp:50},
+  'add-expense':    {label:'Added monthly bill',     xp:20},
+  'add-transaction':{label:'Logged a transaction',   xp:10},
+  'add-savings':    {label:'Added savings account',  xp:30},
+  'add-goal':       {label:'Set a new goal',         xp:40},
+  'add-crypto':     {label:'Added crypto holding',   xp:25},
+  'add-collection': {label:'Added card to portfolio',xp:25},
+  'goal-25':        {label:'Goal reached 25%',       xp:50},
+  'goal-50':        {label:'Goal reached 50%',       xp:75},
+  'goal-75':        {label:'Goal reached 75%',       xp:100},
+  'goal-100':       {label:'Goal achieved!',         xp:200},
+  'budget-healthy': {label:'Healthy budget month',   xp:100},
+};
+
+function getLevel(xp) {
+  var level = 0;
+  for (var i = 0; i < XP_LEVELS.length; i++) {
+    if (xp >= XP_LEVELS[i].min) level = i;
+  }
+  var current = XP_LEVELS[level];
+  var next = XP_LEVELS[level + 1] || null;
+  var fromCurrent = xp - current.min;
+  var toNext = next ? (next.min - current.min) : 1;
+  var pct = next ? Math.min(100, Math.round((fromCurrent / toNext) * 100)) : 100;
+  return {
+    level: level + 1,
+    title: current.title,
+    icon: current.icon,
+    xp: xp,
+    pct: pct,
+    xpInLevel: fromCurrent,
+    xpToNext: next ? (next.min - xp) : 0,
+    nextTitle: next ? next.title : null,
+    maxed: !next,
+  };
+}
+
+function earnXP(actionKey, customLabel) {
+  var action = XP_ACTIONS[actionKey];
+  if (!action) return;
+  var prevLevel = getLevel(data.xp || 0);
+  data.xp = (data.xp || 0) + action.xp;
+  data.xpLog = data.xpLog || [];
+  data.xpLog.unshift({
+    key: actionKey,
+    label: customLabel || action.label,
+    xp: action.xp,
+    date: new Date().toISOString(),
+  });
+  if (data.xpLog.length > 50) data.xpLog = data.xpLog.slice(0, 50);
+  var newLevel = getLevel(data.xp);
+  if (newLevel.level > prevLevel.level) {
+    showXPLevelUp(newLevel);
+  } else {
+    showXPToast('+' + action.xp + ' XP — ' + (customLabel || action.label));
+    pulseXPWidget();
+  }
+  renderXPWidget();
+}
+
+var _xpToastTimer = null;
+function showXPToast(msg) {
+  var el = document.getElementById('xp-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.opacity = '1';
+  el.style.transform = 'translateY(0)';
+  clearTimeout(_xpToastTimer);
+  _xpToastTimer = setTimeout(function() {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-8px)';
+  }, 2200);
+}
+
+function showXPLevelUp(lvl) {
+  launchConfetti('gold');
+  var el = document.getElementById('xp-levelup');
+  if (!el) return;
+  el.innerHTML = '<span style="font-size:32px;line-height:1;">' + lvl.icon + '</span>'
+    + '<div style="font-weight:700;font-size:17px;color:#F59E0B;margin-top:4px;">Level ' + lvl.level + ' reached!</div>'
+    + '<div style="font-size:13px;color:var(--text2);margin-top:2px;">' + lvl.title + '</div>'
+    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">Keep going 🚀</div>';
+  el.style.display = 'flex';
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px) scale(0.9)';
+  setTimeout(function() {
+    el.style.transition = 'opacity .35s ease, transform .35s cubic-bezier(0.16,1,0.3,1)';
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0) scale(1)';
+  }, 30);
+  setTimeout(function() {
+    el.style.transition = 'opacity .3s ease, transform .3s ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-10px) scale(0.95)';
+    setTimeout(function() { el.style.display = 'none'; el.style.transition = ''; }, 320);
+  }, 3200);
+}
+
+// ── Confetti engine ───────────────────────────────────────────────────────
+var _confettiAnim = null;
+
+var CONFETTI_PALETTES = {
+  gold:   ['#F59E0B','#FCD34D','#FBBF24','#10B981','#3B82F6','#EF4444','#8B5CF6'],
+  green:  ['#10B981','#34D399','#6EE7B7','#F59E0B','#3B82F6','#FBBF24'],
+  fire:   ['#EF4444','#F97316','#F59E0B','#FCD34D','#DC2626'],
+};
+
+function launchConfetti(palette) {
+  var colors = CONFETTI_PALETTES[palette] || CONFETTI_PALETTES.gold;
+  var app = document.getElementById('app');
+  if (!app) return;
+
+  // Remove any existing confetti canvas
+  var old = document.getElementById('confetti-canvas');
+  if (old) old.parentNode.removeChild(old);
+  if (_confettiAnim) { cancelAnimationFrame(_confettiAnim); _confettiAnim = null; }
+
+  var canvas = document.createElement('canvas');
+  canvas.id = 'confetti-canvas';
+  canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8999;';
+  app.appendChild(canvas);
+
+  var W = app.offsetWidth;
+  var H = app.offsetHeight;
+  canvas.width  = W;
+  canvas.height = H;
+  var ctx = canvas.getContext('2d');
+
+  // Generate particles
+  var particles = [];
+  var count = 90;
+  for (var i = 0; i < count; i++) {
+    var angle = (Math.random() * 60 - 30) * Math.PI / 180; // spread ±30°
+    var speed = 6 + Math.random() * 10;
+    particles.push({
+      x:  W * 0.3 + Math.random() * W * 0.4,  // launch from middle band
+      y:  -8,
+      vx: Math.sin(angle) * speed * (Math.random() > 0.5 ? 1 : -1),
+      vy: -(4 + Math.random() * 8),            // upward burst
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 8,
+      w:  6 + Math.random() * 6,
+      h:  3 + Math.random() * 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1,
+      shape: Math.random() > 0.5 ? 'rect' : 'circle',
+    });
+  }
+
+  var gravity = 0.35;
+  var drag    = 0.992;
+  var startT  = null;
+  var duration = 2800;
+
+  function frame(ts) {
+    if (!startT) startT = ts;
+    var elapsed = ts - startT;
+    ctx.clearRect(0, 0, W, H);
+
+    var alive = false;
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.vy += gravity;
+      p.vx *= drag;
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.rot += p.rotV;
+      // fade out in last 40% of duration
+      if (elapsed > duration * 0.6) {
+        p.alpha = Math.max(0, 1 - (elapsed - duration * 0.6) / (duration * 0.4));
+      }
+      if (p.y < H + 20 && p.alpha > 0.01) {
+        alive = true;
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        if (p.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        }
+        ctx.restore();
+      }
+    }
+
+    if (alive && elapsed < duration + 400) {
+      _confettiAnim = requestAnimationFrame(frame);
+    } else {
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      _confettiAnim = null;
+    }
+  }
+  _confettiAnim = requestAnimationFrame(frame);
+}
+
+// XP pulse ring on the widget
+function pulseXPWidget() {
+  var el = document.getElementById('xp-widget');
+  if (!el) return;
+  el.style.transition = 'box-shadow .15s ease';
+  el.style.boxShadow = '0 0 0 3px rgba(245,158,11,.4)';
+  setTimeout(function() {
+    el.style.boxShadow = '0 0 0 0px rgba(245,158,11,0)';
+    setTimeout(function() { el.style.boxShadow = ''; el.style.transition = ''; }, 300);
+  }, 150);
+}
+
+function renderXPWidget() {
+  var el = document.getElementById('xp-widget');
+  if (!el) return;
+  var lvl = getLevel(data.xp || 0);
+  var st  = getStreakStatus();
+
+  // Streak chip
+  var streakHtml = '';
+  if (st.status === 'active') {
+    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:rgba(239,68,68,.1);border-radius:20px;padding:3px 10px;">'
+      + '<span style="font-size:14px;">🔥</span>'
+      + '<span style="font-size:12px;font-weight:700;color:#EF4444;">' + st.streak + '</span>'
+      + '<span style="font-size:11px;color:#EF4444;">' + (st.streak === 1 ? 'day' : 'days') + '</span>'
+      + '</div>';
+  } else if (st.status === 'at-risk') {
+    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:rgba(245,158,11,.1);border-radius:20px;padding:3px 10px;">'
+      + '<span style="font-size:14px;">⏳</span>'
+      + '<span style="font-size:12px;font-weight:700;color:#F59E0B;">' + st.streak + '</span>'
+      + '<span style="font-size:11px;color:#F59E0B;">day streak — log today!</span>'
+      + '</div>';
+  } else {
+    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--surface3);border-radius:20px;padding:3px 10px;">'
+      + '<span style="font-size:13px;">🔥</span>'
+      + '<span style="font-size:11px;color:var(--text3);">No streak yet</span>'
+      + '</div>';
+  }
+
+  el.innerHTML =
+    // Top row: level + streak
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+        + '<div style="width:32px;height:32px;border-radius:var(--r-sm);background:rgba(245,158,11,.15);display:flex;align-items:center;justify-content:center;font-size:18px;">' + lvl.icon + '</div>'
+        + '<div>'
+          + '<div style="font-size:13px;font-weight:600;color:var(--text);">Lv.' + lvl.level + ' — ' + lvl.title + '</div>'
+          + '<div style="font-size:11px;color:var(--text3);">' + (data.xp || 0) + ' XP · best streak: ' + (data.longestStreak || 0) + 'd</div>'
+        + '</div>'
+      + '</div>'
+      + streakHtml
+    + '</div>'
+    // XP bar
+    + '<div style="height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;">'
+      + '<div id="xp-bar-fill" style="height:6px;border-radius:3px;background:linear-gradient(90deg,#D97706,#F59E0B);width:0%;transition:width .9s cubic-bezier(0.16,1,0.3,1);"></div>'
+    + '</div>'
+    // XP progress labels
+    + '<div style="display:flex;justify-content:space-between;margin-top:5px;">'
+      + '<div style="font-size:10px;color:var(--text3);">' + lvl.xpInLevel + ' XP into level</div>'
+      + (lvl.maxed
+        ? '<div style="font-size:10px;font-weight:600;color:#F59E0B;">MAX LEVEL</div>'
+        : '<div style="font-size:10px;color:var(--text3);">' + lvl.xpToNext + ' XP to ' + lvl.nextTitle + '</div>')
+    + '</div>';
+
+  setTimeout(function() {
+    var fill = document.getElementById('xp-bar-fill');
+    if (fill) fill.style.width = lvl.pct + '%';
+  }, 80);
+}
+
+// ── Streak system ─────────────────────────────────────────────────────────
+var STREAK_MILESTONES = [
+  {days:3,   xp:30,  label:'3-day streak!',   icon:'🔥'},
+  {days:7,   xp:75,  label:'7-day streak!',   icon:'⚡'},
+  {days:14,  xp:150, label:'2-week streak!',  icon:'💪'},
+  {days:30,  xp:300, label:'30-day streak!',  icon:'👑'},
+  {days:100, xp:500, label:'100-day streak!', icon:'🌟'},
+];
+
+function todayStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+
+function yesterdayStr() {
+  var d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+
+function updateStreak() {
+  var today = todayStr();
+  var last  = data.lastStreakDate || '';
+
+  if (last === today) return; // already counted today
+
+  if (last === yesterdayStr()) {
+    data.streak = (data.streak || 0) + 1;
+  } else {
+    data.streak = 1; // reset or first time
+  }
+
+  data.lastStreakDate = today;
+  if (data.streak > (data.longestStreak || 0)) {
+    data.longestStreak = data.streak;
+  }
+
+  // Check milestones
+  for (var i = 0; i < STREAK_MILESTONES.length; i++) {
+    var m = STREAK_MILESTONES[i];
+    if (data.streak === m.days) {
+      earnXP('add-transaction', m.icon + ' ' + m.label); // piggyback XP
+      data.xp = (data.xp || 0) + (m.xp - 10); // add bonus on top (earnXP already gave +10)
+      showStreakMilestone(m);
+      break;
+    }
+  }
+}
+
+function getStreakStatus() {
+  var today     = todayStr();
+  var yesterday = yesterdayStr();
+  var last      = data.lastStreakDate || '';
+  var streak    = data.streak || 0;
+
+  if (streak === 0) return {streak:0, status:'none'};
+  if (last === today) return {streak:streak, status:'active'};       // logged today
+  if (last === yesterday) return {streak:streak, status:'at-risk'};  // haven't logged yet today
+  return {streak:0, status:'broken'};                                 // missed a day
+}
+
+function showStreakMilestone(m) {
+  launchConfetti('fire');
+  var el = document.getElementById('xp-levelup');
+  if (!el) return;
+  el.innerHTML = '<span style="font-size:32px;line-height:1;">' + m.icon + '</span>'
+    + '<div style="font-weight:700;font-size:17px;color:#EF4444;margin-top:4px;">' + m.label + '</div>'
+    + '<div style="font-size:13px;color:var(--text2);margin-top:2px;">+' + m.xp + ' bonus XP</div>'
+    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">You\'re on fire! 🔥</div>';
+  el.style.display = 'flex';
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px) scale(0.9)';
+  setTimeout(function() {
+    el.style.transition = 'opacity .35s ease, transform .35s cubic-bezier(0.16,1,0.3,1)';
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0) scale(1)';
+  }, 30);
+  setTimeout(function() {
+    el.style.transition = 'opacity .3s ease, transform .3s ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-10px) scale(0.95)';
+    setTimeout(function() { el.style.display = 'none'; el.style.transition = ''; }, 320);
+  }, 3200);
+}
+
+// ── Badge / Achievements system ───────────────────────────────────────────
+var BADGES = [
+  // ── Getting Started ──
+  {id:'first-income',    cat:'start',     icon:'💰', name:'First Payday',      desc:'Add your first income source',         color:'#10B981',
+    check:function(d){ return d.incomeSources.length >= 1; }},
+  {id:'first-txn',       cat:'start',     icon:'📝', name:'Money Tracker',     desc:'Log your first transaction',           color:'#3B82F6',
+    check:function(d){ return d.transactions.length >= 1; }},
+  {id:'first-goal',      cat:'start',     icon:'🎯', name:'Dream Chaser',      desc:'Set your first savings goal',          color:'#F59E0B',
+    check:function(d){ return d.goals.length >= 1; }},
+  {id:'first-savings',   cat:'start',     icon:'🏦', name:'Open Vault',        desc:'Add your first savings account',       color:'#8B5CF6',
+    check:function(d){ return d.savingsAccounts.length >= 1; }},
+  // ── Savings ──
+  {id:'save-1k',         cat:'savings',   icon:'🐷', name:'Piggy Bank',        desc:'Accumulate 1,000 in savings',          color:'#EF4444',
+    check:function(d){ return totalSavings() >= 1000; }},
+  {id:'save-10k',        cat:'savings',   icon:'💎', name:'Nest Egg',          desc:'Accumulate 10,000 in savings',         color:'#3B82F6',
+    check:function(d){ return totalSavings() >= 10000; }},
+  {id:'save-50k',        cat:'savings',   icon:'👑', name:'Wealth Hoarder',    desc:'Accumulate 50,000 in savings',         color:'#F59E0B',
+    check:function(d){ return totalSavings() >= 50000; }},
+  {id:'rate-20',         cat:'savings',   icon:'⚡', name:'20% Club',          desc:'Maintain a 20%+ savings rate',         color:'#10B981',
+    check:function(d){ var b=calcBudget(); return b.inc>0 && b.rate>=20; }},
+  {id:'rate-50',         cat:'savings',   icon:'🚀', name:'Half & Half',       desc:'Maintain a 50%+ savings rate',         color:'#F59E0B',
+    check:function(d){ var b=calcBudget(); return b.inc>0 && b.rate>=50; }},
+  // ── Budget ──
+  {id:'first-budget',    cat:'budget',    icon:'📊', name:'Budget Boss',       desc:'Set up both income and expenses',      color:'#F59E0B',
+    check:function(d){ return d.incomeSources.length>=1 && d.expenses.length>=1; }},
+  {id:'txn-10',          cat:'budget',    icon:'✍️', name:'Diligent Tracker',  desc:'Log 10 transactions',                  color:'#3B82F6',
+    check:function(d){ return d.transactions.length >= 10; }},
+  {id:'txn-50',          cat:'budget',    icon:'📚', name:'Transaction Pro',   desc:'Log 50 transactions',                  color:'#8B5CF6',
+    check:function(d){ return d.transactions.length >= 50; }},
+  // ── Streaks ──
+  {id:'streak-3',        cat:'streak',    icon:'🔥', name:'On Fire',           desc:'Reach a 3-day logging streak',         color:'#EF4444',
+    check:function(d){ return (d.longestStreak||0) >= 3; }},
+  {id:'streak-7',        cat:'streak',    icon:'⚡', name:'Electric',          desc:'Reach a 7-day logging streak',         color:'#F59E0B',
+    check:function(d){ return (d.longestStreak||0) >= 7; }},
+  {id:'streak-14',       cat:'streak',    icon:'💪', name:'Consistent',        desc:'Reach a 14-day logging streak',        color:'#10B981',
+    check:function(d){ return (d.longestStreak||0) >= 14; }},
+  {id:'streak-30',       cat:'streak',    icon:'👑', name:'Dedicated',         desc:'Reach a 30-day logging streak',        color:'#3B82F6',
+    check:function(d){ return (d.longestStreak||0) >= 30; }},
+  // ── Goals ──
+  {id:'goal-25pct',      cat:'goals',     icon:'🌗', name:'Quarterbacker',     desc:'Reach 25% on any goal',                color:'#F59E0B',
+    check:function(d){ return d.goals.some(function(g){ var p=calcGoalProgress(g); return p.pct>=25; }); }},
+  {id:'goal-half',       cat:'goals',     icon:'🏅', name:'Halfway Hero',      desc:'Reach 50% on any goal',                color:'#10B981',
+    check:function(d){ return d.goals.some(function(g){ var p=calcGoalProgress(g); return p.pct>=50; }); }},
+  {id:'goal-done',       cat:'goals',     icon:'🎉', name:'Goal Crusher',      desc:'Complete a goal (100%)',               color:'#EF4444',
+    check:function(d){ return d.goals.some(function(g){ var p=calcGoalProgress(g); return p.pct>=100; }); }},
+  // ── Portfolio ──
+  {id:'first-crypto',    cat:'portfolio', icon:'₿',  name:'Crypto Curious',   desc:'Add your first crypto holding',        color:'#F59E0B',
+    check:function(d){ return d.cryptoHoldings.length >= 1; }},
+  {id:'first-card',      cat:'portfolio', icon:'🃏', name:'Card Shark',        desc:'Add your first collectible card',      color:'#8B5CF6',
+    check:function(d){ return (d.mtgCards.length+d.pokemonCards.length) >= 1; }},
+  // ── XP / Level ──
+  {id:'level-2',         cat:'xp',        icon:'📖', name:'Apprentice',        desc:'Reach Level 2',                        color:'#3B82F6',
+    check:function(d){ return getLevel(d.xp||0).level >= 2; }},
+  {id:'level-5',         cat:'xp',        icon:'🎯', name:'Smart Spender',     desc:'Reach Level 5',                        color:'#10B981',
+    check:function(d){ return getLevel(d.xp||0).level >= 5; }},
+  {id:'level-8',         cat:'xp',        icon:'🔥', name:'Money Master',      desc:'Reach Level 8',                        color:'#EF4444',
+    check:function(d){ return getLevel(d.xp||0).level >= 8; }},
+];
+
+var CAT_LABELS = {
+  start:'Getting Started', savings:'Savings', budget:'Budget',
+  streak:'Streaks', goals:'Goals', portfolio:'Portfolio', xp:'XP & Level',
+};
+
+function checkBadges() {
+  data.unlockedBadges = data.unlockedBadges || [];
+  var newOnes = [];
+  for (var i = 0; i < BADGES.length; i++) {
+    var b = BADGES[i];
+    if (data.unlockedBadges.indexOf(b.id) === -1) {
+      try {
+        if (b.check(data)) {
+          data.unlockedBadges.push(b.id);
+          newOnes.push(b);
+        }
+      } catch(e) {}
+    }
+  }
+  if (newOnes.length > 0) {
+    showBadgeUnlock(newOnes[0]);
+    if (newOnes.length > 1) {
+      for (var j = 1; j < newOnes.length; j++) {
+        (function(badge, delay) {
+          setTimeout(function() { showBadgeUnlock(badge); }, delay);
+        })(newOnes[j], j * 3600);
+      }
+    }
+  }
+}
+
+function showBadgeUnlock(b) {
+  launchConfetti('gold');
+  var el = document.getElementById('xp-levelup');
+  if (!el) return;
+  el.innerHTML =
+    '<div style="font-size:11px;font-weight:600;color:' + b.color + ';letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;">Badge Unlocked!</div>'
+    + '<div style="width:52px;height:52px;border-radius:14px;background:' + b.color + '22;border:2px solid ' + b.color + ';display:flex;align-items:center;justify-content:center;font-size:26px;">' + b.icon + '</div>'
+    + '<div style="font-weight:700;font-size:16px;color:var(--text);margin-top:8px;">' + b.name + '</div>'
+    + '<div style="font-size:12px;color:var(--text2);margin-top:2px;text-align:center;">' + b.desc + '</div>';
+  el.style.display = 'flex';
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(16px) scale(0.9)';
+  setTimeout(function() {
+    el.style.transition = 'opacity .35s ease, transform .35s cubic-bezier(0.16,1,0.3,1)';
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0) scale(1)';
+  }, 30);
+  setTimeout(function() {
+    el.style.transition = 'opacity .3s ease, transform .3s ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-10px) scale(0.95)';
+    setTimeout(function() { el.style.display = 'none'; el.style.transition = ''; }, 320);
+  }, 3400);
+}
+
+function renderBadges() {
+  var el = document.getElementById('badges-grid');
+  if (!el) return;
+  data.unlockedBadges = data.unlockedBadges || [];
+  var unlocked = data.unlockedBadges.length;
+  var total    = BADGES.length;
+
+  // Update header stats
+  var cntEl = document.getElementById('badges-count');
+  if (cntEl) cntEl.textContent = unlocked + ' / ' + total;
+  var barEl = document.getElementById('badges-bar');
+  if (barEl) setTimeout(function() { barEl.style.width = Math.round(unlocked/total*100)+'%'; }, 80);
+
+  // Group by category
+  var cats = ['start','savings','budget','streak','goals','portfolio','xp'];
+  var html = '';
+  for (var c = 0; c < cats.length; c++) {
+    var cat = cats[c];
+    var group = BADGES.filter(function(b) { return b.cat === cat; });
+    html += '<div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px;">' + CAT_LABELS[cat] + '</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
+    for (var i = 0; i < group.length; i++) {
+      var b = group[i];
+      var isUnlocked = data.unlockedBadges.indexOf(b.id) !== -1;
+      if (isUnlocked) {
+        html += '<div class="item-in" style="background:var(--surface);border-radius:var(--r-md);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;border:1px solid ' + b.color + '33;">'
+          + '<div style="width:44px;height:44px;border-radius:12px;background:' + b.color + '22;border:1.5px solid ' + b.color + ';display:flex;align-items:center;justify-content:center;font-size:22px;">' + b.icon + '</div>'
+          + '<div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.2;">' + b.name + '</div>'
+          + '<div style="font-size:10px;color:var(--text3);line-height:1.3;">' + b.desc + '</div>'
+          + '</div>';
+      } else {
+        html += '<div style="background:var(--surface2);border-radius:var(--r-md);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;opacity:.5;">'
+          + '<div style="width:44px;height:44px;border-radius:12px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;filter:grayscale(1);">' + b.icon + '</div>'
+          + '<div style="font-size:11px;font-weight:600;color:var(--text3);line-height:1.2;">' + b.name + '</div>'
+          + '<div style="font-size:10px;color:var(--text3);line-height:1.3;">' + b.desc + '</div>'
+          + '</div>';
+      }
+    }
+    html += '</div>';
+  }
+  el.innerHTML = html;
+}
+
 var cryptoCache={};
 var cryptoChangeCache={};
 
@@ -1608,6 +2179,8 @@ function initTheme(){
 
 // ── Persistence ────────────────────────────────────────────────────────────
 function save(){
+  checkBadges();
+  updateMoreBadgeCount();
   try{
     var json = JSON.stringify(data);
     localStorage.setItem(STORAGE_KEY, json);
@@ -1819,6 +2392,13 @@ var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','
 
 
 
+function updateMoreBadgeCount() {
+  var el = document.getElementById('more-badges-sub');
+  if (!el) return;
+  var n = (data.unlockedBadges || []).length;
+  el.textContent = n + ' of ' + BADGES.length + ' badges unlocked';
+}
+
 function renderTab(tab){
   if(tab==='home')renderHome();
   else if(tab==='budget')renderBudget();
@@ -1827,6 +2407,7 @@ function renderTab(tab){
   else if(tab==='expenses')renderExpenses();
   else if(tab==='savings')renderSavingsTab();
   else if(tab==='advisor')renderAdvisor();
+  else if(tab==='badges')renderBadges();
   else if(tab==='transactions')renderTransactionsTab();
   else if(tab==='goals')renderGoalsTab();
   else if(tab==='activity')renderActivityTab();
@@ -1876,6 +2457,7 @@ function submitGoalSheet(){
     icon:       icon,
     createdAt:  new Date().toISOString()
   });
+  earnXP('add-goal', 'Set goal: '+name.trim());
   save();
   document.getElementById('sheet-overlay').classList.remove('open');
   renderTab(currentTab);
@@ -1901,6 +2483,8 @@ function submitTxnSheet(){
   if(!name.trim()||!amt) return;
   if(currentTxnType === 'income') cat = 'income';
   logTransaction(name.trim(), amt, currentTxnType, cat, note.trim());
+  updateStreak();
+  earnXP('add-transaction', 'Logged: '+name.trim());
   document.getElementById('sheet-overlay').classList.remove('open');
   renderTab(currentTab);
   renderHome();
@@ -2211,6 +2795,9 @@ function checkGoalMilestone(g, prevPct){
       var body  = '"' + g.name + '" — you\'re ' + m.msg + '!';
       logAlert('goal', title, body);
       showToast(m.iconName, m.color, title, body, 'goal-toast');
+      var xpKey = m.pct === 25 ? 'goal-25' : m.pct === 50 ? 'goal-50' : m.pct === 75 ? 'goal-75' : 'goal-100';
+      earnXP(xpKey, g.name + ' — ' + m.label);
+      if (m.pct === 100) launchConfetti('green');
       break;
     }
   }
@@ -3370,6 +3957,7 @@ function renderHome(){
   renderInsights();
   renderHomeGoal();
   renderMovers();
+  renderXPWidget();
 }
 
 
@@ -4302,11 +4890,13 @@ function submitSheet(){
     if(!name||!amt)return;
     data.incomeSources.push({name:name,amt:amt,freq:freq});
     logTransaction(name, amt, 'income', 'income', freq);
+    earnXP('add-income', 'Added income: '+name);
   } else if(currentSheet==='add-expense'){
     var name=gv('sh-name'),amt=gn('sh-amt'),cat=gv('sh-cat');
     if(!name||!amt)return;
     data.expenses.push({name:name,amt:amt,cat:cat});
     logTransaction(name, amt, 'expense', cat, '');
+    earnXP('add-expense', 'Added bill: '+name);
     setTimeout(checkBudgetAlerts, 200);
   } else if(currentSheet==='edit-income'){
     var name=gv('sh-name'),amt=gn('sh-amt'),freq=gv('sh-freq');
@@ -4337,6 +4927,7 @@ function submitSheet(){
     var name=gv('sh-name'),bank=gv('sh-bank'),balance=gn('sh-bal');
     if(!name||!balance)return;
     data.savingsAccounts.push({name:name,bank:bank,balance:balance});
+    earnXP('add-savings', 'Added savings: '+name);
   } else if(currentSheet==='add-crypto'){
     var sel=g('sh-sym');
     var id=gv('sh-sym'),sym=sel?sel.options[sel.selectedIndex].dataset.sym:'BTC';
@@ -4344,6 +4935,7 @@ function submitSheet(){
     if(!qty)return;
     data.cryptoHoldings.push({id:id,sym:sym,name:sel?sel.options[sel.selectedIndex].text.split(' ')[0]:'',qty:qty,costBasis:cost});
     fetchCryptoPrices();
+    earnXP('add-crypto', 'Added crypto: '+sym);
   } else if(currentSheet==='add-collection'){
     // Use selectedScryfallCard if set
     var card=selectedScryfallCard;
