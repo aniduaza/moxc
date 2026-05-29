@@ -1096,8 +1096,8 @@ body.light .backup-btn{background:#FFFFFF;}
 
 
     <!-- ═══ ADVISOR SCREEN ═══ -->
-    <div class="screen" id="screen-advisor">
-      <div class="pg" style="padding-bottom:0;">
+    <div class="screen" id="screen-advisor" style="display:flex;flex-direction:column;">
+      <div class="pg" style="padding-bottom:8px;flex-shrink:0;overflow-y:auto;max-height:42vh;">
 
         <!-- header -->
         <div class="advisor-header slide-up d1">
@@ -1134,7 +1134,7 @@ body.light .backup-btn{background:#FFFFFF;}
         </div>
 
         <!-- daily briefing -->
-        <div id="advisor-briefing" class="slide-up d2"></div>
+        <div id="advisor-briefing" class="slide-up d2" style="overflow:hidden;transition:max-height .35s cubic-bezier(0.16,1,0.3,1);max-height:0;"></div>
 
         <!-- quick prompts -->
         <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:2px;" class="slide-up d3">
@@ -4425,19 +4425,43 @@ function sendChat(){
   });
 }
 
+function toggleAdvisorBriefing(){
+  var el = document.getElementById('advisor-briefing');
+  var arrow = document.getElementById('briefing-arrow');
+  if(!el) return;
+  var open = el.getAttribute('data-open') === '1';
+  if(open){
+    el.style.maxHeight = '36px';
+    el.setAttribute('data-open','0');
+    if(arrow) arrow.style.transform = 'rotate(0deg)';
+  } else {
+    el.style.maxHeight = '300px';
+    el.setAttribute('data-open','1');
+    if(arrow) arrow.style.transform = 'rotate(180deg)';
+  }
+}
+
 function generateBriefing(){
   if(advisorBriefingDone) return;
   advisorBriefingDone = true;
   var el = document.getElementById('advisor-briefing');
   if(!el) return;
-  el.innerHTML = '<div class="briefing-card" style="color:var(--text3);font-size:13px;font-style:italic;">Generating your daily briefing...</div>';
+  // Show collapsed loading state
+  el.style.maxHeight = '36px';
+  el.setAttribute('data-open','0');
+  el.innerHTML = '<div class="briefing-card" style="cursor:pointer;" onclick="toggleAdvisorBriefing()">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+    + '<div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;">Daily briefing</div>'
+    + '<svg id="briefing-arrow" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" style="transition:transform .3s;flex-shrink:0;"><path d="M5 8l5 5 5-5"/></svg>'
+    + '</div>'
+    + '<div id="briefing-body" style="font-size:13px;color:var(--text2);line-height:1.6;margin-top:8px;font-style:italic;color:var(--text3);">Generating...</div>'
+    + '</div>';
   callClaude('Give me a brief 2-3 sentence summary of my current financial situation and one specific recommendation for today. Be direct and use my actual numbers.').then(function(reply){
-    el.innerHTML = '<div class="briefing-card">'
-      + '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:8px;">Daily briefing</div>'
-      + '<div style="font-size:13px;color:var(--text);line-height:1.6;">' + reply.replace(/\n/g,'<br>') + '</div>'
-      + '</div>';
+    var body = document.getElementById('briefing-body');
+    if(body) body.innerHTML = '<span style="color:var(--text);font-style:normal;">' + reply.replace(/\n/g,'<br>') + '</span>';
   }).catch(function(){
-    el.innerHTML = '';
+    var body = document.getElementById('briefing-body');
+    if(body) body.textContent = 'Could not generate briefing.';
   });
 }
 
@@ -4675,30 +4699,47 @@ function onSwipeTouchEnd(e){
   springToIndex(newIdx);
 }
 
+function closeMoreScreen(){
+  document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
+    sc.style.transform='translateX(100%)';
+    setTimeout(function(){ sc.style.display='none'; sc.style.transform=''; }, 320);
+  });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var activeNav = document.getElementById('nav-' + SWIPE_TABS[swipeIndex]);
+  if(activeNav) activeNav.classList.add('active');
+  currentTab = SWIPE_TABS[swipeIndex];
+}
+
 function switchTab(tab){
-  var idx=SWIPE_TABS.indexOf(tab);
-  if(idx>=0){ springToIndex(idx); closeFAB(); return; }
-  document.querySelectorAll('.non-swipe-screen').forEach(function(sc){ sc.style.display='none'; });
-  var el=document.getElementById('screen-'+tab);
+  var idx = SWIPE_TABS.indexOf(tab);
+  if(idx >= 0){ springToIndex(idx); closeFAB(); return; }
+  // Dismiss any open more screen instantly before showing new one
+  document.querySelectorAll('.non-swipe-screen').forEach(function(sc){ sc.style.display='none'; sc.style.transform=''; });
+  var el = document.getElementById('screen-' + tab);
   if(el){
     el.classList.add('non-swipe-screen');
-    var bg=document.body.classList.contains('light')?'#F5F5F0':'#0D0D0D';
-    el.style.cssText='display:flex;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:70px;z-index:50;background:'+bg+';overflow-y:auto;overflow-x:hidden;';
+    var bg = document.body.classList.contains('light') ? '#F5F5F0' : '#0D0D0D';
+    var navH = document.querySelector('.bottom-nav') ? document.querySelector('.bottom-nav').offsetHeight : 64;
+    el.style.cssText = 'display:flex;flex-direction:column;position:absolute;top:0;left:0;right:0;bottom:'+navH+'px;z-index:46;background:'+bg+';overflow:hidden;transform:translateX(100%);transition:transform .32s cubic-bezier(0.32,0.72,0,1);';
     addBackButton(el);
+    setTimeout(function(){ el.style.transform = 'translateX(0)'; }, 20);
   }
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
-  var moreBtn=document.getElementById('nav-more'); if(moreBtn) moreBtn.classList.add('active');
-  currentTab=tab; renderTab(tab); closeFAB();
+  var moreBtn = document.getElementById('nav-more');
+  if(moreBtn) moreBtn.classList.add('active');
+  currentTab = tab; renderTab(tab); closeFAB();
 }
 
 function addBackButton(el){
   if(el.querySelector('.back-btn')) return;
-  var pg=el.querySelector('.pg'); if(!pg) return;
-  var btn=document.createElement('div'); btn.className='back-btn';
-  btn.style.cssText='display:flex;align-items:center;gap:6px;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:12px;padding:4px 0;-webkit-tap-highlight-color:transparent;';
-  btn.innerHTML='&#8592; Back';
-  btn.addEventListener('click',function(){ el.style.display='none'; renderTab(SWIPE_TABS[swipeIndex]); });
-  pg.insertBefore(btn,pg.firstChild);
+  var pg = el.querySelector('.pg');
+  if(!pg) return;
+  var btn = document.createElement('div');
+  btn.className = 'back-btn';
+  btn.style.cssText = 'display:flex;align-items:center;gap:6px;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:12px;padding:4px 0;-webkit-tap-highlight-color:transparent;';
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4l-6 6 6 6"/></svg> Back';
+  btn.addEventListener('click', closeMoreScreen);
+  pg.insertBefore(btn, pg.firstChild);
 }
 
 
