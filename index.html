@@ -292,10 +292,16 @@ body{transition:background .3s,color .3s;}
 .quick-btn{background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;transition:background .15s;}
 .quick-btn:active{background:var(--surface3);}
 body.light .advisor-header{background:linear-gradient(135deg,#E8F5D0,#D4ECA8);}
+body.light .advisor-header [style*="color:rgba(255,255,255"]{color:rgba(30,60,0,.5)!important;}
+body.light .advisor-header [style*="color:var(--green)"]{color:#2A5000!important;}
 body.light .chat-bubble.assistant{background:#F0F0EC;color:#0D0D0D;}
+body.light .chat-bubble.thinking{background:#F0F0EC;color:rgba(0,0,0,.4);}
 body.light .chat-input{background:#F0F0EC;color:#0D0D0D;}
 body.light .chat-input-row{background:#FFFFFF;border-top-color:rgba(0,0,0,.08);}
-body.light .quick-btn{background:#EFEFEB;color:#333;}
+body.light .quick-btn{background:#EFEFEB;border-color:rgba(0,0,0,.06);color:rgba(0,0,0,.55);}
+body.light .delete-btn{background:rgba(208,48,48,.08);color:var(--red);}
+body.light #advisor-setup-form [style*="rgba(255,255,255,.06)"]{border-color:rgba(0,0,0,.08)!important;}
+body.light #advisor-setup-fields{border-color:rgba(0,0,0,.08)!important;background:var(--surface2)!important;}
 
 /* ── Particle canvas ─────────────────────────────────────────────────── */
 #bg-canvas{display:block;}
@@ -729,7 +735,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <div class="stat-sub">of income</div>
           </div>
           <div class="stat-pill">
-            <div class="stat-lbl">Spent this month</div>
+            <div class="stat-lbl" id="home-spent-lbl">Spent this month</div>
             <div class="stat-val" id="home-spent">—</div>
             <div class="stat-sub" id="home-spent-of">of — AED</div>
           </div>
@@ -2019,12 +2025,28 @@ function getGoalColor(idx){
 }
 
 function calcGoalProgress(goal){
-  // current saved = totalSavings + current assets if goal links to portfolio
   var current = goal.currentAmt || 0;
   if(goal.autoTrack === 'savings') current = totalSavings();
-  if(goal.autoTrack === 'assets')  current = totalAssets();
+  else if(goal.autoTrack === 'assets') current = totalAssets();
+  else if(goal.autoTrack && goal.autoTrack.slice(0,8) === 'account:'){
+    var idx = parseInt(goal.autoTrack.slice(8));
+    var acc = (data.savingsAccounts||[])[idx];
+    current = acc ? (acc.balance||0) : 0;
+  }
   var pct = goal.targetAmt > 0 ? Math.min(100, (current / goal.targetAmt) * 100) : 0;
   return {current: current, pct: pct};
+}
+
+function getGoalTrackLabel(goal){
+  if(!goal.autoTrack) return 'Manual';
+  if(goal.autoTrack === 'savings') return 'Total savings';
+  if(goal.autoTrack === 'assets')  return 'Total assets';
+  if(goal.autoTrack.slice(0,8) === 'account:'){
+    var idx = parseInt(goal.autoTrack.slice(8));
+    var acc = (data.savingsAccounts||[])[idx];
+    return acc ? acc.name : 'Account';
+  }
+  return 'Auto-tracked';
 }
 
 function calcGoalETA(goal, prog){
@@ -2036,11 +2058,11 @@ function calcGoalETA(goal, prog){
   if(monthlySav <= 0) return 'Set a savings rate to see ETA';
   var months = Math.ceil(remaining / monthlySav);
   if(months > 120) return 'Long-term goal';
-  if(months <= 1 && prog.pct >= 80)  return 'Almost there!';
+  if(prog.pct >= 80 && months <= 2) return 'Almost there!';
   var target = new Date();
   target.setMonth(target.getMonth() + months);
   var label = target.toLocaleDateString('en', {month:'short', year:'numeric'});
-  return months + ' months · ' + label;
+  return months + (months === 1 ? ' month' : ' months') + ' · ' + label;
 }
 
 function renderGoals(){
@@ -2079,7 +2101,7 @@ function renderGoals(){
 
     var etaColor = isComplete ? 'var(--green)' : prog.pct >= 75 ? '#5BCDD5' : prog.pct >= 40 ? col.accent : 'var(--text3)';
 
-    html += '<div class="goal-card item-in" style="border:0.5px solid ' + col.accent + '33;">'
+    html += '<div class="goal-card item-in" style="border:0.5px solid ' + col.accent + '33;cursor:pointer;" onclick="openSheet(\'edit-goal\',' + i + ')">'
       + '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:' + col.accent + ';border-radius:3px 3px 0 0;"></div>'
 
       // header
@@ -2088,10 +2110,10 @@ function renderGoals(){
           + gIconHtml
           + '<div>'
             + '<div class="goal-title">' + g.name + '</div>'
-            + '<div class="goal-sub">' + (g.desc || (g.autoTrack ? 'Auto-tracked' : 'Manual')) + '</div>'
+            + '<div class="goal-sub">' + (g.desc || getGoalTrackLabel(g)) + '</div>'
           + '</div>'
         + '</div>'
-        + '<div onclick="deleteGoal(' + i + ')" style="cursor:pointer;color:var(--text3);padding:4px;font-size:14px;">&#10005;</div>'
+        + '<div onclick="event.stopPropagation();deleteGoal(' + i + ')" style="cursor:pointer;color:var(--text3);padding:4px;font-size:14px;">&#10005;</div>'
       + '</div>'
 
       // progress bar
@@ -2111,10 +2133,16 @@ function renderGoals(){
         + '</div>'
       + '</div>'
 
-      // manual update button (if not auto-tracked)
-      + (!g.autoTrack ? '<div class="goal-actions">'
-          + '<button class="goal-action-btn" onclick="updateGoalAmt(' + i + ')" style="background:' + col.bg + ';color:' + col.accent + ';">Update amount</button>'
-        + '</div>' : '')
+      // auto-track badge or manual update button
+      + (g.autoTrack
+          ? '<div style="margin-top:10px;display:flex;align-items:center;gap:5px;">'
+              + '<svg width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--text3);"><path d="M4 10a6 6 0 1 0 1.5-3.9"/><path d="M4 6v4h4"/></svg>'
+              + '<span style="font-size:11px;color:var(--text3);">Synced from ' + getGoalTrackLabel(g) + '</span>'
+            + '</div>'
+          : '<div class="goal-actions">'
+              + '<button class="goal-action-btn" onclick="updateGoalAmt(' + i + ')" style="background:' + col.bg + ';color:' + col.accent + ';">Update amount</button>'
+            + '</div>'
+        )
 
     + '</div>';
   });
@@ -3301,14 +3329,28 @@ function renderHome(){
   }
 
   // Stat: savings rate
+  var overBudget = b.inc > 0 && b.actual > b.inc;
   var rateEl = document.getElementById('home-rate');
-  if(rateEl) rateEl.textContent = b.rate+'%';
+  if(rateEl){
+    rateEl.textContent = overBudget ? '0%' : b.rate+'%';
+    rateEl.style.color = overBudget ? 'var(--red)' : 'var(--green)';
+  }
 
   // Stat: spent this month
   var spentEl   = document.getElementById('home-spent');
   var spentOfEl = document.getElementById('home-spent-of');
-  if(spentEl)   spentEl.textContent   = fmt(b.actual);
-  if(spentOfEl) spentOfEl.textContent = 'of '+fmt(b.inc)+' '+curSym();
+  var spentLblEl = document.getElementById('home-spent-lbl');
+  if(spentLblEl) spentLblEl.textContent = overBudget ? 'Over budget' : 'Spent this month';
+  if(spentEl){
+    spentEl.textContent = fmt(b.actual);
+    spentEl.style.color = overBudget ? 'var(--red)' : 'var(--text)';
+  }
+  if(spentOfEl){
+    spentOfEl.textContent = overBudget
+      ? fmt(b.actual - b.inc)+' '+curSym()+' over budget'
+      : 'of '+fmt(b.inc)+' '+curSym();
+    spentOfEl.style.color = overBudget ? 'var(--red)' : '';
+  }
 
   renderInsights();
   renderHomeGoal();
@@ -3942,11 +3984,19 @@ function renderSavingsTab(){
   if(!data.savingsAccounts.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No accounts yet</div>';return;}
   var savFullHtml='';
   data.savingsAccounts.forEach(function(a,i){
-    savFullHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;">'
+    // Check if any goal is linked to this account
+    var linkedGoal = null;
+    (data.goals||[]).forEach(function(g){
+      if(g.autoTrack === 'account:'+i) linkedGoal = g;
+    });
+    var linkBadge = linkedGoal
+      ? '<div style="font-size:10px;color:var(--green);background:rgba(168,230,60,.1);border-radius:var(--r-sm);padding:2px 7px;margin-top:3px;display:inline-block;">&#8635; '+linkedGoal.name+'</div>'
+      : '';
+    savFullHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openSheet(\'edit-savings\','+i+')">'
       +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
-      +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+a.name+'</div><div style="font-size:11px;color:var(--text3);">'+(a.bank||'Account')+'</div></div>'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+a.name+'</div><div style="font-size:11px;color:var(--text3);">'+(a.bank||'Account')+'</div>'+linkBadge+'</div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--blue);">'+fmt(a.balance)+'</div>'
-      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
+      +'<div onclick="event.stopPropagation();deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=savFullHtml;
@@ -4021,6 +4071,48 @@ function openSheet(type,idx){
       '<option value="sub"'+(ex.cat==='sub'?' selected':'')+'>Subscription</option>' +
       '</select></div>' +
       '<button class="btn-primary" onclick="submitSheet()">Save changes</button>';
+
+  } else if(type === 'edit-savings'){
+    var sv = data.savingsAccounts[currentSheetIdx];
+    if(!sv) return;
+    title.textContent = 'Edit account';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Account name</div>' +
+      '<input class="field-input" id="sh-name" value="'+sv.name+'"></div>' +
+      '<div class="field-group"><div class="field-label">Bank</div>' +
+      '<input class="field-input" id="sh-bank" value="'+(sv.bank||'')+'"></div>' +
+      '<div class="field-group"><div class="field-label">Balance (AED)</div>' +
+      '<input class="field-input" id="sh-bal" type="number" value="'+(sv.balance||0)+'"></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Save changes</button>';
+
+  } else if(type === 'edit-goal'){
+    var gl = data.goals[currentSheetIdx];
+    if(!gl) return;
+    title.textContent = 'Edit goal';
+    var trackOpts =
+      '<option value=""'+(gl.autoTrack?'':' selected')+'>Manual (I update it)</option>' +
+      (data.savingsAccounts||[]).map(function(acc,idx){
+        return '<option value="account:'+idx+'"'+(gl.autoTrack==='account:'+idx?' selected':'')+'>Account — '+acc.name+'</option>';
+      }).join('') +
+      '<option value="savings"'+(gl.autoTrack==='savings'?' selected':'')+'>Total savings balance</option>' +
+      '<option value="assets"'+(gl.autoTrack==='assets'?' selected':'')+'>Total assets</option>';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Goal name</div>' +
+      '<input class="field-input" id="sh-goal-name" value="'+gl.name+'"></div>' +
+      '<div class="field-group"><div class="field-label">Target amount (AED)</div>' +
+      '<input class="field-input" id="sh-goal-target" type="number" value="'+gl.targetAmt+'"></div>' +
+      '<div class="field-group"><div class="field-label">Track automatically</div>' +
+      '<select class="select-input" id="sh-goal-track">'+trackOpts+'</select></div>' +
+      '<div class="field-group" id="sh-goal-current-group" style="'+(gl.autoTrack?'display:none;':'')+'"><div class="field-label">Current amount (AED)</div>' +
+      '<input class="field-input" id="sh-goal-current" type="number" value="'+(gl.currentAmt||0)+'"></div>' +
+      '<div class="field-group"><div class="field-label">Description (optional)</div>' +
+      '<input class="field-input" id="sh-goal-desc" value="'+(gl.desc||'')+'"></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Save changes</button>';
+    setTimeout(function(){
+      var sel = document.getElementById('sh-goal-track');
+      var grp = document.getElementById('sh-goal-current-group');
+      if(sel && grp) sel.onchange = function(){ grp.style.display = sel.value ? 'none' : 'block'; };
+    }, 50);
 
   } else if(type === 'add-savings'){
     title.textContent = 'Add savings account';
@@ -4124,8 +4216,11 @@ function openSheet(type,idx){
       '<div class="field-group"><div class="field-label">Track automatically</div>' +
       '<select class="select-input" id="sh-goal-track">' +
         '<option value="">Manual (I update it)</option>' +
-        '<option value="savings">Auto — total savings balance</option>' +
-        '<option value="assets">Auto — total assets</option>' +
+        (data.savingsAccounts||[]).map(function(acc,idx){
+          return '<option value="account:'+idx+'">Account — '+acc.name+' ('+fmt(acc.balance||0)+' '+curSym()+')</option>';
+        }).join('') +
+        '<option value="savings">Total savings balance</option>' +
+        '<option value="assets">Total assets</option>' +
       '</select></div>' +
       '<div class="field-group" id="sh-goal-current-group"><div class="field-label">Current saved amount (AED)</div>' +
       '<input class="field-input" id="sh-goal-current" type="number" placeholder="0"></div>' +
@@ -4207,6 +4302,22 @@ function submitSheet(){
     if(!name||!amt)return;
     var ex=data.expenses[currentSheetIdx]||{};
     data.expenses[currentSheetIdx]={name:name,amt:amt,cat:cat,recurring:ex.recurring};
+  } else if(currentSheet==='edit-savings'){
+    var name=gv('sh-name'),bank=gv('sh-bank'),balance=gn('sh-bal');
+    if(!name)return;
+    data.savingsAccounts[currentSheetIdx]={name:name,bank:bank,balance:balance};
+  } else if(currentSheet==='edit-goal'){
+    var name=gv('sh-goal-name'),target=gn('sh-goal-target'),track=gv('sh-goal-track');
+    var current=gn('sh-goal-current'),desc=gv('sh-goal-desc');
+    if(!name||!target)return;
+    var gl=data.goals[currentSheetIdx]||{};
+    data.goals[currentSheetIdx]={
+      name:name,targetAmt:target,
+      currentAmt:track?0:current,
+      autoTrack:track||null,
+      desc:desc,icon:gl.icon||'goal-target',
+      createdAt:gl.createdAt||new Date().toISOString()
+    };
   } else if(currentSheet==='add-savings'){
     var name=gv('sh-name'),bank=gv('sh-bank'),balance=gn('sh-bal');
     if(!name||!balance)return;
