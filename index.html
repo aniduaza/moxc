@@ -6,7 +6,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Moxcoin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0D0D0D">
+<meta name="theme-color" content="#0E0F0D">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,21 +18,21 @@
 /* ── Reset & base ── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;font-size:16px;overscroll-behavior:none;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#0E0F0D;color:#fff;font-size:16px;overscroll-behavior:none;}
 
 /* ── CSS tokens ── */
 :root{
-  --green:#A8E63C;
-  --green-dark:#1A2800;
-  --green-mid:#3B6D11;
-  --yellow:#C89A00;
-  --yellow-dark:#1C1400;
-  --stone:#1E1D1A;
-  --stone2:#252320;
-  --black:#0D0D0D;
-  --surface:#181818;
-  --surface2:#222;
-  --surface3:#2A2A2A;
+  --green:#7EC8A0;
+  --green-dark:#0A1F14;
+  --green-mid:#1E5C3A;
+  --yellow:#C8A97E;
+  --yellow-dark:#1C1510;
+  --stone:#1F1E1B;
+  --stone2:#262420;
+  --black:#0E0F0D;
+  --surface:#161714;
+  --surface2:#1E1D1A;
+  --surface3:#252320;
   --text:#fff;
   --text2:rgba(255,255,255,.65);
   --text3:rgba(255,255,255,.35);
@@ -64,7 +64,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
 
 /* ── Cards ── */
 .card{background:var(--surface);border-radius:var(--r-lg);padding:18px;}
-.card-yellow{background:linear-gradient(135deg,#1C1400,#261900);border-radius:var(--r-lg);padding:18px;}
+.card-yellow{background:linear-gradient(135deg,#1C1510,#1F1A12);border-radius:var(--r-lg);padding:18px;}
 .card-green{background:var(--green);border-radius:var(--r-lg);padding:18px;}
 
 /* ── Section header ── */
@@ -100,9 +100,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#0D0D0D;color:#fff;fo
   padding:18px;
   position:relative;
   overflow:hidden;
-  box-shadow:0 0 0 1px rgba(168,230,60,.08), 0 24px 48px rgba(0,0,0,.6);
+  box-shadow:0 0 0 1px rgba(126,200,160,.08), 0 24px 48px rgba(0,0,0,.6);
 }
-body.light .greeting-card{background:#F0F8E0;border-color:rgba(168,230,60,.2);}
+body.light .greeting-card{background:#F0F8E0;border-color:rgba(126,200,160,.2);}
 
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:livePulse 1.8s ease-in-out infinite;flex-shrink:0;}
 /* count-up */
@@ -177,7 +177,7 @@ body.light .greeting-card{background:#F0F8E0;border-color:rgba(168,230,60,.2);}
 .field-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
 .field-label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;}
 .field-input{background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-sm);padding:14px 16px;font-size:16px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border-color .15s;}
-.field-input:focus{border-color:rgba(168,230,60,.5);}
+.field-input:focus{border-color:rgba(126,200,160,.5);}
 .btn-primary{background:var(--green);color:var(--green-dark);border:none;border-radius:var(--r-md);padding:16px;font-size:15px;font-weight:600;width:100%;cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform .1s;}
 .btn-primary:active{transform:scale(.98);}
 .btn-secondary{background:var(--surface);color:var(--text);border:none;border-radius:var(--r-md);padding:14px;font-size:14px;font-weight:500;width:100%;cursor:pointer;font-family:'DM Sans',sans-serif;}
@@ -227,12 +227,12 @@ body.light .greeting-card{background:#F0F8E0;border-color:rgba(168,230,60,.2);}
 
 /* ── Light mode overrides ──────────────────────────────────────────── */
 body.light{
-  --black:#F5F5F0;
+  --black:#F2F5F3;
   --surface:#FFFFFF;
-  --surface2:#F0F0EC;
-  --surface3:#E4E4DF;
-  --stone:#EDECEA;
-  --stone2:#E4E2DF;
+  --surface2:#EFF4F1;
+  --surface3:#E2EBE6;
+  --stone:#E8F0EC;
+  --stone2:#DDE8E2;
   --text:#0D0D0D;
   --text2:rgba(0,0,0,.65);
   --text3:rgba(0,0,0,.38);
@@ -240,29 +240,29 @@ body.light{
   --blue:#1A6EC0;
 }
 body.light #app{background:#F5F5F0;}
-body.light .greeting-card{background:linear-gradient(135deg,#D8EDB8,#C6E494);animation:none;box-shadow:0 4px 24px rgba(80,140,0,.15);border-color:rgba(120,180,0,.2);}
+body.light .greeting-card{background:linear-gradient(135deg,#C8E8D8,#A8D4BC);animation:none;box-shadow:0 4px 24px rgba(30,120,80,.15);border-color:rgba(126,200,160,.2);}
 /* Sub-screen hero cards in light mode */
-body.light #income-hero{background:linear-gradient(135deg,#D8EDB8,#C6E494) !important;}
-body.light #income-hero *{color:rgba(30,60,0,.7) !important;}
-body.light #income-hero [id]{color:#1A3200 !important;}
+body.light #income-hero{background:linear-gradient(135deg,#C8E8D8,#A8D4BC) !important;}
+body.light #income-hero *{color:rgba(10,50,30,.7) !important;}
+body.light #income-hero [id]{color:#0A3020 !important;}
 body.light #expenses-hero{background:linear-gradient(135deg,#F5D5D5,#EDB8B8) !important;}
 body.light #expenses-hero *{color:rgba(80,10,10,.6) !important;}
 body.light #expenses-hero [id]{color:#5A0808 !important;}
 body.light #savings-hero{background:linear-gradient(135deg,#D0E4F5,#B8D0ED) !important;}
 body.light #savings-hero *{color:rgba(10,40,80,.6) !important;}
 body.light #savings-hero [id]{color:#0A2850 !important;}
-body.light .greeting-title{color:rgba(30,60,0,.65);}
+body.light .greeting-title{color:rgba(10,50,30,.65);}
 /* Hero card date + currency labels */
 .home-date-lbl{font-size:10px;color:rgba(255,255,255,.4);}
 .home-cur-lbl{font-size:14px;color:rgba(255,255,255,.35);}
 .balance-amount{color:#fff;}
-body.light .home-date-lbl{color:rgba(40,80,0,.45);}
+body.light .home-date-lbl{color:rgba(10,50,30,.45);}
 body.light .home-cur-lbl{color:rgba(0,0,0,.35);}
-body.light .balance-amount{color:#1A3200 !important;}
-body.light .greeting-name{color:#2A5000;}
-body.light .greeting-sub{color:rgba(30,60,0,.45);}
-body.light .card-yellow{background:linear-gradient(135deg,#F5E8C0,#EDD898);}
-body.light #bud-portfolio-card{background:linear-gradient(135deg,#F0E4B8,#E8D898) !important;}
+body.light .balance-amount{color:#0A3020 !important;}
+body.light .greeting-name{color:#0A3828;}
+body.light .greeting-sub{color:rgba(10,50,30,.45);}
+body.light .card-yellow{background:linear-gradient(135deg,#F5EAD0,#EDD8A8);}
+body.light #bud-portfolio-card{background:linear-gradient(135deg,#F2E8C8,#E8D4A0) !important;}
 body.light .bottom-nav{background:#FFFFFF;border-top:0.5px solid rgba(0,0,0,.1);}
 body.light .field-input{background:#EFEFEB;border-color:rgba(0,0,0,.1);color:#0D0D0D;}
 body.light .select-input{background:#EFEFEB;border-color:rgba(0,0,0,.1);color:#0D0D0D;}
@@ -276,7 +276,7 @@ body{transition:background .3s,color .3s;}
 .card,.card-yellow,.card-green,.stat-pill,.holding-row,.sheet{transition:background .3s,color .3s,border-color .3s;}
 
 /* ── Advisor screen ─────────────────────────────────────────────────── */
-.advisor-header{background:linear-gradient(135deg,#131D00,#1A2800);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;}
+.advisor-header{background:linear-gradient(135deg,#0D1F17,#0A1F14);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;}
 .chat-wrap{display:flex;flex-direction:column;gap:10px;min-height:200px;}
 .chat-bubble{max-width:88%;padding:11px 14px;border-radius:var(--r-md);font-size:13px;line-height:1.55;word-break:break-word;}
 .chat-bubble.user{background:var(--green);color:var(--green-dark);align-self:flex-end;border-bottom-right-radius:4px;font-weight:500;}
@@ -284,14 +284,16 @@ body{transition:background .3s,color .3s;}
 .chat-bubble.thinking{background:var(--surface);color:var(--text3);align-self:flex-start;border-bottom-left-radius:4px;font-style:italic;}
 .chat-input-row{display:flex;gap:8px;align-items:flex-end;padding:12px 16px;background:var(--surface);border-top:0.5px solid rgba(255,255,255,.07);position:sticky;bottom:0;}
 .chat-input{flex:1;background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:10px 16px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;resize:none;max-height:100px;line-height:1.4;}
-.chat-input:focus{border-color:rgba(168,230,60,.4);}
+.chat-input:focus{border-color:rgba(126,200,160,.4);}
 .chat-send{width:38px;height:38px;border-radius:50%;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s;}
 .chat-send:active{transform:scale(.93);}
 .chat-send:disabled{background:var(--surface2);cursor:default;}
 .briefing-card{background:var(--surface);border-radius:var(--r-lg);padding:14px;border-left:3px solid var(--green);margin-bottom:4px;}
 .quick-btn{background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;transition:background .15s;}
 .quick-btn:active{background:var(--surface3);}
-body.light .advisor-header{background:linear-gradient(135deg,#E8F5D0,#D4ECA8);}
+body.light .advisor-header{background:linear-gradient(135deg,#D4EDE3,#B8DEC9);}
+body.light .advisor-header [style*="rgba(255,255,255"]{color:rgba(10,50,30,.5)!important;}
+body.light .advisor-header [style*="color:var(--green)"]{color:#0A3828!important;}
 body.light .advisor-header [style*="color:rgba(255,255,255"]{color:rgba(30,60,0,.5)!important;}
 body.light .advisor-header [style*="color:var(--green)"]{color:#2A5000!important;}
 body.light .chat-bubble.assistant{background:#F0F0EC;color:#0D0D0D;}
@@ -314,7 +316,7 @@ body.light #bg-canvas{opacity:.25;}
 .txn-filter-btn.active{background:var(--green);color:var(--green-dark);}
 .txn-filter-btn:not(.active){background:var(--surface);color:var(--text3);}
 .txn-search{width:100%;background:var(--surface);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:11px 16px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
-.txn-search:focus{border-color:rgba(168,230,60,.4);}
+.txn-search:focus{border-color:rgba(126,200,160,.4);}
 .txn-month-hdr{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;padding:12px 0 6px;}
 .txn-group-hdr{font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 5px;}
 body.light .txn-group-hdr{color:rgba(0,0,0,.35);}
@@ -395,8 +397,8 @@ body.light .more-item{background:#FFFFFF;}
   overflow:hidden;
   position:relative;
   margin-top:10px;
-  background:rgba(168,230,60,.07);
-  border-top:1px solid rgba(168,230,60,.12);
+  background:rgba(126,200,160,.07);
+  border-top:1px solid rgba(126,200,160,.12);
   border-radius:0 0 var(--r-md) var(--r-md);
   margin-left:-18px;
   margin-right:-18px;
@@ -435,7 +437,7 @@ body.light .more-item{background:#FFFFFF;}
   position:absolute;
   left:0;right:0;bottom:0;
   background:#131D00;
-  border:0.5px solid rgba(168,230,60,.25);
+  border:0.5px solid rgba(126,200,160,.25);
   border-radius:var(--r-md);
   padding:10px 12px;
   z-index:10;
@@ -468,7 +470,7 @@ body.light .more-item{background:#FFFFFF;}
 /* ── Pager dots ──────────────────────────────────────────────────────── */
 #pager-dots{display:flex;justify-content:center;align-items:center;gap:5px;padding:10px 0 8px;flex-shrink:0;}
 .pager-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s cubic-bezier(0.16,1,0.3,1);cursor:pointer;}
-.pager-dot.active{width:16px;border-radius:3px;background:#A8E63C;}
+.pager-dot.active{width:16px;border-radius:3px;background:#7EC8A0;}
 
 /* ── Spacing rhythm ──────────────────────────────────────────────────── */
 .sec-hdr{ margin-bottom:8px; }
@@ -482,7 +484,7 @@ body.light .more-item{background:#FFFFFF;}
 .goal-progress-card{background:var(--surface);border-radius:var(--r-md);padding:14px;border:0.5px solid rgba(255,255,255,.06);}
 .goal-progress-card:active{transform:scale(0.98);}
 .goal-prog-track{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin:10px 0 6px;}
-.goal-prog-fill{height:6px;border-radius:3px;background:#A8E63C;transition:width .8s cubic-bezier(0.16,1,0.3,1);width:0%;}
+.goal-prog-fill{height:6px;border-radius:3px;background:#7EC8A0;transition:width .8s cubic-bezier(0.16,1,0.3,1);width:0%;}
 body.light .goal-progress-card{background:#FFFFFF;}
 
 /* ── More + backup items ─────────────────────────────────────────────── */
@@ -564,8 +566,8 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .back-btn{display:flex;align-items:center;gap:6px;color:var(--green);font-size:13px;font-weight:500;cursor:pointer;margin-bottom:16px;padding:4px 0;}
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;gap:12px;}
 .empty-state-img{width:80px;height:80px;border-radius:var(--r-md);object-fit:cover;margin-bottom:4px;background:#0D0D0D;mix-blend-mode:lighten;}
-.empty-state-emoji{font-size:44px;line-height:1;margin-bottom:4px;filter:drop-shadow(0 0 12px rgba(168,230,60,.3));}
-.empty-state-icon-wrap{width:60px;height:60px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--green);margin-bottom:4px;box-shadow:0 0 24px rgba(168,230,60,.12);}
+.empty-state-emoji{font-size:44px;line-height:1;margin-bottom:4px;filter:drop-shadow(0 0 12px rgba(126,200,160,.3));}
+.empty-state-icon-wrap{width:60px;height:60px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--green);margin-bottom:4px;box-shadow:0 0 24px rgba(126,200,160,.12);}
 .search-wrap{position:relative;}
 .search-wrap .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;display:flex;align-items:center;}
 .empty-state-title{font-size:16px;font-weight:600;color:var(--text);}
@@ -590,16 +592,16 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .ob-step.prev{transform:translateX(-100%);opacity:0;pointer-events:none;}
 .ob-step.active{transform:translateX(0);opacity:1;pointer-events:auto;}
 .ob-step.next{transform:translateX(100%);opacity:0;pointer-events:none;}
-.ob-icon-wrap{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 32px rgba(168,230,60,.18);}
-.ob-icon-wrap.brand{background:rgba(168,230,60,.12);color:var(--green);}
-.ob-icon-wrap.income{background:rgba(168,230,60,.1);color:var(--green);}
+.ob-icon-wrap{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 32px rgba(126,200,160,.18);}
+.ob-icon-wrap.brand{background:rgba(126,200,160,.12);color:var(--green);}
+.ob-icon-wrap.income{background:rgba(126,200,160,.1);color:var(--green);}
 .ob-icon-wrap.bill{background:rgba(224,85,85,.1);color:#E05555;}
-.ob-icon-wrap.done{background:rgba(168,230,60,.15);color:var(--green);}
+.ob-icon-wrap.done{background:rgba(126,200,160,.15);color:var(--green);}
 .ob-title{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.5px;line-height:1.2;margin-bottom:8px;}
 .ob-sub{font-size:14px;color:var(--text3);line-height:1.6;margin-bottom:32px;}
 .ob-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;}
 .ob-input{width:100%;background:var(--surface);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:14px 16px;font-size:16px;color:var(--text);font-family:"DM Sans",sans-serif;outline:none;box-sizing:border-box;transition:border-color .18s;}
-.ob-input:focus{border-color:rgba(168,230,60,.5);}
+.ob-input:focus{border-color:rgba(126,200,160,.5);}
 .ob-pills{display:flex;gap:8px;flex-wrap:wrap;}
 .ob-pill{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:var(--surface);color:var(--text2);transition:all .18s;font-family:"DM Sans",sans-serif;}
 .ob-pill.selected{background:var(--green);color:#0D0D0D;border-color:var(--green);}
@@ -674,8 +676,8 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <div id="home-greeting" style="font-size:17px;font-weight:600;color:var(--text);">Moxcoin</div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
-            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 12px;border-radius:var(--r-md);cursor:pointer;">AED</div>
-            <div id="briefing-btn" onclick="onBriefingBtnTap()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(168,230,60,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
+            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(126,200,160,.1);padding:5px 12px;border-radius:var(--r-md);cursor:pointer;">AED</div>
+            <div id="briefing-btn" onclick="onBriefingBtnTap()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(126,200,160,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
               <div id="briefing-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--green);"></div>
               <div id="alerts-home-dot" style="display:none;position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#E24B4A;border:1.5px solid var(--bg);"></div>
@@ -686,7 +688,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
         <!-- hero summary card -->
         <div class="greeting-card slide-up d1" style="padding:18px;">
-          <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(168,230,60,.15) 0%,transparent 70%);pointer-events:none;"></div>
+          <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(126,200,160,.15) 0%,transparent 70%);pointer-events:none;"></div>
           <!-- top row: label + live dot + date -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
             <div style="display:flex;align-items:center;gap:6px;">
@@ -843,7 +845,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
               <span class="toggle-btn" onclick="setHistRange(this,'1y')">1Y</span>
               <span class="toggle-btn" onclick="setHistRange(this,'all')">All</span>
             </div>
-            <div onclick="openLogSnapshot()" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(168,230,60,.1);padding:5px 14px;border-radius:var(--r-md);cursor:pointer;">+ Log</div>
+            <div onclick="openLogSnapshot()" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(126,200,160,.1);padding:5px 14px;border-radius:var(--r-md);cursor:pointer;">+ Log</div>
           </div>
           <!-- chart card -->
           <div id="hist-chart-card" class="card" style="padding:16px;margin-bottom:12px;">
@@ -899,7 +901,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div style="display:flex;gap:6px;margin-bottom:12px;">
             <div class="act-stat-pill">
               <div class="act-stat-lbl">Income</div>
-              <div class="act-stat-val" style="color:#A8E63C;" id="act-income">—</div>
+              <div class="act-stat-val" style="color:#7EC8A0;" id="act-income">—</div>
             </div>
             <div class="act-stat-pill">
               <div class="act-stat-lbl">Spent</div>
@@ -913,10 +915,10 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
           <!-- budget progress -->
           <div class="act-bar-track">
-            <div id="act-bar" style="height:5px;border-radius:3px;background:#A8E63C;width:0%;transition:width .8s cubic-bezier(0.16,1,0.3,1);"></div>
+            <div id="act-bar" style="height:5px;border-radius:3px;background:#7EC8A0;width:0%;transition:width .8s cubic-bezier(0.16,1,0.3,1);"></div>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:12px;">
-            <span id="act-pct" style="color:#A8E63C;font-weight:600;"></span>
+            <span id="act-pct" style="color:#7EC8A0;font-weight:600;"></span>
             <span id="act-remaining" class="act-remaining-lbl"></span>
           </div>
 
@@ -932,7 +934,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             </div>
             <div class="act-mini-pill">
               <div class="act-mini-lbl">Saved</div>
-              <div class="act-mini-val" style="color:#A8E63C;" id="act-saved2">—</div>
+              <div class="act-mini-val" style="color:#7EC8A0;" id="act-saved2">—</div>
             </div>
           </div>
         </div>
@@ -967,7 +969,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
         <div class="slide-up d2">
           <div class="more-item item-in" onclick="switchTab('goals')">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);color:#A8E63C;">
+            <div class="more-item-icon" style="background:rgba(126,200,160,.1);color:#7EC8A0;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><circle cx="10" cy="10" r="4.5"/><circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none"/></svg>
             </div>
             <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
@@ -981,7 +983,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
           <div class="more-item item-in" onclick="switchTab('income')">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);color:#A8E63C;">
+            <div class="more-item-icon" style="background:rgba(126,200,160,.1);color:#7EC8A0;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 13V7M7.5 9.5L10 7L12.5 9.5"/></svg>
             </div>
             <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No income sources yet</div></div>
@@ -1013,7 +1015,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d4">Settings</div>
         <div class="slide-up d4">
           <div class="more-item item-in" onclick="editUserName()">
-            <div class="more-item-icon" style="background:rgba(168,230,60,.1);color:#A8E63C;">
+            <div class="more-item-icon" style="background:rgba(126,200,160,.1);color:#7EC8A0;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7.5" r="3.5"/><path d="M3 18.5c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
             </div>
             <div class="more-item-info"><div class="more-item-title">Your name</div><div class="more-item-sub" id="more-username">Tap to personalise greeting</div></div>
@@ -1083,9 +1085,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div class="gauge-wrap">
             <svg width="172" height="90" viewBox="0 0 172 90" style="overflow:visible;">
               <path d="M16 82 A70 70 0 0 1 156 82" stroke="rgba(255,255,255,.1)" stroke-width="10" stroke-linecap="round" fill="none"/>
-              <path id="gauge-arc" d="M16 82 A70 70 0 0 1 156 82" stroke="#C89A00" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="220" stroke-dashoffset="220"/>
-              <line id="gauge-needle" x1="86" y1="82" x2="86" y2="24" stroke="#C89A00" stroke-width="3" stroke-linecap="round" transform="rotate(-120,86,82)"/>
-              <circle cx="86" cy="82" r="5" fill="#C89A00"/>
+              <path id="gauge-arc" d="M16 82 A70 70 0 0 1 156 82" stroke="#C8A97E" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="220" stroke-dashoffset="220"/>
+              <line id="gauge-needle" x1="86" y1="82" x2="86" y2="24" stroke="#C8A97E" stroke-width="3" stroke-linecap="round" transform="rotate(-120,86,82)"/>
+              <circle cx="86" cy="82" r="5" fill="#C8A97E"/>
               <text x="12" y="90" font-size="9" fill="rgba(255,255,255,.3)" font-family="DM Sans,sans-serif">0</text>
               <text x="148" y="90" font-size="9" fill="rgba(255,255,255,.3)" font-family="DM Sans,sans-serif" id="gauge-max-lbl">12k</text>
             </svg>
@@ -1140,13 +1142,13 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- portfolio daily -->
-        <div id="bud-portfolio-card" style="background:linear-gradient(135deg,#1C1400,#261900);border-radius:var(--r-lg);padding:16px;display:flex;align-items:center;justify-content:space-between;" class="slide-up d5">
+        <div id="bud-portfolio-card" style="background:linear-gradient(135deg,#1C1510,#1F1A12);border-radius:var(--r-lg);padding:16px;display:flex;align-items:center;justify-content:space-between;" class="slide-up d5">
           <div>
             <div style="font-size:11px;color:rgba(200,154,0,.6);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;font-weight:600;">Portfolio today</div>
             <div style="font-size:20px;font-weight:600;color:#fff;" id="bud-pl">—</div>
           </div>
           <div style="background:rgba(200,154,0,.15);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#C89A00" stroke-width="1.8"><path d="M2 12l3.5-4 3 2.5 4-6"/></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#C8A97E" stroke-width="1.8"><path d="M2 12l3.5-4 3 2.5 4-6"/></svg>
           </div>
         </div>
 
@@ -1267,7 +1269,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <div id="advisor-setup-form" style="display:none;">
           <div onclick="toggleAdvisorSetupExpand()" style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-radius:var(--r-md);padding:12px 14px;cursor:pointer;border:0.5px solid rgba(255,255,255,.06);">
             <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:28px;height:28px;border-radius:var(--r-sm);background:rgba(168,230,60,.1);color:var(--green);display:flex;align-items:center;justify-content:center;">
+              <div style="width:28px;height:28px;border-radius:var(--r-sm);background:rgba(126,200,160,.1);color:var(--green);display:flex;align-items:center;justify-content:center;">
                 <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v1.8M10 15.7v1.8M2.5 10h1.8M15.7 10h1.8M4.7 4.7l1.3 1.3M14 14l1.3 1.3M4.7 15.3l1.3-1.3M14 6l1.3-1.3"/></svg>
               </div>
               <div>
@@ -1424,8 +1426,8 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
     <!-- FAB -->
     <div style="flex:1;display:flex;justify-content:center;align-items:center;padding-bottom:4px;">
-      <div id="fab-btn" onclick="openFAB()" style="width:52px;height:52px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(168,230,60,.3);transition:transform .15s;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(.92)'" ontouchend="this.style.transform='scale(1)'">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1A2800" stroke-width="2.5" stroke-linecap="round"><path d="M11 4v14M4 11h14"/></svg>
+      <div id="fab-btn" onclick="openFAB()" style="width:52px;height:52px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(126,200,160,.3);transition:transform .15s;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(.92)'" ontouchend="this.style.transform='scale(1)'">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#0A1F14" stroke-width="2.5" stroke-linecap="round"><path d="M11 4v14M4 11h14"/></svg>
       </div>
     </div>
 
@@ -1487,7 +1489,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
     <div id="briefing-sheet" style="background:var(--surface);border-radius:0 0 var(--r-xl) var(--r-xl);width:100%;padding:22px 20px 28px;transform:translateY(-100%);transition:transform .38s cubic-bezier(0.32,0.72,0,1);max-height:80vh;overflow-y:auto;">
       <div style="width:36px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 18px;"></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-        <div style="width:36px;height:36px;border-radius:var(--r-sm);background:rgba(168,230,60,.1);color:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:36px;height:36px;border-radius:var(--r-sm);background:rgba(126,200,160,.1);color:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
         </div>
         <div>
@@ -1893,7 +1895,7 @@ function submitTxnSheet(){
 
 var txnFilter = 'all';
 var TXN_CATS = {
-  income:  {label:'Income',        iconName:'income',       bg:'#1A2800', color:'var(--green)'},
+  income:  {label:'Income',        iconName:'income',       bg:'#0A1F14', color:'var(--green)'},
   ess:     {label:'Essential',     iconName:'essential',    bg:'#2A0A00', color:'var(--red)'},
   food:    {label:'Food',          iconName:'food',         bg:'#2A1200', color:'#F7A400'},
   transport:{label:'Transport',    iconName:'transport',    bg:'#001A18', color:'#3DD9C5'},
@@ -2010,7 +2012,7 @@ function renderTransactionsTab(){
 
 // ── Goals tracker ─────────────────────────────────────────────────────────
 var GOAL_COLORS = [
-  {name:'Green',  accent:'#A8E63C', bg:'rgba(168,230,60,.12)',  text:'var(--green-dark)'},
+  {name:'Green',  accent:'#7EC8A0', bg:'rgba(126,200,160,.12)',  text:'var(--green-dark)'},
   {name:'Blue',   accent:'#5B9BD5', bg:'rgba(91,155,213,.12)',  text:'#fff'},
   {name:'Yellow', accent:'#E8D800', bg:'rgba(232,216,0,.12)',   text:'var(--yellow-dark)'},
   {name:'Red',    accent:'#E05555', bg:'rgba(224,85,85,.12)',   text:'#fff'},
@@ -2180,9 +2182,9 @@ function updateGoalAmt(idx){
 
 var GOAL_MILESTONES = [
   {pct:25,  label:'25%',  color:'#5B9BD5', iconName:'alert-goal',     msg:'a quarter of the way there'},
-  {pct:50,  label:'50%',  color:'#A8E63C', iconName:'alert-goal',     msg:'halfway to your goal'},
-  {pct:75,  label:'75%',  color:'#A8E63C', iconName:'alert-goal',     msg:'75% of the way there'},
-  {pct:100, label:'100%', color:'#A8E63C', iconName:'alert-complete', msg:'reached your goal'},
+  {pct:50,  label:'50%',  color:'#7EC8A0', iconName:'alert-goal',     msg:'halfway to your goal'},
+  {pct:75,  label:'75%',  color:'#7EC8A0', iconName:'alert-goal',     msg:'75% of the way there'},
+  {pct:100, label:'100%', color:'#7EC8A0', iconName:'alert-complete', msg:'reached your goal'},
 ];
 
 function checkGoalMilestone(g, prevPct){
@@ -2264,7 +2266,7 @@ function renderAlertsSheetList(){
     if(s<86400) return Math.floor(s/3600)+'h ago';
     return Math.floor(s/86400)+'d ago';
   }
-  var alertColors = {budget:'#E05555', goal:'#A8E63C'};
+  var alertColors = {budget:'#E05555', goal:'#7EC8A0'};
   var alertIcons  = {budget:'alert-crit', goal:'alert-goal'};
   el.innerHTML = log.map(function(a){
     var col  = alertColors[a.type]  || 'var(--text3)';
@@ -2299,7 +2301,7 @@ function renderAlertsTab(){
     if(s < 86400) return Math.floor(s/3600)+'h ago';
     return Math.floor(s/86400)+'d ago';
   }
-  var alertColors = {budget:'#E05555', goal:'#A8E63C'};
+  var alertColors = {budget:'#E05555', goal:'#7EC8A0'};
   var alertIcons  = {budget:'alert-crit', goal:'alert-goal'};
   el.innerHTML = log.map(function(a){
     var col  = alertColors[a.type] || 'var(--text3)';
@@ -2408,7 +2410,7 @@ function drawRealSparkline(canvasId, range, options){
 
   // Gradient fill
   var grad = ctx.createLinearGradient(0, 0, 0, H);
-  var lineColor = opts.color || '#A8E63C';
+  var lineColor = opts.color || '#7EC8A0';
   grad.addColorStop(0, hexToRgba(lineColor, 0.22));
   grad.addColorStop(1, hexToRgba(lineColor, 0));
 
@@ -2622,12 +2624,12 @@ function renderBudgetAlertBanner(pct, b){
 
 // ── FAB (Floating Action Button) ──────────────────────────────────────────
 var FAB_OPTIONS = [
-  {id:'add-income',      iconName:'income',       label:'Income source',     sub:'Salary, freelance, other',   color:'rgba(168,230,60,.08)',  accent:'#A8E63C'},
+  {id:'add-income',      iconName:'income',       label:'Income source',     sub:'Salary, freelance, other',   color:'rgba(126,200,160,.08)',  accent:'#7EC8A0'},
   {id:'add-expense',     iconName:'bill',          label:'Monthly bill',      sub:'Rent, subscriptions, bills', color:'rgba(224,85,85,.08)',   accent:'#E05555'},
   {id:'add-transaction', iconName:'transaction',   label:'Transaction',       sub:'Log a one-time payment',     color:'rgba(91,155,213,.08)',  accent:'#5B9BD5'},
   {id:'add-crypto',      iconName:'crypto',        label:'Crypto holding',    sub:'BTC, ETH, SOL and more',     color:'rgba(247,164,0,.08)',   accent:'#F7A400'},
   {id:'add-collection',  iconName:'card',          label:'Card',              sub:'MTG or Pokemon card',        color:'rgba(181,123,224,.08)', accent:'#B57BE0'},
-  {id:'add-goal',        iconName:'goal',          label:'Goal',              sub:'Savings target with ETA',    color:'rgba(168,230,60,.06)',  accent:'#A8E63C'},
+  {id:'add-goal',        iconName:'goal',          label:'Goal',              sub:'Savings target with ETA',    color:'rgba(126,200,160,.06)',  accent:'#7EC8A0'},
   {id:'add-savings',     iconName:'savings',       label:'Savings account',   sub:'Bank account or cash',       color:'rgba(91,155,213,.06)',  accent:'#5B9BD5'},
 ];
 
@@ -2749,7 +2751,7 @@ function renderActivity(){
   var pctEl  = document.getElementById('act-pct');
   var remEl  = document.getElementById('act-remaining');
   if(barEl){
-    setTimeout(function(){ barEl.style.width = pct+'%'; barEl.style.background = pct>=90?'#E05555':pct>=75?'#E0A030':'#A8E63C'; },80);
+    setTimeout(function(){ barEl.style.width = pct+'%'; barEl.style.background = pct>=90?'#E05555':pct>=75?'#E0A030':'#7EC8A0'; },80);
   }
   if(pctEl) pctEl.textContent = pct+'% of budget used';
   if(remEl) remEl.textContent = fmt(Math.max(0,limit-b.actual))+' '+curSym()+' remaining';
@@ -2800,7 +2802,7 @@ function renderActivity(){
   });
 
   var TXN_CATS = {
-    income: {iconName:'income',       bg:'rgba(168,230,60,.1)',  color:'#A8E63C'},
+    income: {iconName:'income',       bg:'rgba(126,200,160,.1)',  color:'#7EC8A0'},
     ess:    {iconName:'essential',    bg:'rgba(224,85,85,.1)',   color:'#E24B4A'},
     sub:    {iconName:'subscription', bg:'rgba(0,16,48,.9)',     color:'#5B9BD5'},
     saving: {iconName:'saving-cat',   bg:'rgba(91,155,213,.1)',  color:'#5B9BD5'},
@@ -2816,7 +2818,7 @@ function renderActivity(){
       var cat      = TXN_CATS[t.cat]||TXN_CATS.other;
       var d        = new Date(t.date);
       var time     = d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false});
-      var amtColor = isIncome?'#A8E63C':'#E05555';
+      var amtColor = isIncome?'#7EC8A0':'#E05555';
       var amtSign  = isIncome?'+':'&#8722;';
       html+='<div class="item-in" style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface);border-radius:var(--r-sm);margin-bottom:6px;border:0.5px solid rgba(255,255,255,.05);">'
         +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+cat.bg+';color:'+cat.color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon(cat.iconName,18)+'</div>'
@@ -2891,7 +2893,7 @@ function renderActivityTxns(){
   });
 
   var TXN_CATS = {
-    income: {label:'Income',       iconName:'income',       bg:'#1A2800', color:'var(--green)'},
+    income: {label:'Income',       iconName:'income',       bg:'#0A1F14', color:'var(--green)'},
     ess:    {label:'Essential',    iconName:'essential',    bg:'#2A0A00', color:'var(--red)'},
     sub:    {label:'Subscription', iconName:'subscription', bg:'#001020', color:'var(--blue)'},
     saving: {label:'Saving',       iconName:'saving-cat',   bg:'#001A2A', color:'var(--blue)'},
@@ -3006,7 +3008,7 @@ function handleImportFile(e){
 function showToast(msg){
   var ex=document.getElementById('mox-toast'); if(ex) ex.remove();
   var t=document.createElement('div'); t.id='mox-toast';
-  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:0.5px solid rgba(168,230,60,.3);color:var(--text);font-size:13px;font-weight:500;padding:10px 20px;border-radius:var(--r-md);z-index:200;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:0.5px solid rgba(126,200,160,.3);color:var(--text);font-size:13px;font-weight:500;padding:10px 20px;border-radius:var(--r-md);z-index:200;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);';
   t.textContent=msg; document.body.appendChild(t);
   setTimeout(function(){ t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(function(){ if(t.parentNode) t.remove(); },300); },2500);
 }
@@ -3092,7 +3094,7 @@ function generateInsights(){
     if(b.actual>monthPct*b.inc*1.15){
       ins.push({icon:'⚠️',bg:'rgba(224,85,85,.12)',text:'You have spent <strong>'+fmt(b.actual)+' '+curSym()+'</strong> and are ahead of pace. Projected month total: <strong>'+fmt(Math.round(b.actual/monthPct))+' '+curSym()+'</strong>.'});
     } else if(b.rate>=30){
-      ins.push({icon:'✅',bg:'rgba(168,230,60,.1)',text:'Strong savings rate of <strong>'+b.rate+'%</strong> this month — saving <strong>'+fmt(b.sav)+' '+curSym()+'</strong>.'});
+      ins.push({icon:'✅',bg:'rgba(126,200,160,.1)',text:'Strong savings rate of <strong>'+b.rate+'%</strong> this month — saving <strong>'+fmt(b.sav)+' '+curSym()+'</strong>.'});
     }
     if(b.subs>0&&b.actual>0&&Math.round(b.subs/b.actual*100)>35){
       ins.push({icon:'📱',bg:'rgba(91,155,213,.1)',text:'Subscriptions are <strong>'+Math.round(b.subs/b.actual*100)+'%</strong> of spending (<strong>'+fmt(b.subs)+' '+curSym()+'</strong>). Worth reviewing.'});
@@ -3101,7 +3103,7 @@ function generateInsights(){
   if(data.cryptoHoldings.length){
     var best=null,bestChg=-999;
     data.cryptoHoldings.forEach(function(h){ var chg=cryptoChangeCache[h.id]||0; if(chg>bestChg){bestChg=chg;best=h;} });
-    if(best&&bestChg>1) ins.push({icon:'📈',bg:'rgba(168,230,60,.1)',text:'<strong>'+best.sym+'</strong> is your top mover today at <strong>+'+bestChg.toFixed(1)+'%</strong>.'});
+    if(best&&bestChg>1) ins.push({icon:'📈',bg:'rgba(126,200,160,.1)',text:'<strong>'+best.sym+'</strong> is your top mover today at <strong>+'+bestChg.toFixed(1)+'%</strong>.'});
     else if(best&&bestChg<-2) ins.push({icon:'📉',bg:'rgba(224,85,85,.1)',text:'<strong>'+best.sym+'</strong> is down <strong>'+bestChg.toFixed(1)+'%</strong> — largest drop in your portfolio.'});
   }
   var mtgT=data.mtgCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
@@ -3117,7 +3119,7 @@ function generateInsights(){
       var pct=g.targetAmt>0?Math.min(100,cur/g.targetAmt*100):0;
       if(pct>closestPct){closestPct=pct;closest=g;}
     });
-    if(closest&&closestPct>=50&&closestPct<100) ins.push({icon:'🎯',bg:'rgba(168,230,60,.08)',text:'<strong>'+closest.name+'</strong> is <strong>'+closestPct.toFixed(0)+'%</strong> complete.'});
+    if(closest&&closestPct>=50&&closestPct<100) ins.push({icon:'🎯',bg:'rgba(126,200,160,.08)',text:'<strong>'+closest.name+'</strong> is <strong>'+closestPct.toFixed(0)+'%</strong> complete.'});
   }
   if(!ins.length) ins.push({icon:'💡',bg:'rgba(255,255,255,.05)',text:'Add your income, bills and holdings to get personalised financial insights.'});
   return ins.slice(0,3);
@@ -3312,7 +3314,7 @@ function renderHome(){
     var pkVal     = data.pokemonCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
     var total     = savVal+cryptoVal+mtgVal+pkVal||1;
     var segs = [
-      {label:'Savings',val:savVal,  color:'#A8E63C'},
+      {label:'Savings',val:savVal,  color:'#7EC8A0'},
       {label:'Crypto', val:cryptoVal,color:'#5B9BD5'},
       {label:'MTG',    val:mtgVal,  color:'#E05010'},
       {label:'Pokemon',val:pkVal,   color:'#F0B90B'},
@@ -3602,9 +3604,9 @@ function drawHistChart(pts){
   var vals=pts.map(function(p){return p.total;}),mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);
   var rng=mx-mn||mx*0.05||1; mn-=rng*0.08; mx+=rng*0.08;
   function px(i){return(i/(pts.length-1))*W;} function py(v){return H-((v-mn)/(mx-mn))*(H*0.88)-H*0.06;}
-  var isUp=vals[vals.length-1]>=vals[0],color=isUp?'#A8E63C':'#E05555';
+  var isUp=vals[vals.length-1]>=vals[0],color=isUp?'#7EC8A0':'#E05555';
   var grad=ctx.createLinearGradient(0,0,0,H);
-  grad.addColorStop(0,isUp?'rgba(168,230,60,.2)':'rgba(224,85,85,.2)'); grad.addColorStop(1,'rgba(0,0,0,0)');
+  grad.addColorStop(0,isUp?'rgba(126,200,160,.2)':'rgba(224,85,85,.2)'); grad.addColorStop(1,'rgba(0,0,0,0)');
   ctx.beginPath(); ctx.moveTo(px(0),py(vals[0]));
   for(var i=1;i<pts.length;i++) ctx.lineTo(px(i),py(vals[i]));
   ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
@@ -3612,7 +3614,7 @@ function drawHistChart(pts){
   for(var i=1;i<pts.length;i++) ctx.lineTo(px(i),py(vals[i]));
   ctx.strokeStyle=color; ctx.lineWidth=2; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.stroke();
   var ex=px(pts.length-1),ey=py(vals[vals.length-1]);
-  ctx.beginPath();ctx.arc(ex,ey,5,0,Math.PI*2);ctx.fillStyle=isUp?'rgba(168,230,60,.2)':'rgba(224,85,85,.2)';ctx.fill();
+  ctx.beginPath();ctx.arc(ex,ey,5,0,Math.PI*2);ctx.fillStyle=isUp?'rgba(126,200,160,.2)':'rgba(224,85,85,.2)';ctx.fill();
   ctx.beginPath();ctx.arc(ex,ey,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
 }
 function renderHistory(){
@@ -3845,7 +3847,7 @@ function renderIncome(){
   var incHtml='';
   data.incomeSources.forEach(function(s,i){
     incHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openSheet(\'edit-income\','+i+')">'
-      +'<div class="txn-avatar" style="background:#1A2800;color:var(--green);display:flex;align-items:center;justify-content:center;">'+getIcon('income',18)+'</div>'
+      +'<div class="txn-avatar" style="background:#0A1F14;color:var(--green);display:flex;align-items:center;justify-content:center;">'+getIcon('income',18)+'</div>'
       +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+s.name+'</div><div style="font-size:11px;color:var(--text3);">'+(s.freq||'monthly')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--green);">+'+fmt(s.amt)+'</div>'
       +'<div onclick="event.stopPropagation();deleteItem(\'income\','+i+')" class="delete-btn">&#10005;</div>'
@@ -3990,7 +3992,7 @@ function renderSavingsTab(){
       if(g.autoTrack === 'account:'+i) linkedGoal = g;
     });
     var linkBadge = linkedGoal
-      ? '<div style="font-size:10px;color:var(--green);background:rgba(168,230,60,.1);border-radius:var(--r-sm);padding:2px 7px;margin-top:3px;display:inline-block;">&#8635; '+linkedGoal.name+'</div>'
+      ? '<div style="font-size:10px;color:var(--green);background:rgba(126,200,160,.1);border-radius:var(--r-sm);padding:2px 7px;margin-top:3px;display:inline-block;">&#8635; '+linkedGoal.name+'</div>'
       : '';
     savFullHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openSheet(\'edit-savings\','+i+')">'
       +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
@@ -4146,7 +4148,7 @@ function openSheet(type,idx){
     title.textContent = 'Add card';
     body.innerHTML =
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;">' +
-        '<div id="ctype-mtg" onclick="switchCardType(\'mtg\')" style="border-radius:var(--r-md);padding:14px 10px;text-align:center;cursor:pointer;border:1.5px solid var(--green);background:rgba(168,230,60,.08);">' +
+        '<div id="ctype-mtg" onclick="switchCardType(\'mtg\')" style="border-radius:var(--r-md);padding:14px 10px;text-align:center;cursor:pointer;border:1.5px solid var(--green);background:rgba(126,200,160,.08);">' +
           '<div style="margin:0 auto 4px;display:flex;align-items:center;justify-content:center;">' +
             '<i class="ss ss-planeswalker" style="font-size:26px;color:#E05010;"></i>' +
           '</div>' +
@@ -4457,7 +4459,7 @@ function switchCardType(type){
   var mtgForm=document.getElementById('form-mtg');
   var pokeForm=document.getElementById('form-poke');
   if(type==='mtg'){
-    mtgBtn.style.borderColor='var(--green)';mtgBtn.style.background='rgba(168,230,60,.08)';
+    mtgBtn.style.borderColor='var(--green)';mtgBtn.style.background='rgba(126,200,160,.08)';
     mtgBtn.querySelector('div:nth-child(2)').style.color='var(--green)';
     pokeBtn.style.borderColor='var(--surface3)';pokeBtn.style.background='transparent';
     pokeBtn.querySelector('div:nth-child(2)').style.color='var(--text2)';
@@ -4605,7 +4607,7 @@ function displayPokeCard(card){
       +'<div><div style="font-size:10px;color:var(--text3);">AED</div>'
       +'<div style="font-size:15px;font-weight:600;color:var(--green);">'+(priceAED?priceAED.toFixed(0):'—')+'</div></div>'
       +'</div>'
-      +(priceAED?'<button onclick="prefillPokePrice()" style="background:rgba(168,230,60,.12);color:var(--green);border:none;border-radius:var(--r-sm);padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
+      +(priceAED?'<button onclick="prefillPokePrice()" style="background:rgba(126,200,160,.12);color:var(--green);border:none;border-radius:var(--r-sm);padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
       +'</div>';
   }
   var paidInput=document.getElementById('sh-poke-paid');
@@ -4733,7 +4735,7 @@ function displayScryfallCard(card){
       +'<div><div style="font-size:10px;color:var(--text3);">Market</div><div style="font-size:15px;font-weight:600;color:var(--yellow);">'+(priceUSD?'$'+priceUSD.toFixed(2):'—')+'</div></div>'
       +'<div><div style="font-size:10px;color:var(--text3);">AED</div><div style="font-size:15px;font-weight:600;color:var(--green);">'+(priceAED?priceAED.toFixed(0):'—')+'</div></div>'
       +'</div>'
-      +(priceAED?'<button onclick="prefillPrice()" style="background:rgba(168,230,60,.12);color:var(--green);border:none;border-radius:var(--r-sm);padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
+      +(priceAED?'<button onclick="prefillPrice()" style="background:rgba(126,200,160,.12);color:var(--green);border:none;border-radius:var(--r-sm);padding:5px 10px;font-size:11px;margin-top:8px;cursor:pointer;font-family:DM Sans,sans-serif;">Use market price</button>':'')
       +'</div>';
   }
   var paidInput=document.getElementById('sh-paid');
@@ -5721,7 +5723,7 @@ function obBuildSummary(){
   if(data.incomeSources.length){
     var inc = data.incomeSources[data.incomeSources.length - 1];
     rows += '<div class="ob-summary-row">'
-      + '<div class="ob-summary-icon" style="background:rgba(168,230,60,.12);color:var(--green);">'+obSvg('income')+'</div>'
+      + '<div class="ob-summary-icon" style="background:rgba(126,200,160,.12);color:var(--green);">'+obSvg('income')+'</div>'
       + '<div><div class="ob-summary-val">'+inc.name+'</div><div class="ob-summary-label">'+fmt(inc.amt)+' '+obData.currency+' / month</div></div>'
       + '</div>';
   }
