@@ -640,9 +640,21 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .ob-icon-wrap.income{background:rgba(245,158,11,.1);color:var(--green);}
 .ob-icon-wrap.bill{background:rgba(224,85,85,.1);color:#EF4444;}
 .ob-icon-wrap.done{background:rgba(245,158,11,.15);color:var(--green);}
-.ob-title{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.5px;line-height:1.2;margin-bottom:8px;}
-.ob-sub{font-size:14px;color:var(--text3);line-height:1.6;margin-bottom:32px;}
-.ob-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;}
+.ob-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.2;margin-bottom:8px;}
+.ob-sub{font-size:14px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:32px;}
+.ob-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.4);margin-bottom:8px;}
+/* Onboarding always dark — override light mode */
+#ob-overlay{color:#fff!important;}
+#ob-overlay .ob-input{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;color:#fff!important;}
+#ob-overlay .ob-input::placeholder{color:rgba(255,255,255,.3)!important;}
+#ob-overlay .ob-input:focus{border-color:rgba(245,158,11,.5)!important;}
+#ob-overlay .ob-pill{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;color:rgba(255,255,255,.7)!important;}
+#ob-overlay .ob-pill.selected{background:var(--green)!important;color:#0D0D0D!important;border-color:var(--green)!important;}
+#ob-overlay .ob-summary-row{background:rgba(255,255,255,.06)!important;}
+#ob-overlay .ob-summary-label{color:rgba(255,255,255,.5)!important;}
+#ob-overlay .ob-summary-val{color:#fff!important;}
+#ob-overlay .ob-currency-label{color:rgba(255,255,255,.5)!important;}
+#ob-overlay .ob-btn-skip{color:rgba(255,255,255,.35)!important;}
 .ob-input{width:100%;background:var(--surface);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:14px 16px;font-size:16px;color:var(--text);font-family:"DM Sans",sans-serif;outline:none;box-sizing:border-box;transition:border-color .18s;}
 .ob-input:focus{border-color:rgba(245,158,11,.5);}
 .ob-pills{display:flex;gap:8px;flex-wrap:wrap;}
@@ -799,19 +811,6 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div id="asset-bar" style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:flex;gap:1px;"></div>
           <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
 
-          <!-- insight ticker (marquee) -->
-          <div class="insight-ticker" id="insight-ticker">
-            <div class="insight-ticker-inner">
-              <span class="insight-ticker-label">Live</span>
-              <div class="insight-ticker-track">
-                <span class="insight-ticker-text" id="insight-ticker-text">Loading insights...</span>
-              </div>
-            </div>
-          </div>
-          <div class="insight-expanded" id="insight-expanded">
-            <div id="insight-expanded-rows"></div>
-            <div class="insight-exp-close" onclick="toggleInsightExpand(event)">Tap to close &#8593;</div>
-          </div>
         </div>
 
         <!-- 2 key stats -->
@@ -887,6 +886,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <button class="port-tab" onclick="setPortFilter(this,'crypto')">Crypto</button>
           <button class="port-tab" onclick="setPortFilter(this,'cards')">Cards</button>
           <button class="port-tab" onclick="setPortFilter(this,'savings')">Savings</button>
+          <button class="port-tab" onclick="setPortFilter(this,'credit')">Credit</button>
           <button class="port-tab" onclick="setPortFilter(this,'history')">History</button>
         </div>
 
@@ -928,6 +928,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <div id="port-section-savings" style="display:none;">
           <div class="sec-hdr"><span class="sec-title">Savings accounts</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
           <div id="savings-list-2"></div>
+        </div>
+
+        <!-- CREDIT section -->
+        <div id="port-section-credit" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Credit cards</span><span class="sec-link" onclick="openFABSheet('add-credit')">+ Add</span></div>
+          <div id="credit-list-2"></div>
         </div>
 
         <!-- HISTORY section -->
@@ -1103,6 +1109,13 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3.5h11v11l-1.75 1.75-1.75-1.75-1.75 1.75-1.75-1.75-1.75 1.75-1.75-1.75V3.5Z"/><path d="M7 8h6M7 11h4"/></svg>
             </div>
             <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills yet</div></div>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
+          </div>
+          <div class="more-item item-in" onclick="switchTab('credit')">
+            <div class="more-item-icon" style="background:rgba(99,102,241,.12);color:#6366F1;">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="16" height="11" rx="1.5"/><path d="M2 8.5h16"/><path d="M5 12.5h3.5M13 12.5h1.5"/></svg>
+            </div>
+            <div class="more-item-info"><div class="more-item-title">Credit cards</div><div class="more-item-sub" id="more-credit-sub">No cards yet</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
           <div class="more-item item-in" onclick="switchTab('savings')">
@@ -1358,6 +1371,56 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
       </div>
     </div>
 
+
+    <!-- ═══ CREDIT CARDS SCREEN ═══ -->
+    <div class="screen" id="screen-credit">
+      <div class="pg">
+        <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
+          <div style="font-size:18px;font-weight:600;">Credit cards</div>
+          <div class="badge-green" style="cursor:pointer;" onclick="openFABSheet('add-credit')">+ Add</div>
+        </div>
+        <!-- Hero summary -->
+        <div id="credit-hero" class="slide-up d2" style="background:linear-gradient(135deg,#12001A,#1E0028);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
+          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total credit debt</div>
+          <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="cc-total-debt">—</div>
+          <div style="margin-top:10px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;">
+            <div id="cc-util-bar" style="height:100%;border-radius:3px;background:#6366F1;transition:width .6s;width:0%;"></div>
+          </div>
+          <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:11px;color:rgba(255,255,255,.35);" id="cc-util-lbl">0% utilisation</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.35);" id="cc-available-lbl">— available</div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:12px;">
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Cards</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="cc-count">0</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Total limit</div>
+              <div style="font-size:13px;font-weight:600;color:#fff;" id="cc-total-limit">—</div>
+            </div>
+            <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
+              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Due soon</div>
+              <div style="font-size:13px;font-weight:600;color:#EF4444;" id="cc-due-soon">—</div>
+            </div>
+          </div>
+        </div>
+        <!-- SMS paste button -->
+        <div class="slide-up d3">
+          <div onclick="openSMSPaste()" style="display:flex;align-items:center;gap:12px;background:rgba(99,102,241,.08);border:0.5px solid rgba(99,102,241,.25);border-radius:var(--r-md);padding:14px;cursor:pointer;">
+            <div style="width:36px;height:36px;border-radius:var(--r-sm);background:rgba(99,102,241,.15);color:#6366F1;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="11" rx="1.5"/><path d="M3 7h14M7 11h2M10 11h3"/></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);">Paste bank SMS</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:1px;">Auto-detect balance, limit &amp; due date</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;margin-left:auto;"><path d="M7 5l5 5-5 5"/></svg>
+          </div>
+        </div>
+        <div id="credit-list" class="slide-up d4"></div>
+      </div>
+    </div>
 
     <!-- ═══ ADVISOR SCREEN ═══ -->
     <div class="screen" id="screen-advisor" style="flex-direction:column;">
@@ -1691,6 +1754,7 @@ var data={
   transactions:[],
   goals:[],
   snapshots:[],
+  creditCards:[],
   userName:'',
   lastAutoLog:'',
   xp:0,
@@ -1938,74 +2002,123 @@ function pulseXPWidget() {
 function renderXPWidget() {
   var el = document.getElementById('xp-widget');
   if (!el) return;
-  var lvl = getLevel(data.xp || 0);
-  var st  = getStreakStatus();
+  var lvl    = getLevel(data.xp || 0);
+  var st     = getStreakStatus();
+  var streak = data.streak || 0;
 
-  // Streak chip
-  var streakHtml = '';
-  if (st.status === 'active') {
-    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:rgba(239,68,68,.1);border-radius:20px;padding:3px 10px;color:#EF4444;">'
-      + getIcon('streak-fire', 13)
-      + '<span style="font-size:12px;font-weight:700;color:#EF4444;">' + st.streak + '</span>'
-      + '<span style="font-size:11px;color:#EF4444;">' + (st.streak === 1 ? 'day' : 'days') + '</span>'
-      + '</div>';
-  } else if (st.status === 'at-risk') {
-    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:rgba(245,158,11,.1);border-radius:20px;padding:3px 10px;color:#F59E0B;">'
-      + getIcon('streak-clock', 13)
-      + '<span style="font-size:12px;font-weight:700;color:#F59E0B;">' + st.streak + '</span>'
-      + '<span style="font-size:11px;color:#F59E0B;">day — log today!</span>'
-      + '</div>';
-  } else {
-    streakHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--surface3);border-radius:20px;padding:3px 10px;color:var(--text3);">'
-      + getIcon('streak-none', 13)
-      + '<span style="font-size:11px;color:var(--text3);">No streak yet</span>'
-      + '</div>';
+  // ── Streak flame chip (top-right) ──────────────────────────────────
+  var flameColor = st.status === 'active' ? '#F59E0B'
+                 : st.status === 'at-risk' ? '#F97316'
+                 : 'var(--text3)';
+  var flameBg = st.status === 'active' ? 'rgba(245,158,11,.1)'
+              : st.status === 'at-risk' ? 'rgba(249,115,22,.1)'
+              : 'var(--surface3)';
+  var flameHtml = '<div style="display:flex;align-items:center;gap:3px;background:'+flameBg
+    +';border-radius:20px;padding:3px 9px;flex-shrink:0;">'
+    + '<span style="font-size:13px;line-height:1;">&#128293;</span>'
+    + '<span style="font-size:13px;font-weight:800;color:'+flameColor+';letter-spacing:-.3px;">'
+      + (streak > 0 ? streak : (st.status === 'at-risk' ? streak : '—'))
+    + '</span>'
+  + '</div>';
+
+  // ── 7-day dot row ───────────────────────────────────────────────────
+  var DAY_LABELS = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+  var todayDow = (new Date().getDay() + 6) % 7; // Mon=0 … Sun=6
+  var dotsHtml = '<div style="display:flex;gap:0;justify-content:space-between;margin:10px 0 2px;">';
+  for (var d = 0; d < 7; d++) {
+    var daysAgo  = todayDow - d;
+    var isFuture = d > todayDow;
+    var isToday  = d === todayDow;
+    var isFilled = !isFuture && daysAgo < streak;
+    var dotBg = (isFilled || isToday)
+      ? 'linear-gradient(135deg,#D97706,#F59E0B)'
+      : 'var(--surface3)';
+    var ring = isToday
+      ? 'box-shadow:0 0 0 2px #F59E0B,0 0 0 3.5px rgba(245,158,11,.25);'
+      : '';
+    dotsHtml += '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">'
+      + '<div style="width:20px;height:20px;border-radius:50%;background:'+dotBg+';'+ring
+        +'display:flex;align-items:center;justify-content:center;">'
+        + (isFilled || isToday ? '<span style="width:6px;height:6px;border-radius:50%;background:#1C1200;display:block;"></span>' : '')
+      + '</div>'
+      + '<span style="font-size:8px;font-weight:600;color:'+(isToday?'#F59E0B':'var(--text3)')+';letter-spacing:.02em;">'
+        + DAY_LABELS[d]
+      + '</span>'
+    + '</div>';
   }
+  dotsHtml += '</div>';
 
-  // Segmented XP bar — 12 segments
-  var SEGS = 12;
+  // ── Segmented XP bar — 12 segments ─────────────────────────────────
+  var SEGS      = 12;
   var filledSegs = Math.round(lvl.pct / 100 * SEGS);
-  var segsHtml = '<div class="xp-segments">';
-  for(var s = 0; s < SEGS; s++){
+  var segsHtml  = '<div class="xp-segments" style="margin-top:12px;">';
+  for (var s = 0; s < SEGS; s++) {
     segsHtml += '<div class="xp-seg '+(s < filledSegs ? 'filled' : 'empty')+'" id="xp-seg-'+s+'"></div>';
   }
   segsHtml += '</div>';
 
-  // Last XP action hint
+  // ── Milestone callout — only when ≤ 2 days away ─────────────────────
+  var milestoneHtml = '';
+  var nextM = null;
+  for (var i = 0; i < STREAK_MILESTONES.length; i++) {
+    if (STREAK_MILESTONES[i].days > streak) { nextM = STREAK_MILESTONES[i]; break; }
+  }
+  if (nextM && (nextM.days - streak) <= 2) {
+    var daysLeft = nextM.days - streak;
+    milestoneHtml = '<div style="display:flex;align-items:center;gap:6px;background:rgba(245,158,11,.07);'
+      + 'border-radius:var(--r-sm);padding:6px 10px;margin-top:8px;">'
+      + '<span style="font-size:12px;line-height:1;">&#128293;</span>'
+      + '<span style="font-size:11px;color:var(--text2);">'
+        + (daysLeft === 1 ? 'One more day' : daysLeft + ' days')
+        + ' to <b style="color:#F59E0B;">'+nextM.label+'</b> &middot; +'+nextM.xp+' XP</span>'
+    + '</div>';
+  }
+
+  // ── Last XP hint ────────────────────────────────────────────────────
   var lastXPHtml = '';
-  if(data.xpLog && data.xpLog.length){
+  if (data.xpLog && data.xpLog.length) {
     var last = data.xpLog[0];
-    lastXPHtml = '<div style="font-size:10px;color:var(--text3);margin-top:2px;">Last: +'+last.xp+' XP · '+last.label+'</div>';
+    var lastLabel = last.label.replace(/^Logged:\s*/i,'');
+    lastXPHtml = '<div style="font-size:10px;color:var(--text3);margin-top:1px;">+'+last.xp+' XP &middot; '+lastLabel+'</div>';
   }
 
   el.innerHTML =
-    // Top row: level icon + info
-    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">'
-      + '<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,rgba(217,119,6,.25),rgba(245,158,11,.15));border:1.5px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;color:#F59E0B;flex-shrink:0;">' + getIcon(lvl.icon, 22) + '</div>'
+    // Top row: level icon + info + flame
+    '<div style="display:flex;align-items:center;gap:12px;">'
+      + '<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(217,119,6,.25),rgba(245,158,11,.15));'
+          + 'border:1.5px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;color:#F59E0B;flex-shrink:0;">'
+        + getIcon(lvl.icon, 20)
+      + '</div>'
       + '<div style="flex:1;min-width:0;">'
-        + '<div style="font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.2px;">Level ' + lvl.level + ' <span style="color:rgba(245,158,11,.5);">·</span> ' + lvl.title + '</div>'
+        + '<div style="font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.2px;">'
+          + 'Level ' + lvl.level + ' <span style="color:rgba(245,158,11,.4);">·</span> ' + lvl.title
+        + '</div>'
         + '<div style="font-size:11px;color:var(--text3);margin-top:1px;">' + (data.xp || 0) + ' XP total</div>'
         + lastXPHtml
       + '</div>'
-      + streakHtml
+      + flameHtml
     + '</div>'
+    // 7-day dot row
+    + dotsHtml
     // Segmented bar
     + segsHtml
-    // XP progress labels
-    + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+    // XP labels
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">'
       + '<div style="font-size:11px;color:var(--text3);">' + lvl.xpInLevel + ' / ' + (lvl.xpInLevel + lvl.xpToNext) + ' XP</div>'
       + (lvl.maxed
-        ? '<div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#F59E0B;">' + getIcon('level-star',12) + 'MAX LEVEL</div>'
+        ? '<div style="font-size:11px;font-weight:700;color:#F59E0B;">MAX LEVEL</div>'
         : '<div style="font-size:11px;font-weight:600;color:#F59E0B;">' + lvl.xpToNext + ' XP to ' + lvl.nextTitle + '</div>')
-    + '</div>';
+    + '</div>'
+    // Milestone nudge (only near milestones)
+    + milestoneHtml;
 
-  // Animate segments in staggered
+  // Staggered segment animation
   setTimeout(function() {
-    for(var s = 0; s < filledSegs; s++){
-      (function(idx){
-        setTimeout(function(){
+    for (var s = 0; s < filledSegs; s++) {
+      (function(idx) {
+        setTimeout(function() {
           var seg = document.getElementById('xp-seg-'+idx);
-          if(seg){ seg.classList.remove('empty'); seg.classList.add('filled'); }
+          if (seg) { seg.classList.remove('empty'); seg.classList.add('filled'); }
         }, idx * 40);
       })(s);
     }
@@ -2013,7 +2126,11 @@ function renderXPWidget() {
 }
 
 function renderCheckIn(){
+  // Merged into renderXPWidget — hide the old card slot
   var el = document.getElementById('home-checkin');
+  if(el) el.style.display = 'none';
+  return;
+  // dead code below kept for reference
   if(!el) return;
   var streak = data.streak || 0;
   var st = getStreakStatus();
@@ -2416,6 +2533,9 @@ function curSym(){return data.currency;}
 function totalIncome(){return data.incomeSources.reduce(function(s,x){return s+x.amt;},0);}
 function totalExpenses(){return data.expenses.reduce(function(s,x){return s+x.amt;},0);}
 function totalSavings(){return data.savingsAccounts.reduce(function(s,x){return s+x.balance;},0);}
+function totalCreditDebt(){return (data.creditCards||[]).reduce(function(s,c){return s+(c.balance||0);},0);}
+function totalCreditLimit(){return (data.creditCards||[]).reduce(function(s,c){return s+(c.limit||0);},0);}
+function totalNetWorth(){return totalAssets()-totalCreditDebt();}
 function netSavings(){return totalIncome()-totalExpenses();}
 function savingsRate(){var i=totalIncome();return i>0?Math.round(netSavings()/i*100):0;}
 function totalAssets(){
@@ -2509,6 +2629,10 @@ function getIcon(name, sz) {
       + '<path d="M7.5 3.5a2.5 2.5 0 0 1 5 0"/>';
   } else if(name === 'entertainment') {
     d = '<polygon points="7,4 17,10 7,16"/>';
+  } else if(name === 'credit-card') {
+    d = '<rect x="2" y="5" width="16" height="11" rx="1.5"/>'
+      + '<path d="M2 8.5h16"/>'
+      + '<path d="M5 12h3.5M12 12h1"/>';
   } else if(name === 'search') {
     d = '<circle cx="8.5" cy="8.5" r="5"/>'
       + '<path d="M13.5 13.5L17.5 17.5"/>';
@@ -2609,7 +2733,7 @@ function getIcon(name, sz) {
 
 
 // ── Navigation ─────────────────────────────────────────────────────────────
-var MORE_TABS = ['budget','transactions','income','expenses','savings','goals','advisor','activity','more'];
+var MORE_TABS = ['budget','transactions','income','expenses','savings','credit','goals','advisor','activity','more'];
 
 
 
@@ -2649,6 +2773,7 @@ function renderTab(tab){
   else if(tab==='advisor')renderAdvisor();
   else if(tab==='badges')renderBadges();
   else if(tab==='transactions')renderTransactionsTab();
+  else if(tab==='credit')renderCreditCards();
   else if(tab==='goals')renderGoalsTab();
   else if(tab==='activity')renderActivityTab();
   else if(tab==='alerts')renderAlertsTab();
@@ -2666,8 +2791,8 @@ function updateCurrencyToggle(){
 // ── HOME ───────────────────────────────────────────────────────────────────
 
 function drawAssetsSpark(){
-  // Use real snapshot data — falls back to generated curve if < 2 snapshots
-  drawRealSparkline('assets-spark', currentRange, {lineWidth:1.8});
+  // White line on amber hero card for contrast
+  drawRealSparkline('assets-spark', currentRange, {lineWidth:2, color:'#FFFFFF', fillAlphaTop:0.18, fillAlphaBottom:0});
 }
 
 function selectGoalIcon(el, icon){
@@ -2712,6 +2837,34 @@ function setTxnType(btn, type){
   });
   var catGroup = document.getElementById('txn-cat-group');
   if(catGroup) catGroup.style.display = type === 'income' ? 'none' : 'block';
+}
+
+function submitCreditSheet(){
+  function g(id){return document.getElementById(id);}
+  function gv(id){var e=g(id);return e?e.value.trim():'';}
+  function gn(id){var e=g(id);return e?parseFloat(e.value)||0:0;}
+  var balance = gn('sh-cc-balance');
+  var limit   = gn('sh-cc-limit');
+  if(!limit && !balance){ showToast('Enter at least a credit limit'); return; }
+  var card = {
+    id:      Date.now(),
+    name:    gv('sh-cc-name'),
+    bank:    gv('sh-cc-bank'),
+    last4:   gv('sh-cc-last4').slice(-4),
+    balance: balance,
+    limit:   limit || balance,
+    available: Math.max(0,(limit||balance)-balance),
+    dueDate: gv('sh-cc-due')||null,
+    lastUpdated: new Date().toISOString(),
+  };
+  data.creditCards = data.creditCards||[];
+  data.creditCards.push(card);
+  save();
+  document.getElementById('sheet-overlay').classList.remove('open');
+  renderTab(currentTab);
+  renderHome();
+  renderMore();
+  showToast('Credit card added');
 }
 
 function submitTxnSheet(){
@@ -3258,8 +3411,10 @@ function drawRealSparkline(canvasId, range, options){
   // Gradient fill
   var grad = ctx.createLinearGradient(0, 0, 0, H);
   var lineColor = opts.color || '#F59E0B';
-  grad.addColorStop(0, hexToRgba(lineColor, 0.22));
-  grad.addColorStop(1, hexToRgba(lineColor, 0));
+  var fillTop = opts.fillAlphaTop !== undefined ? opts.fillAlphaTop : 0.22;
+  var fillBot = opts.fillAlphaBottom !== undefined ? opts.fillAlphaBottom : 0;
+  grad.addColorStop(0, hexToRgba(lineColor, fillTop));
+  grad.addColorStop(1, hexToRgba(lineColor, fillBot));
 
   ctx.beginPath();
   ctx.moveTo(px(0), py(vals[0]));
@@ -3478,7 +3633,69 @@ var FAB_OPTIONS = [
   {id:'add-collection',  iconName:'card',          label:'Card',              sub:'MTG or Pokemon card',        color:'rgba(181,123,224,.08)', accent:'#B57BE0'},
   {id:'add-goal',        iconName:'goal',          label:'Goal',              sub:'Savings target with ETA',    color:'rgba(245,158,11,.06)',  accent:'#F59E0B'},
   {id:'add-savings',     iconName:'savings',       label:'Savings account',   sub:'Bank account or cash',       color:'rgba(91,155,213,.06)',  accent:'#5B9BD5'},
+  {id:'add-credit',      iconName:'credit-card',   label:'Credit card',       sub:'Track limit, balance & due', color:'rgba(99,102,241,.06)',  accent:'#6366F1'},
 ];
+
+function makeFABItem(id, iconName, label, accent, fullWidth, hero){
+  var el = document.createElement('div');
+  el.className = 'fab-in';
+  el.setAttribute('data-id', id);
+  el.setAttribute('ontouchstart', 'this.style.transform="scale(.96)"');
+  el.setAttribute('ontouchend',   'this.style.transform="scale(1)"');
+  el.style.cssText = 'border-radius:var(--r-md);cursor:pointer;'
+    + '-webkit-tap-highlight-color:transparent;transition:transform .12s;'
+    + (fullWidth ? 'grid-column:1/-1;' : '');
+
+  if(hero){
+    // Full amber gradient hero — unmistakably the primary action
+    el.style.cssText += 'background:linear-gradient(135deg,#D97706,#F59E0B);padding:16px 18px;'
+      + 'display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(245,158,11,.3);';
+    el.innerHTML =
+      '<div style="width:44px;height:44px;border-radius:14px;background:rgba(0,0,0,.15);'
+        + 'display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;">'
+        + getIcon(iconName, 24)
+      + '</div>'
+      + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-size:16px;font-weight:700;color:#fff;letter-spacing:-.2px;">'+label+'</div>'
+        + '<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,.15);'
+            + 'border-radius:20px;padding:2px 8px;margin-top:4px;">'
+          + '<span style="width:5px;height:5px;border-radius:50%;background:#fff;opacity:.7;display:inline-block;"></span>'
+          + '<span style="font-size:10px;font-weight:600;color:rgba(255,255,255,.85);">Most used daily</span>'
+        + '</div>'
+      + '</div>'
+      + '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="M7 5l5 5-5 5"/>'
+      + '</svg>';
+  } else {
+    // Standard grid item — stronger tint, icon + label
+    el.style.cssText += 'background:'+accent+'26;border:0.5px solid '+accent+'35;padding:14px 12px;';
+    el.innerHTML =
+      '<div style="width:38px;height:38px;border-radius:10px;background:'+accent+'20;'
+        + 'display:flex;align-items:center;justify-content:center;color:'+accent+';margin-bottom:9px;">'
+        + getIcon(iconName, 19)
+      + '</div>'
+      + '<div style="font-size:12px;font-weight:600;color:var(--text);line-height:1.3;">'+label+'</div>';
+  }
+
+  el.addEventListener('click', function(){
+    openFABSheet(this.getAttribute('data-id'));
+  });
+  return el;
+}
+
+function fabSectionLabel(text){
+  var el = document.createElement('div');
+  el.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;'
+    + 'color:var(--text3);margin:16px 0 8px;';
+  el.textContent = text;
+  return el;
+}
+
+function fabGrid(cols, gap){
+  var el = document.createElement('div');
+  el.style.cssText = 'display:grid;grid-template-columns:repeat('+cols+',1fr);gap:'+(gap||8)+'px;';
+  return el;
+}
 
 function openFAB(){
   var existing = document.getElementById('fab-overlay');
@@ -3486,61 +3703,73 @@ function openFAB(){
 
   var overlay = document.createElement('div');
   overlay.id  = 'fab-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.75);display:flex;flex-direction:column;justify-content:flex-end;';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.75);'
+    + 'display:flex;flex-direction:column;justify-content:flex-end;';
 
   var sheet = document.createElement('div');
-  sheet.style.cssText = 'background:var(--surface);border-radius:24px 24px 0 0;padding:20px 16px 36px;';
+  sheet.style.cssText = 'background:var(--surface);border-radius:28px 28px 0 0;padding:0 16px 44px;'
+    + 'animation:sheetSpring .44s cubic-bezier(0.32,0.72,0,1) both;';
 
-  // Handle
-  var handle = document.createElement('div');
-  handle.style.cssText = 'width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 18px;';
-  sheet.appendChild(handle);
+  // Handle + header
+  var header = document.createElement('div');
+  header.innerHTML =
+    '<div style="width:36px;height:5px;background:rgba(255,255,255,.14);border-radius:3px;margin:12px auto 18px;"></div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'
+      + '<div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px;">Track</div>'
+      + '<div onclick="closeFAB()" style="width:28px;height:28px;border-radius:50%;background:var(--surface2);'
+          + 'display:flex;align-items:center;justify-content:center;color:var(--text3);cursor:pointer;">'
+        + '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 4l12 12M16 4L4 16"/></svg>'
+      + '</div>'
+    + '</div>';
+  sheet.appendChild(header);
 
-  // Title
-  var title = document.createElement('div');
-  title.style.cssText = 'font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px;';
-  title.textContent = 'Add something';
-  sheet.appendChild(title);
+  // ── Hero: Log a transaction ──────────────────────────────────────────────
+  var heroGrid = fabGrid(1, 0);
+  heroGrid.style.marginBottom = '0';
+  heroGrid.appendChild(makeFABItem('add-transaction','transaction','Log a transaction','#F59E0B',true,true));
+  sheet.appendChild(heroGrid);
 
-  var sub = document.createElement('div');
-  sub.style.cssText = 'font-size:12px;color:var(--text3);margin-bottom:16px;';
-  sub.textContent = 'What would you like to track?';
-  sheet.appendChild(sub);
+  // ── Money in / out ───────────────────────────────────────────────────────
+  sheet.appendChild(fabSectionLabel('Money in / out'));
+  var row1 = fabGrid(2, 8);
+  row1.appendChild(makeFABItem('add-income',  'income', 'Income', '#10B981', false, false));
+  row1.appendChild(makeFABItem('add-expense', 'bill',   'Bill',   '#EF4444', false, false));
+  sheet.appendChild(row1);
 
-  // Grid
-  var grid = document.createElement('div');
-  grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;';
+  // ── Assets & tracking ───────────────────────────────────────────────────
+  sheet.appendChild(fabSectionLabel('Assets & tracking'));
+  var row2 = fabGrid(2, 8);
+  row2.style.marginBottom = '8px';
+  row2.appendChild(makeFABItem('add-crypto',     'crypto',      'Crypto',      '#F7A400', false, false));
+  row2.appendChild(makeFABItem('add-collection', 'card',        'Card',        '#B57BE0', false, false));
+  sheet.appendChild(row2);
+  var row3 = fabGrid(2, 8);
+  row3.appendChild(makeFABItem('add-savings',    'savings',     'Savings',     '#5B9BD5', false, false));
+  row3.appendChild(makeFABItem('add-goal',       'goal',        'Goal',        '#F59E0B', false, false));
+  sheet.appendChild(row3);
 
-  FAB_OPTIONS.forEach(function(opt){
-    var card = document.createElement('div');
-    card.className = 'fab-in';
-    card.style.cssText = 'background:'+opt.color+';border:0.5px solid '+opt.accent+'44;border-radius:var(--r-md);padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s;';
-    card.setAttribute('data-id', opt.id);
-    card.setAttribute('ontouchstart', 'this.style.transform="scale(.95)"');
-    card.setAttribute('ontouchend', 'this.style.transform="scale(1)"');
+  // ── Credit card — full width, different feel ──────────────────────────
+  sheet.appendChild(fabSectionLabel('Liabilities'));
+  var row4 = fabGrid(1, 0);
+  var ccItem = makeFABItem('add-credit','credit-card','Credit card','#6366F1',true,false);
+  // Override to horizontal layout for the full-width liabilities item
+  ccItem.style.display   = 'flex';
+  ccItem.style.alignItems = 'center';
+  ccItem.style.gap       = '12px';
+  ccItem.style.padding   = '13px 16px';
+  ccItem.innerHTML =
+    '<div style="width:38px;height:38px;border-radius:10px;background:#6366F120;'
+      + 'display:flex;align-items:center;justify-content:center;color:#6366F1;flex-shrink:0;">'
+      + getIcon('credit-card', 19)
+    + '</div>'
+    + '<div style="flex:1;">'
+      + '<div style="font-size:13px;font-weight:600;color:var(--text);">Credit card</div>'
+      + '<div style="font-size:11px;color:var(--text3);margin-top:1px;">Track limit, balance &amp; due date</div>'
+    + '</div>'
+    + '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l5 5-5 5"/></svg>';
+  row4.appendChild(ccItem);
+  sheet.appendChild(row4);
 
-    var ico = document.createElement('div');
-    ico.style.cssText = 'width:38px;height:38px;border-radius:var(--r-sm);background:'+opt.accent+'1A;display:flex;align-items:center;justify-content:center;color:'+opt.accent+';margin-bottom:10px;';
-    ico.innerHTML = getIcon(opt.iconName, 22);
-    card.appendChild(ico);
-
-    var lbl = document.createElement('div');
-    lbl.style.cssText = 'font-size:13px;font-weight:600;color:var(--text);';
-    lbl.textContent = opt.label;
-    card.appendChild(lbl);
-
-    var desc = document.createElement('div');
-    desc.style.cssText = 'font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4;';
-    desc.textContent = opt.sub;
-    card.appendChild(desc);
-
-    card.addEventListener('click', function(){
-      openFABSheet(this.getAttribute('data-id'));
-    });
-    grid.appendChild(card);
-  });
-
-  sheet.appendChild(grid);
   overlay.appendChild(sheet);
   overlay.addEventListener('click', function(e){ if(e.target===overlay) closeFAB(); });
   document.body.appendChild(overlay);
@@ -3557,9 +3786,9 @@ function closeFAB(){
   if(fab){ fab.style.transform='rotate(0deg)'; fab.style.transition='transform .2s cubic-bezier(0.16,1,0.3,1)'; }
 }
 
-function openFABSheet(type){
+function openFABSheet(type, prefill){
   closeFAB();
-  openSheet(type);
+  openSheet(type, 0, prefill);
 }
 
 // ── Activity screen ───────────────────────────────────────────────────────
@@ -3891,7 +4120,7 @@ function handleImportFile(e){
       var msg='This will replace ALL your current data with the backup from '+(parsed.exported?parsed.exported.slice(0,10):'unknown')+'. Are you sure?';
       if(!window.confirm(msg)) return;
       ['currency','incomeSources','expenses','cryptoHoldings','mtgCards','pokemonCards',
-       'savingsAccounts','transactions','goals','snapshots'].forEach(function(k){ if(imp[k]!==undefined) data[k]=imp[k]; });
+       'savingsAccounts','transactions','goals','snapshots','creditCards'].forEach(function(k){ if(imp[k]!==undefined) data[k]=imp[k]; });
       if(imp.hidden!==undefined) data.hidden=imp.hidden;
       save(); renderAll(); showToast('Data imported successfully');
     }catch(err){ showToast('Import failed: '+err.message); }
@@ -3948,6 +4177,277 @@ function renderAdvisor(){
   }
 }
 
+// ── Credit card SMS parser ─────────────────────────────────────────────────
+function parseBankSMS(text){
+  var r = {};
+
+  // Last 4 digits
+  var m4 = text.match(/(?:ending|xx|[*#])\s*0*(\d{4})/i);
+  if(m4) r.last4 = m4[1];
+
+  // Balance — many UAE bank formats
+  var mBal = text.match(/(?:stmt\s*|statement\s*|outstanding\s*|closing\s*)?bal(?:ance)?\s*(?:of\s*|is\s*|[:\s])\s*(?:aed|dhs|dhm)\.?\s*([\d,]+(?:\.\d{1,2})?)/i);
+  if(!mBal) mBal = text.match(/(?:aed|dhs)\s*([\d,]+(?:\.\d{1,2})?)\s*(?:is\s*)?(?:your\s*)?(?:stmt|statement|outstanding)/i);
+  if(!mBal) mBal = text.match(/balance[^A-Z\d]*([\d,]+(?:\.\d{1,2})?)/i);
+  if(mBal) r.balance = parseFloat(mBal[1].replace(/,/g,''));
+
+  // Available credit
+  var mAv = text.match(/avail(?:able)?\s*(?:cr(?:edit)?|limit|bal)?(?:\s*[:\s])\s*(?:aed|dhs)?\.?\s*([\d,]+(?:\.\d{1,2})?)/i);
+  if(!mAv) mAv = text.match(/(?:aed|dhs)\s*([\d,]+(?:\.\d{1,2})?)\s*(?:avail|available)/i);
+  if(mAv) r.available = parseFloat(mAv[1].replace(/,/g,''));
+
+  // Derive limit
+  if(r.balance !== undefined && r.available !== undefined){
+    r.limit = Math.round(r.balance + r.available);
+  }
+
+  // Due date — various formats: 15-Jun-2026, 15/06/26, Jun 15
+  var mDue = text.match(/(?:(?:min(?:imum)?\s*)?payment\s*)?due\s*(?:date|by|on)?\s*[:\s]*(\d{1,2}[-\/\s](?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[-\/]?\d{0,4})/i);
+  if(!mDue) mDue = text.match(/(?:due|by)\s*[:\s]*(\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4})/i);
+  if(mDue) r.dueRaw = mDue[1].trim();
+
+  // Bank name
+  var banks = [
+    {k:'ADCB',v:'ADCB'},{k:'Emirates NBD',v:'Emirates NBD'},{k:'ENBD',v:'Emirates NBD'},
+    {k:'FAB',v:'FAB'},{k:'First Abu Dhabi',v:'FAB'},{k:'Mashreq',v:'Mashreq'},
+    {k:'Dubai Islamic',v:'DIB'},{k:'DIB',v:'DIB'},{k:'RAK Bank',v:'RAK Bank'},
+    {k:'HSBC',v:'HSBC'},{k:'Citi',v:'Citi'},{k:'NBF',v:'NBF'},{k:'CBD',v:'CBD'},
+  ];
+  for(var i=0;i<banks.length;i++){
+    if(text.toLowerCase().indexOf(banks[i].k.toLowerCase())>=0){ r.bank=banks[i].v; break; }
+  }
+
+  return r;
+}
+
+function parseDueDate(raw){
+  if(!raw) return null;
+  var months = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  // "15-Jun-2026" or "15Jun26"
+  var m1 = raw.match(/(\d{1,2})[-\/\s]?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[-\/]?(\d{2,4})?/i);
+  if(m1){
+    var day = parseInt(m1[1]);
+    var mon = months[m1[2].toLowerCase().slice(0,3)];
+    var yr  = m1[3] ? (m1[3].length===2 ? 2000+parseInt(m1[3]) : parseInt(m1[3])) : new Date().getFullYear();
+    var d   = new Date(yr, mon, day);
+    return d.toISOString().slice(0,10);
+  }
+  // "15/06/2026"
+  var m2 = raw.match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})/);
+  if(m2){
+    var yr2 = m2[3].length===2?2000+parseInt(m2[3]):parseInt(m2[3]);
+    return new Date(yr2, parseInt(m2[2])-1, parseInt(m2[1])).toISOString().slice(0,10);
+  }
+  return null;
+}
+
+function openSMSPaste(){
+  // Show a textarea for the user to paste the SMS
+  var overlay = document.createElement('div');
+  overlay.id  = 'sms-paste-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.8);display:flex;flex-direction:column;justify-content:flex-end;';
+
+  var sheet = document.createElement('div');
+  sheet.style.cssText = 'background:var(--surface);border-radius:24px 24px 0 0;padding:20px 20px 40px;animation:sheetSpring .44s cubic-bezier(0.32,0.72,0,1) both;';
+  sheet.innerHTML =
+    '<div style="width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:0 auto 18px;"></div>'
+    +'<div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px;">Paste bank SMS</div>'
+    +'<div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Copy the SMS from your banking app and paste it below. We will extract the balance, limit and due date automatically.</div>'
+    +'<textarea id="sms-paste-input" style="width:100%;height:110px;background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-sm);padding:12px;font-size:13px;color:var(--text);font-family:DM Sans,sans-serif;outline:none;resize:none;box-sizing:border-box;" placeholder="e.g. ADCB: Your Credit Card ending 1234 Stmt Bal AED 2,340.00. Avail Credit AED 7,660.00. Due 15-Jun-2026"></textarea>'
+    +'<div id="sms-parse-preview" style="display:none;background:var(--surface2);border-radius:var(--r-sm);padding:12px;margin-top:10px;font-size:12px;"></div>'
+    +'<div style="display:flex;gap:8px;margin-top:14px;">'
+      +'<button onclick="closeSMSPaste()" style="flex:1;padding:14px;background:var(--surface2);color:var(--text);border:none;border-radius:var(--r-md);font-size:14px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;">Cancel</button>'
+      +'<button onclick="confirmSMSPaste()" style="flex:2;padding:14px;background:#6366F1;color:#fff;border:none;border-radius:var(--r-md);font-size:14px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">Parse &amp; add card</button>'
+    +'</div>';
+
+  overlay.appendChild(sheet);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeSMSPaste(); });
+  document.getElementById('app').appendChild(overlay);
+
+  // Live preview as user pastes
+  setTimeout(function(){
+    var ta = document.getElementById('sms-paste-input');
+    if(ta){
+      ta.focus();
+      ta.addEventListener('input', function(){
+        var parsed = parseBankSMS(ta.value);
+        var prev   = document.getElementById('sms-parse-preview');
+        if(!prev) return;
+        if(!ta.value.trim()){ prev.style.display='none'; return; }
+        var rows = [];
+        if(parsed.bank)      rows.push('<span style="color:#6366F1;font-weight:600;">Bank:</span> '+parsed.bank);
+        if(parsed.last4)     rows.push('<span style="color:#6366F1;font-weight:600;">Card:</span> ****'+parsed.last4);
+        if(parsed.balance!==undefined) rows.push('<span style="color:#EF4444;font-weight:600;">Balance:</span> '+fmt(parsed.balance)+' AED');
+        if(parsed.available!==undefined) rows.push('<span style="color:#10B981;font-weight:600;">Available:</span> '+fmt(parsed.available)+' AED');
+        if(parsed.limit)     rows.push('<span style="color:var(--text2);font-weight:600;">Limit:</span> '+fmt(parsed.limit)+' AED');
+        if(parsed.dueRaw)    rows.push('<span style="color:#F59E0B;font-weight:600;">Due:</span> '+parsed.dueRaw);
+        if(rows.length){
+          prev.style.display='block';
+          prev.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Detected</div>'
+            +rows.map(function(r){return '<div style="margin-bottom:4px;">'+r+'</div>';}).join('');
+        } else {
+          prev.style.display='block';
+          prev.innerHTML='<span style="color:var(--text3);">Could not detect card details — try a different SMS format or use manual entry.</span>';
+        }
+      });
+    }
+  }, 100);
+}
+
+function closeSMSPaste(){
+  var el = document.getElementById('sms-paste-overlay');
+  if(el && el.parentNode) el.parentNode.removeChild(el);
+}
+
+function confirmSMSPaste(){
+  var ta = document.getElementById('sms-paste-input');
+  if(!ta) return;
+  var parsed = parseBankSMS(ta.value);
+  closeSMSPaste();
+
+  // Open the add-credit sheet pre-filled with parsed data
+  openFABSheet('add-credit', parsed);
+}
+
+function renderCreditCards(){
+  var cards = data.creditCards||[];
+  var debt  = totalCreditDebt();
+  var limit = totalCreditLimit();
+  var avail = limit - debt;
+  var util  = limit > 0 ? Math.round(debt/limit*100) : 0;
+
+  // Hero
+  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  set('cc-total-debt',  fmt(debt)+' '+curSym());
+  set('cc-total-limit', limit>0?fmt(limit)+' '+curSym():'—');
+  set('cc-count',       cards.length);
+  set('cc-util-lbl',    util+'% utilisation');
+  set('cc-available-lbl', avail>0?fmt(avail)+' '+curSym()+' available':'—');
+  var barEl = document.getElementById('cc-util-bar');
+  if(barEl) setTimeout(function(){ barEl.style.width=Math.min(100,util)+'%'; barEl.style.background=util>=80?'#EF4444':util>=50?'#F59E0B':'#6366F1'; },80);
+
+  // Due soon — cards due within 7 days
+  var today = new Date(); today.setHours(0,0,0,0);
+  var dueSoon = cards.filter(function(c){
+    if(!c.dueDate) return false;
+    var d = new Date(c.dueDate); d.setHours(0,0,0,0);
+    var diff = Math.round((d-today)/86400000);
+    return diff>=0 && diff<=7;
+  });
+  set('cc-due-soon', dueSoon.length?dueSoon.length+' card'+(dueSoon.length>1?'s':''):'None');
+
+  // Card list
+  var el = document.getElementById('credit-list');
+  if(!el) return;
+  if(!cards.length){
+    el.innerHTML = emptyState('credit-card','No credit cards yet',
+      'Paste a bank SMS to auto-detect your balance and limit, or add manually.',
+      'Paste SMS','openSMSPaste()');
+    return;
+  }
+
+  el.innerHTML = cards.map(function(c,i){
+    var u = c.limit>0?Math.round(c.balance/c.limit*100):0;
+    var uColor = u>=80?'#EF4444':u>=50?'#F59E0B':'#6366F1';
+
+    // Due date formatting
+    var dueStr = '';
+    var dueWarn = false;
+    if(c.dueDate){
+      var dDate = new Date(c.dueDate); dDate.setHours(0,0,0,0);
+      var dDiff = Math.round((dDate-today)/86400000);
+      if(dDiff<0)      dueStr='Overdue!';
+      else if(dDiff===0) dueStr='Due today!';
+      else if(dDiff===1) dueStr='Due tomorrow';
+      else if(dDiff<=7)  dueStr='Due in '+dDiff+' days';
+      else dueStr=dDate.toLocaleDateString('en',{day:'numeric',month:'short'});
+      dueWarn = dDiff<=3;
+    }
+
+    // Utilisation ring (same as goal ring, smaller)
+    var R=18; var C=Math.round(2*3.14159*R);
+    var ringOffset=Math.round(C*(1-Math.min(1,u/100)));
+    var ringHtml='<svg width="48" height="48" viewBox="0 0 48 48" style="flex-shrink:0;transform:rotate(-90deg);">'
+      +'<circle cx="24" cy="24" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/>'
+      +'<circle cx="24" cy="24" r="'+R+'" fill="none" stroke="'+uColor+'" stroke-width="4" stroke-linecap="round"'
+        +' stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'" id="cc-ring-'+i+'"'
+        +' style="transition:stroke-dashoffset .8s cubic-bezier(0.16,1,0.3,1);"/>'
+      +'</svg>'
+      +'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1;">'
+        +'<div style="font-size:11px;font-weight:800;color:'+uColor+';">'+u+'</div>'
+        +'<div style="font-size:8px;color:'+uColor+';opacity:.7;">%</div>'
+      +'</div>';
+
+    return '<div class="holding-row item-in" style="align-items:flex-start;gap:10px;">'
+      +'<div style="width:40px;height:40px;border-radius:var(--r-sm);background:rgba(99,102,241,.12);color:#6366F1;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+        +getIcon('credit-card',20)+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+(c.name||c.bank||'Card')+(c.last4?' ****'+c.last4:'')+'</div>'
+        +'<div style="font-size:11px;color:var(--text3);margin-top:1px;">'+(c.bank||'')+(c.bank&&c.dueDate?' · ':'')+(dueStr?'<span style="color:'+(dueWarn?'#EF4444':'var(--text3)')+';">'+dueStr+'</span>':'')+'</div>'
+        +'<div style="margin-top:8px;">'
+          +'<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px;">'
+            +'<span style="color:var(--text3);">'+fmt(c.balance)+' / '+fmt(c.limit)+' '+curSym()+'</span>'
+          +'</div>'
+          +'<div style="height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;">'
+            +'<div style="height:4px;border-radius:2px;background:'+uColor+';width:'+Math.min(100,u)+'%;transition:width .6s;"></div>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="position:relative;width:48px;height:48px;flex-shrink:0;">'+ringHtml+'</div>'
+      +'<div onclick="deleteCredit('+i+')" style="cursor:pointer;color:var(--text3);padding:4px;font-size:16px;align-self:flex-start;">&#10005;</div>'
+    +'</div>';
+  }).join('');
+
+  // Animate rings
+  setTimeout(function(){
+    cards.forEach(function(c,i){
+      var ring = document.getElementById('cc-ring-'+i);
+      if(!ring) return;
+      var u = c.limit>0?Math.round(c.balance/c.limit*100):0;
+      var R=18; var C=Math.round(2*3.14159*R);
+      ring.style.strokeDashoffset = Math.round(C*(1-Math.min(1,u/100)));
+    });
+  }, 80);
+}
+
+function renderCreditPortfolio(elId){
+  var el = document.getElementById(elId||'credit-list-2');
+  if(!el) return;
+  var cards = data.creditCards||[];
+  if(!cards.length){
+    el.innerHTML = emptyState('credit-card','No credit cards','Add a card to track utilisation and due dates.','+ Add card','openFABSheet(\'add-credit\')');
+    return;
+  }
+  var totalDebt  = totalCreditDebt();
+  var totalLim   = totalCreditLimit();
+  var totalAvail = totalLim - totalDebt;
+  var overallUtil= totalLim>0?Math.round(totalDebt/totalLim*100):0;
+  var uColor     = overallUtil>=80?'#EF4444':overallUtil>=50?'#F59E0B':'#6366F1';
+  var summaryHtml= '<div style="background:rgba(99,102,241,.08);border-radius:var(--r-md);padding:14px;margin-bottom:12px;display:flex;gap:16px;">'
+    +'<div style="flex:1;"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">Total debt</div><div style="font-size:15px;font-weight:700;color:#EF4444;">'+fmt(totalDebt)+' '+curSym()+'</div></div>'
+    +'<div style="flex:1;"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">Available</div><div style="font-size:15px;font-weight:700;color:#10B981;">'+fmt(totalAvail)+' '+curSym()+'</div></div>'
+    +'<div style="flex:1;"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">Utilisation</div><div style="font-size:15px;font-weight:700;color:'+uColor+';">'+overallUtil+'%</div></div>'
+    +'</div>';
+  el.innerHTML = summaryHtml + cards.map(function(c,i){
+    var u=c.limit>0?Math.round(c.balance/c.limit*100):0;
+    var uc=u>=80?'#EF4444':u>=50?'#F59E0B':'#6366F1';
+    return '<div class="holding-row item-in">'
+      +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:rgba(99,102,241,.12);color:#6366F1;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon('credit-card',18)+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div class="holding-name">'+(c.name||c.bank||'Card')+(c.last4?' ****'+c.last4:'')+'</div>'
+        +'<div class="holding-qty">'+fmt(c.balance)+' / '+fmt(c.limit)+' '+curSym()+'</div>'
+      +'</div>'
+      +'<span style="display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;background:'+uc+'18;color:'+uc+';">'+u+'% used</span>'
+    +'</div>';
+  }).join('');
+}
+
+function deleteCredit(idx){
+  if(!window.confirm('Remove this card?')) return;
+  data.creditCards.splice(idx,1);
+  save(); renderCreditCards(); renderMore();
+}
+
 function renderMore(){
   // ── Profile hero card ──
   (function(){
@@ -4002,6 +4502,18 @@ function renderMore(){
   set('more-savings-count', data.savingsAccounts.length
     ? data.savingsAccounts.length+' account'+(data.savingsAccounts.length>1?'s':'')+' · '+fmt(totalSavings())+' '+curSym()
     : 'No savings accounts yet');
+  // Credit cards subtitle
+  (function(){
+    var cards=data.creditCards||[];
+    var el=document.getElementById('more-credit-sub');
+    if(!el)return;
+    if(!cards.length){el.textContent='No cards yet';return;}
+    var debt=totalCreditDebt();
+    var lim=totalCreditLimit();
+    var u=lim>0?Math.round(debt/lim*100):0;
+    el.textContent=cards.length+' card'+(cards.length>1?'s':'')+' · '+fmt(debt)+' '+curSym()+' debt · '+u+'% utilisation';
+  })();
+
   set('more-goals-sub', data.goals.length
     ? data.goals.length+' goal'+(data.goals.length>1?'s':'')+' active'
     : 'Track your financial targets');
@@ -4149,16 +4661,22 @@ function renderHomeGoal(){
     ? '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+iconName+'</div>'
     : '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';color:'+col.accent+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon(iconName,18)+'</div>';
 
-  // SVG ring — circumference of r=22 circle = 2π×22 ≈ 138
-  var R = 22; var C = Math.round(2 * 3.14159 * R);
+  // SVG ring — r=27, size=68px
+  var R = 27; var C = Math.round(2 * 3.14159 * R);
   var offset = Math.round(C * (1 - Math.min(1, prog.pct / 100)));
-  var ringHtml = '<svg width="56" height="56" viewBox="0 0 56 56" style="flex-shrink:0;transform:rotate(-90deg);">'
-    + '<circle cx="28" cy="28" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5"/>'
-    + '<circle cx="28" cy="28" r="'+R+'" fill="none" stroke="'+col.accent+'" stroke-width="5"'
+  var ringHtml = '<svg width="68" height="68" viewBox="0 0 68 68" style="flex-shrink:0;transform:rotate(-90deg);">'
+    + '<circle cx="34" cy="34" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5.5"/>'
+    + '<circle cx="34" cy="34" r="'+R+'" fill="none" stroke="'+col.accent+'" stroke-width="5.5"'
       + ' stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"'
       + ' id="home-goal-ring" style="transition:stroke-dashoffset .9s cubic-bezier(0.16,1,0.3,1);"/>'
     + '</svg>'
-    + '<div style="position:absolute;font-size:12px;font-weight:700;color:'+col.accent+';top:50%;left:50%;transform:translate(-50%,-50%);line-height:1;text-align:center;">'+Math.round(prog.pct)+'<span style="font-size:9px;display:block;font-weight:600;">%</span></div>';
+    + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1;">'
+      + '<div style="font-size:15px;font-weight:800;color:'+col.accent+';letter-spacing:-.5px;">'+Math.round(prog.pct)+'</div>'
+      + '<div style="font-size:9px;font-weight:600;color:'+col.accent+';opacity:.7;">%</div>'
+    + '</div>';
+
+  // ETA — show month+year only, no redundant "N months" prefix
+  var etaShort = eta.indexOf('·') >= 0 ? eta.split('·')[1].trim() : eta;
 
   var html = '<div class="goal-card item-in" style="border:0.5px solid '+col.accent+'33;cursor:pointer;" onclick="switchTab(\'goals\')">'
     + '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,'+col.accent+','+col.accent+'44);border-radius:3px 3px 0 0;"></div>'
@@ -4168,10 +4686,10 @@ function renderHomeGoal(){
           + iconHtml
           + '<div class="goal-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+best.name+'</div>'
         + '</div>'
-        + '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">'+fmt(prog.current)+' / '+fmt(best.targetAmt)+' '+curSym()+'</div>'
-        + '<div style="font-size:10px;color:var(--text3);">ETA: '+eta+'</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-bottom:4px;">'+fmt(prog.current)+' / '+fmt(best.targetAmt)+' '+curSym()+'</div>'
+        + '<div style="font-size:10px;color:var(--text3);">'+etaShort+'</div>'
       + '</div>'
-      + '<div style="position:relative;width:56px;height:56px;flex-shrink:0;">' + ringHtml + '</div>'
+      + '<div style="position:relative;width:68px;height:68px;flex-shrink:0;">' + ringHtml + '</div>'
     + '</div>'
   + '</div>';
 
@@ -4183,8 +4701,11 @@ function renderHomeGoal(){
 }
 
 function renderHome(){
-  var assets = totalAssets();
-  var b      = calcBudget();
+  var assets     = totalAssets();
+  var creditDebt = totalCreditDebt();
+  var netWorth   = assets - creditDebt;
+  var b          = calcBudget();
+  var hasCredit  = (data.creditCards||[]).length > 0;
 
   // Check if app has any data at all
   var hasAnyData = (
@@ -4249,10 +4770,14 @@ function renderHome(){
   var curEl = document.getElementById('home-bal-cur');
   if(curEl) curEl.textContent = curSym();
 
-  // Count-up balance
+  // Update hero label: "Net worth" if credit cards exist, else "Total assets"
+  var heroLabelEl = document.querySelector('.greeting-title');
+  if(heroLabelEl) heroLabelEl.textContent = hasCredit ? 'Net worth' : 'Total assets';
+
+  // Count-up balance (net worth if credit cards exist)
   var balEl = document.getElementById('home-balance');
   if(balEl){
-    var startVal=0, endVal=assets, dur=1000, t0=performance.now();
+    var startVal=0, endVal=hasCredit?netWorth:assets, dur=1000, t0=performance.now();
     balEl.classList.remove('count-up-num'); void balEl.offsetWidth; balEl.classList.add('count-up-num');
     function countTick(now){
       var p = Math.min(1,(now-t0)/dur);
@@ -4268,7 +4793,7 @@ function renderHome(){
   if(plEl){
     var plPct = (Math.random()*4-1).toFixed(2);
     var up    = parseFloat(plPct) >= 0;
-    plEl.innerHTML = '<div class="'+(up?'badge-green':'badge-red')+'">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
+    plEl.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;background:'+(up?'rgba(255,255,255,.25)':'rgba(0,0,0,.2)')+';color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-md);">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
   }
 
   // Sparkline
@@ -4282,13 +4807,14 @@ function renderHome(){
     var cryptoVal = data.cryptoHoldings.reduce(function(s,h){return s+(h.qty*(cryptoCache[h.id]||0)*3.6725);},0);
     var mtgVal    = data.mtgCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
     var pkVal     = data.pokemonCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
-    var total     = savVal+cryptoVal+mtgVal+pkVal||1;
+    var total     = savVal+cryptoVal+mtgVal+pkVal+creditDebt||1;
     var segs = [
-      {label:'Savings',val:savVal,  color:'#3B82F6'},
-      {label:'Crypto', val:cryptoVal,color:'#F59E0B'},
-      {label:'MTG',    val:mtgVal,  color:'#E05010'},
-      {label:'Pokemon',val:pkVal,   color:'#F0B90B'},
-    ].filter(function(sg){return sg.val>0;});
+      {label:'Savings',val:savVal,    color:'#3B82F6'},
+      {label:'Crypto', val:cryptoVal, color:'#F59E0B'},
+      {label:'MTG',    val:mtgVal,    color:'#E05010'},
+      {label:'Pokemon',val:pkVal,     color:'#F0B90B'},
+      {label:'Credit', val:-creditDebt,color:'#EF4444'},
+    ].filter(function(sg){return sg.val!==0;});
     assetBarEl.innerHTML = segs.map(function(sg){
       var pct = (sg.val/total*100).toFixed(1);
       return '<div class="seg" style="flex:'+pct+';background:'+sg.color+';--f:'+pct+';" title="'+sg.label+'"></div>';
@@ -4335,25 +4861,23 @@ function renderHome(){
     for(var i = 0; i < STREAK_MILESTONES.length; i++){
       if(STREAK_MILESTONES[i].days > streak){ nextM = STREAK_MILESTONES[i]; break; }
     }
-    // Pick the most relevant insight
+    // Right pill: always a DIFFERENT insight from the left (which shows savings rate)
+    // Priority: over-budget > streak > badges > spent this month
     if(overBudget){
-      // keep default over-budget display
-    } else if(b.rate >= 80 && b.inc > 0){
-      if(lbl) lbl.textContent = 'Savings rate';
-      if(val){ val.textContent = b.rate + '%'; val.style.color = '#10B981'; }
-      if(sub){ sub.textContent = 'Top 10% saver this month'; sub.style.color = '#10B981'; }
+      // keep default over-budget display already set above
     } else if(streak >= 3 && nextM){
       if(lbl) lbl.textContent = 'Streak';
       if(val){ val.textContent = streak + ' days'; val.style.color = '#F59E0B'; }
-      if(sub){ sub.textContent = (nextM.days - streak) + ' to go for +' + nextM.xp + ' XP'; sub.style.color = '#F59E0B'; }
-    } else if(badges >= 3){
+      if(sub){ sub.textContent = (nextM.days - streak) + ' day'+(nextM.days-streak===1?'':'s')+' to +' + nextM.xp + ' XP'; sub.style.color = '#F59E0B'; }
+    } else if(badges >= 1){
       if(lbl) lbl.textContent = 'Achievements';
-      if(val){ val.textContent = badges + ''; val.style.color = 'var(--text)'; }
-      if(sub){ sub.textContent = badges + ' of 24 badges'; sub.style.color = ''; }
+      if(val){ val.textContent = badges + ''; val.style.color = '#8B5CF6'; }
+      if(sub){ sub.textContent = badges + ' of 24 badges'; sub.style.color = '#8B5CF6'; }
+    } else {
+      // Fallback: spent this month (already set by default code above)
     }
   })();
 
-  renderInsights();
   renderHomeGoal();
   renderMovers();
   renderXPWidget();
@@ -4447,20 +4971,26 @@ function renderMovers(){
   });
   assets=assets.slice(0,6);
 
+  // If odd number, last tile goes full-width
+  var isOdd = assets.length % 2 !== 0;
   var html='';
-  assets.forEach(function(asset){
+  assets.forEach(function(asset, assetIdx){
+    var isLast = assetIdx === assets.length - 1;
+    var fullWidth = isOdd && isLast;
     var up=asset.chg==null?true:asset.chg>=0;
     var chgStr=asset.chg==null?'—':(up?'+':'')+asset.chg.toFixed(2)+'%';
     var valStr=fmt(asset.value);
     var priceStr=asset.price&&asset.price>=1000?(asset.price/1000).toFixed(2)+'k':asset.price&&asset.price>=1?asset.price.toFixed(2):asset.price?asset.price.toFixed(4):'';
     var upColor=asset.chg==null?'var(--text3)':up?'var(--green)':'var(--red)';
     var barW=asset.chg!=null?Math.min(100,Math.abs(asset.chg)*8)+'%':'0%';
-    var badgeCls = asset.chg == null ? 'flat' : (up ? 'up' : 'down');
-    html+='<div class="item-in" style="background:var(--surface);border-radius:var(--r-md);padding:11px;border:0.5px solid var(--stone2);position:relative;overflow:hidden;">'
+    var badgeHtml = asset.chg == null
+      ? '<span style="font-size:11px;color:var(--text3);">—</span>'
+      : '<span class="mover-badge '+(up?'up':'down')+'">'+chgStr+'</span>';
+    html+='<div class="item-in" style="background:var(--surface);border-radius:var(--r-md);padding:11px;border:0.5px solid var(--stone2);position:relative;overflow:hidden;'+(fullWidth?'grid-column:1/-1;':'')+'">'
       +'<div style="position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;background:'+asset.color+';"></div>'
       +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">'
-        +'<div style="width:28px;height:28px;border-radius:var(--r-sm);background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';">'+asset.sym+'</div>'
-        +'<div class="mover-badge '+badgeCls+'">'+chgStr+'</div>'
+        +(asset.type==='crypto' ? cryptoIconHtml(asset.sym,28) : '<div style="width:28px;height:28px;border-radius:var(--r-sm);background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:'+asset.color+';">'+asset.sym+'</div>')
+        +badgeHtml
       +'</div>'
       +'<div style="font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+asset.name+'</div>'
       +'<div style="font-size:13px;font-weight:700;color:var(--text);margin-top:4px;font-variant-numeric:tabular-nums;">'+valStr+'</div>'
@@ -4516,16 +5046,16 @@ function setPortFilter(btn, filter){
   document.querySelectorAll('.port-tab').forEach(function(b){
     b.classList.toggle('active', b === btn);
   });
-  var sections = ['all','crypto','cards','savings','history'];
+  var sections = ['all','crypto','cards','savings','credit','history'];
   sections.forEach(function(sec){
     var el = document.getElementById('port-section-'+sec);
     if(el) el.style.display = (sec === filter) ? 'block' : 'none';
   });
   if(filter === 'crypto')  renderCryptoListTo('crypto-list-2');
   if(filter === 'history') renderHistory();
-  if(filter === 'history') renderHistory();
   if(filter === 'cards')   renderCollectionListTo('collection-list-2');
   if(filter === 'savings') renderSavingsListTo('savings-list-2');
+  if(filter === 'credit')  renderCreditPortfolio('credit-list-2');
 }
 
 function renderCryptoListTo(elId){
@@ -4539,12 +5069,17 @@ function renderCryptoListTo(elId){
     var val   = h.qty*price*3.6725;
     var chg   = (cryptoChangeCache[h.id]||0).toFixed(2);
     var up    = parseFloat(chg) >= 0;
+    var chgBadge='<span style="display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+(up?'#10B981':'#EF4444')+'">'+(up?'+':'')+chg+'%</span>';
+    var priceStr=price>=1000?(price/1000).toFixed(2)+'k':price>=1?price.toFixed(2):price?price.toFixed(4):'';
     return '<div class="holding-row item-in">'
-      +'<div class="holding-icon" style="background:'+holdingColor(h.sym)+';">'+h.sym.slice(0,3)+'</div>'
-      +'<div style="flex:1;"><div class="holding-name">'+(h.name||h.sym)+'</div><div class="holding-qty">'+h.qty+' units</div></div>'
-      +'<div style="text-align:right;"><div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
-        +'<div class="holding-chg '+(up?'txn-positive':'txn-negative')+'">'+(up?'+':'')+chg+'%</div></div>'
-      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
+      +cryptoIconHtml(h.sym,36)
+      +'<div style="flex:1;min-width:0;"><div class="holding-name">'+(h.name||h.sym)+'</div>'
+        +'<div class="holding-qty">'+(priceStr?'$'+priceStr+' &middot; ':'')+h.qty+' qty</div></div>'
+      +'<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'
+        +'<div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
+        +chgBadge
+      +'</div>'
+      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;">&#10005;</div>'
     +'</div>';
   }).join('');
 }
@@ -4774,7 +5309,7 @@ function renderCryptoList(){
     var chgBadge='<span style="display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up2?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+(up2?'#10B981':'#EF4444')+'">'+(up2?'+':'')+chg+'%</span>';
     var priceStr=price>=1000?(price/1000).toFixed(2)+'k':price>=1?price.toFixed(2):price?price.toFixed(4):'';
     return '<div class="holding-row item-in">'
-      +'<div class="holding-icon" style="background:'+holdingColor(h.sym)+'22;color:'+holdingColor(h.sym)+';border:1.5px solid '+holdingColor(h.sym)+'44;font-size:9px;font-weight:700;">'+h.sym.slice(0,3)+'</div>'
+      +cryptoIconHtml(h.sym,36)
       +'<div style="flex:1;min-width:0;">'
         +'<div class="holding-name">'+(h.name||h.sym)+'</div>'
         +'<div class="holding-qty">'+(priceStr?'$'+priceStr+' · ':'')+h.qty+' qty</div>'
@@ -4791,6 +5326,40 @@ function renderCryptoList(){
 function holdingColor(sym){
   var map={BTC:'#F7A400',ETH:'#627EEA',ADA:'#0033AD',SOL:'#9945FF',BNB:'#F0B90B'};
   return map[sym.toUpperCase()]||'var(--surface3)';
+}
+
+// CoinGecko image IDs for supported coins
+var CRYPTO_IMG_IDS = {
+  BTC: '1', ETH: '279', SOL: '4128', ADA: '975', BNB: '825',
+  USDT: '325', XRP: '44', DOGE: '5', DOT: '12171', AVAX: '12559'
+};
+
+function cryptoIconHtml(sym, size){
+  var s     = size || 36;
+  var color = holdingColor(sym);
+  var imgId = CRYPTO_IMG_IDS[sym.toUpperCase()];
+  var inner = '';
+  if(imgId){
+    // CoinGecko small images — reliable, already whitelisted since we call their API
+    var url = 'https://assets.coingecko.com/coins/images/'+imgId+'/small/';
+    // Known filenames for each coin
+    var fileMap = {
+      '1':'bitcoin.png','279':'ethereum.png','4128':'solana.png',
+      '975':'cardano.png','825':'bnb-icon2_2x.png','325':'tether.png',
+      '44':'xrp-symbol-white-128.png','5':'dogecoin.png',
+      '12171':'polkadot_network.png','12559':'avalanche-avax-logo.png'
+    };
+    var file = fileMap[imgId] || 'thumb.png';
+    inner = '<img src="'+url+file+'" width="'+(s-8)+'" height="'+(s-8)+'"'
+      +' style="display:block;border-radius:50%;"'
+      +' onerror="this.parentNode.innerHTML=\'<span style=&quot;font-size:'+(s<=28?'8':'10')+'px;font-weight:700;color:'+color+';&quot;>'+sym.slice(0,3)+'</span>\'">';
+  } else {
+    inner = '<span style="font-size:'+(s<=28?'8':'10')+'px;font-weight:700;color:'+color+';">'+sym.slice(0,3)+'</span>';
+  }
+  return '<div style="width:'+s+'px;height:'+s+'px;border-radius:var(--r-sm);'
+    +'background:'+color+'18;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">'
+    +inner
+  +'</div>';
 }
 
 function renderCollectionList(){
@@ -5052,8 +5621,9 @@ function renderSavingsTab(){
 // ── SHEETS ─────────────────────────────────────────────────────────────────
 var currentSheet='';
 var currentSheetIdx=0;
-function openSheet(type,idx){
+function openSheet(type,idx,prefill){
   currentSheetIdx=idx||0;
+  var pf = prefill||{};
   var overlay = document.getElementById('sheet-overlay');
   var title   = document.getElementById('sheet-title');
   var body    = document.getElementById('sheet-body');
@@ -5315,6 +5885,25 @@ function openSheet(type,idx){
       '<div class="field-group"><div class="field-label">Note (optional)</div>' +
       '<input class="field-input" id="sh-txn-note" placeholder="e.g. Carrefour, Etisalat..."></div>' +
       '<button class="btn-primary" onclick="submitTxnSheet()">Add transaction</button>';
+
+  } else if(type === 'add-credit'){
+    title.textContent = 'Add credit card';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Card nickname</div>' +
+      '<input class="field-input" id="sh-cc-name" placeholder="e.g. ADCB Platinum" value="'+(pf.bank||'')+'"></div>' +
+      '<div class="field-group"><div class="field-label">Bank</div>' +
+      '<input class="field-input" id="sh-cc-bank" placeholder="ADCB, Emirates NBD..." value="'+(pf.bank||'')+'"></div>' +
+      '<div class="field-group"><div class="field-label">Last 4 digits</div>' +
+      '<input class="field-input" id="sh-cc-last4" placeholder="1234" maxlength="4" type="tel" value="'+(pf.last4||'')+'"></div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">' +
+        '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Balance (AED)</div>' +
+        '<input class="field-input" id="sh-cc-balance" type="number" placeholder="0" value="'+(pf.balance||'')+'"></div>' +
+        '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Credit limit (AED)</div>' +
+        '<input class="field-input" id="sh-cc-limit" type="number" placeholder="10000" value="'+(pf.limit||'')+'"></div>' +
+      '</div>' +
+      '<div class="field-group"><div class="field-label">Payment due date</div>' +
+      '<input class="field-input" id="sh-cc-due" type="date" value="'+(pf.dueRaw?parseDueDate(pf.dueRaw)||'':'')+'"></div>' +
+      '<button class="btn-primary" onclick="submitCreditSheet()">Add card</button>';
   }
 
   setTimeout(function(){var fi=body.querySelector('input');if(fi)fi.focus();},200);
