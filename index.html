@@ -1381,7 +1381,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
         <!-- Hero summary -->
         <div id="credit-hero" class="slide-up d2" style="background:linear-gradient(135deg,#12001A,#1E0028);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
-          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total credit debt</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total balance owed</div>
           <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="cc-total-debt">—</div>
           <div style="margin-top:10px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;">
             <div id="cc-util-bar" style="height:100%;border-radius:3px;background:#6366F1;transition:width .6s;width:0%;"></div>
@@ -4322,7 +4322,7 @@ function renderCreditCards(){
   set('cc-total-limit', limit>0?fmt(limit)+' '+curSym():'—');
   set('cc-count',       cards.length);
   set('cc-util-lbl',    util+'% utilisation');
-  set('cc-available-lbl', avail>0?fmt(avail)+' '+curSym()+' available':'—');
+  set('cc-available-lbl', avail>0?fmt(avail)+' '+curSym()+' available credit':'—');
   var barEl = document.getElementById('cc-util-bar');
   if(barEl) setTimeout(function(){ barEl.style.width=Math.min(100,util)+'%'; barEl.style.background=util>=80?'#EF4444':util>=50?'#F59E0B':'#6366F1'; },80);
 
@@ -4424,8 +4424,8 @@ function renderCreditPortfolio(elId){
   var overallUtil= totalLim>0?Math.round(totalDebt/totalLim*100):0;
   var uColor     = overallUtil>=80?'#EF4444':overallUtil>=50?'#F59E0B':'#6366F1';
   var summaryHtml= '<div style="background:rgba(99,102,241,.08);border-radius:var(--r-md);padding:14px;margin-bottom:12px;display:flex;gap:16px;">'
-    +'<div style="flex:1;"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">Total debt</div><div style="font-size:15px;font-weight:700;color:#EF4444;">'+fmt(totalDebt)+' '+curSym()+'</div></div>'
-    +'<div style="flex:1;"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">Available</div><div style="font-size:15px;font-weight:700;color:#10B981;">'+fmt(totalAvail)+' '+curSym()+'</div></div>'
+    +'<div style="flex:1;"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">Balance owed</div><div style="font-size:15px;font-weight:700;color:#EF4444;">'+fmt(totalDebt)+' '+curSym()+'</div></div>'
+    +'<div style="flex:1;"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">Available credit</div><div style="font-size:15px;font-weight:700;color:#10B981;">'+fmt(totalAvail)+' '+curSym()+'</div></div>'
     +'<div style="flex:1;"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">Utilisation</div><div style="font-size:15px;font-weight:700;color:'+uColor+';">'+overallUtil+'%</div></div>'
     +'</div>';
   el.innerHTML = summaryHtml + cards.map(function(c,i){
@@ -5895,12 +5895,12 @@ function openSheet(type,idx,prefill){
       '<input class="field-input" id="sh-cc-bank" placeholder="ADCB, Emirates NBD..." value="'+(pf.bank||'')+'"></div>' +
       '<div class="field-group"><div class="field-label">Last 4 digits</div>' +
       '<input class="field-input" id="sh-cc-last4" placeholder="1234" maxlength="4" type="tel" value="'+(pf.last4||'')+'"></div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">' +
-        '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Balance (AED)</div>' +
-        '<input class="field-input" id="sh-cc-balance" type="number" placeholder="0" value="'+(pf.balance||'')+'"></div>' +
-        '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Credit limit (AED)</div>' +
-        '<input class="field-input" id="sh-cc-limit" type="number" placeholder="10000" value="'+(pf.limit||'')+'"></div>' +
-      '</div>' +
+      '<div class="field-group"><div class="field-label">Credit limit (AED)</div>' +
+      '<input class="field-input" id="sh-cc-limit" type="number" placeholder="10000" value="'+(pf.limit||'')+'">' +
+      '<div style="font-size:10px;color:var(--text3);margin-top:4px;">Total spending limit on this card</div></div>' +
+      '<div class="field-group"><div class="field-label">Current balance owed (AED)</div>' +
+      '<input class="field-input" id="sh-cc-balance" type="number" placeholder="0" value="'+(pf.balance||'')+'">' +
+      '<div style="font-size:10px;color:var(--text3);margin-top:4px;">How much you currently owe — NOT the available amount</div></div>' +
       '<div class="field-group"><div class="field-label">Payment due date</div>' +
       '<input class="field-input" id="sh-cc-due" type="date" value="'+(pf.dueRaw?parseDueDate(pf.dueRaw)||'':'')+'"></div>' +
       '<button class="btn-primary" onclick="submitCreditSheet()">Add card</button>';
