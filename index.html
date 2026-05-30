@@ -312,7 +312,7 @@ body{transition:background .3s,color .3s;}
 
 /* ── Advisor screen ─────────────────────────────────────────────────── */
 .advisor-header{background:linear-gradient(135deg,#1F0D0D,#1F0A0A);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;}
-.chat-wrap{display:flex;flex-direction:column;gap:10px;min-height:200px;}
+.chat-wrap{display:flex;flex-direction:column;gap:10px;}
 .chat-bubble{max-width:88%;padding:11px 14px;border-radius:var(--r-md);font-size:13px;line-height:1.55;word-break:break-word;}
 .chat-bubble.user{background:var(--green);color:var(--green-dark);align-self:flex-end;border-bottom-right-radius:4px;font-weight:500;}
 .chat-bubble.assistant{background:var(--surface);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
@@ -331,9 +331,14 @@ body.light .advisor-header [style*="rgba(255,255,255"]{color:rgba(255,255,255,.7
 body.light .advisor-header [style*="color:var(--green)"]{color:#fff!important;}
 body.light .chat-bubble.assistant{background:#F0F0EC;color:#0D0D0D;}
 body.light .chat-bubble.thinking{background:#F0F0EC;color:rgba(0,0,0,.4);}
-body.light .chat-input{background:#F0F0EC;color:#0D0D0D;}
-body.light .chat-input-row{background:#FFFFFF;border-top-color:rgba(0,0,0,.08);}
-body.light .quick-btn{background:#EFEFEB;border-color:rgba(0,0,0,.06);color:rgba(0,0,0,.55);}
+body.light #chat-messages{background:#F5F4EF;}
+body.light .chat-bubble.assistant{background:#FFFFFF;color:#1A1814;border:0.5px solid rgba(0,0,0,.06);}
+body.light .chat-bubble.thinking{background:#F0F0EC;color:rgba(0,0,0,.4);}
+body.light .chat-input{background:#FFFFFF;border-color:rgba(0,0,0,.12);color:#1A1814;}
+body.light .chat-input:focus{border-color:rgba(245,158,11,.5);}
+body.light .chat-input-row{background:#F5F4EF;border-top:0.5px solid rgba(0,0,0,.08);}
+body.light .quick-btn{background:#FFFFFF;border:0.5px solid rgba(0,0,0,.08);color:rgba(0,0,0,.6);}
+body.light #advisor-quick-row{background:#F5F4EF;}
 body.light .delete-btn{background:rgba(208,48,48,.08);color:var(--red);}
 body.light #advisor-setup-form [style*="rgba(255,255,255,.06)"]{border-color:rgba(0,0,0,.08)!important;}
 body.light #advisor-setup-fields{border-color:rgba(0,0,0,.08)!important;background:var(--surface2)!important;}
@@ -1424,7 +1429,8 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
     <!-- ═══ ADVISOR SCREEN ═══ -->
     <div class="screen" id="screen-advisor" style="flex-direction:column;">
-      <div class="pg" style="padding-bottom:8px;flex-shrink:0;overflow-y:auto;max-height:42vh;">
+      <!-- top section: flex:none overrides the .pg{flex:1} rule so it doesn't swallow space -->
+      <div class="pg" style="padding-bottom:0;flex:none;">
 
         <!-- header -->
         <div class="advisor-header slide-up d1">
@@ -1468,19 +1474,20 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <!-- daily briefing -->
         <div id="advisor-briefing" class="slide-up d2" style="overflow:hidden;transition:max-height .35s cubic-bezier(0.16,1,0.3,1);max-height:0;"></div>
 
-        <!-- quick prompts -->
-        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:2px;" class="slide-up d3">
-          <div class="quick-btn" onclick="sendQuick('How is my budget looking this month?')">Budget check</div>
-          <div class="quick-btn" onclick="sendQuick('What should I do to improve my savings rate?')">Savings tips</div>
-          <div class="quick-btn" onclick="sendQuick('How is my portfolio performing?')">Portfolio</div>
-          <div class="quick-btn" onclick="sendQuick('Am I spending too much on subscriptions?')">Subscriptions</div>
-          <div class="quick-btn" onclick="sendQuick('What are the biggest risks in my portfolio?')">Risks</div>
-        </div>
-
       </div>
 
-      <!-- chat messages -->
-      <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;justify-content:flex-end;"></div>
+      <!-- quick prompts — always visible, outside the flex-shrink section -->
+      <div style="display:flex;gap:8px;overflow-x:auto;padding:8px 16px 0;flex-shrink:0;" class="slide-up d3" id="advisor-quick-row">
+        <div class="quick-btn" onclick="sendQuick('How is my budget looking this month?')">Budget check</div>
+        <div class="quick-btn" onclick="sendQuick('What should I do to improve my savings rate?')">Savings tips</div>
+        <div class="quick-btn" onclick="sendQuick('How is my portfolio performing?')">Portfolio</div>
+        <div class="quick-btn" onclick="sendQuick('Am I spending too much on subscriptions?')">Subscriptions</div>
+        <div class="quick-btn" onclick="sendQuick('What are the biggest risks in my portfolio?')">Risks</div>
+        <div class="quick-btn" onclick="sendQuick('How much are my credit cards costing me?')">Credit cards</div>
+      </div>
+
+      <!-- chat messages — flex-start so first message sits at top naturally -->
+      <div id="chat-messages" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;justify-content:flex-start;"></div>
 
       <!-- input row -->
       <div class="chat-input-row">
