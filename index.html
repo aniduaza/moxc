@@ -895,10 +895,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <!-- filter tabs -->
         <div class="port-tabs slide-up d3">
           <button class="port-tab active" onclick="setPortFilter(this,'all')">All assets</button>
-          <button class="port-tab" onclick="setPortFilter(this,'crypto')">Crypto</button>
-          <button class="port-tab" onclick="setPortFilter(this,'cards')">Cards</button>
-          <button class="port-tab" onclick="setPortFilter(this,'savings')">Savings</button>
-          <button class="port-tab" onclick="setPortFilter(this,'credit')">Credit</button>
+          <button class="port-tab" id="port-tab-crypto"  onclick="setPortFilter(this,'crypto')"  style="display:none;">Crypto</button>
+          <button class="port-tab" id="port-tab-gold"    onclick="setPortFilter(this,'gold')"    style="display:none;">Gold</button>
+          <button class="port-tab" id="port-tab-stocks"  onclick="setPortFilter(this,'stocks')"  style="display:none;">Stocks</button>
+          <button class="port-tab" id="port-tab-cards"   onclick="setPortFilter(this,'cards')"   style="display:none;">Cards</button>
+          <button class="port-tab" id="port-tab-savings" onclick="setPortFilter(this,'savings')" style="display:none;">Savings</button>
+          <button class="port-tab" id="port-tab-credit"  onclick="setPortFilter(this,'credit')"  style="display:none;">Credit</button>
           <button class="port-tab" onclick="setPortFilter(this,'history')">History</button>
         </div>
 
@@ -916,6 +918,14 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div id="collection-list"></div>
           <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Savings</span><span class="sec-link" onclick="openFABSheet('add-savings')">+ Add</span></div>
           <div id="savings-list"></div>
+          <div id="gold-all-section">
+            <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Gold</span><span class="sec-link" onclick="openFABSheet('add-gold')">+ Add</span></div>
+            <div id="gold-list"></div>
+          </div>
+          <div id="stocks-all-section">
+            <div class="sec-hdr" style="margin-top:8px;"><span class="sec-title">Stocks &amp; ETFs</span><span class="sec-link" onclick="openFABSheet('add-stock')">+ Add</span></div>
+            <div id="stocks-list"></div>
+          </div>
         </div>
 
         <!-- CRYPTO section -->
@@ -946,6 +956,18 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <div id="port-section-credit" style="display:none;">
           <div class="sec-hdr"><span class="sec-title">Credit cards</span><span class="sec-link" onclick="openFABSheet('add-credit')">+ Add</span></div>
           <div id="credit-list-2"></div>
+        </div>
+
+        <!-- GOLD section -->
+        <div id="port-section-gold" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Gold</span><span class="sec-link" onclick="openFABSheet('add-gold')">+ Add</span></div>
+          <div id="gold-list-2"></div>
+        </div>
+
+        <!-- STOCKS section -->
+        <div id="port-section-stocks" style="display:none;">
+          <div class="sec-hdr"><span class="sec-title">Stocks &amp; ETFs</span><span class="sec-link" onclick="openFABSheet('add-stock')">+ Add</span></div>
+          <div id="stocks-list-2"></div>
         </div>
 
         <!-- HISTORY section -->
@@ -1051,7 +1073,10 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             </div>
           </div>
           <!-- vs last month -->
-          <div id="act-vs-last" style="display:none;font-size:11px;color:rgba(255,255,255,.4);padding-top:8px;border-top:0.5px solid rgba(255,255,255,.07);"></div>
+          <div id="act-vs-last" style="display:none;font-size:11px;color:rgba(255,255,255,.4);padding-top:8px;border-top:0.5px solid rgba(255,255,255,.07);margin-bottom:10px;"></div>
+          <!-- free to spend + category rings -->
+          <div id="act-free-spend" style="display:none;"></div>
+          <div id="act-cat-rings" style="display:none;margin-top:10px;"></div>
         </div>
 
         <!-- search -->
@@ -1769,6 +1794,8 @@ var data={
   goals:[],
   snapshots:[],
   creditCards:[],
+  goldHoldings:[],
+  stockHoldings:[],
   missionsLog:[],
   firstUseDate:'',
   userName:'',
@@ -2590,6 +2617,8 @@ function renderBadges() {
 }
 
 var cryptoCache={};
+var goldCache={pricePerGram:0, change24h:0};  // price in AED per gram
+var stocksCache={};                             // {AAPL:{price:185,change:1.2,name:'Apple'}}
 var cryptoChangeCache={};
 
 
@@ -2653,18 +2682,17 @@ function load(){
     var raw=localStorage.getItem(STORAGE_KEY);
     if(raw){
       var d=JSON.parse(raw);
-      // Merge each key individually to avoid wiping defaults
-      if(d.currency)   data.currency   = d.currency;
-      if(d.hidden!==undefined) data.hidden = d.hidden;
-      if(d.incomeSources)  data.incomeSources  = d.incomeSources;
-      if(d.expenses)       data.expenses       = d.expenses;
-      if(d.cryptoHoldings) data.cryptoHoldings = d.cryptoHoldings;
-      if(d.mtgCards)       data.mtgCards       = d.mtgCards;
-      if(d.pokemonCards)   data.pokemonCards   = d.pokemonCards;
-      if(d.savingsAccounts)data.savingsAccounts= d.savingsAccounts;
-      if(d.transactions)   data.transactions   = d.transactions;
-      if(d.goals)          data.goals          = d.goals;
-      if(d.snapshots)      data.snapshots      = d.snapshots;
+      // Merge every field — adding a new field here is the only requirement
+      var fields = [
+        'currency','hidden','incomeSources','expenses','cryptoHoldings',
+        'mtgCards','pokemonCards','savingsAccounts','transactions','goals',
+        'snapshots','userName','lastAutoLog',
+        'xp','xpLog','streak','longestStreak','lastStreakDate','unlockedBadges',
+        'creditCards','missionsLog','firstUseDate'
+      ];
+      fields.forEach(function(k){
+        if(d[k] !== undefined) data[k] = d[k];
+      });
     }
   }catch(e){ console.error('Load error:', e); }
 }
@@ -2700,7 +2728,37 @@ function totalAssets(){
   });
   data.mtgCards.forEach(function(c){t+=(c.currentPrice||c.addedPrice||0);});
   data.pokemonCards.forEach(function(c){t+=(c.currentPrice||c.addedPrice||0);});
+  // Gold
+  (data.goldHoldings||[]).forEach(function(g){
+    var grams=gramsFromGold(g);
+    t+= goldCache.pricePerGram>0 ? grams*goldCache.pricePerGram : (g.costBasis||0);
+  });
+  // Stocks (prices in USD → AED)
+  (data.stockHoldings||[]).forEach(function(s){
+    var c=stocksCache[s.ticker];
+    t+= c ? s.shares*c.price*3.6725 : (s.shares*(s.costBasis||0));
+  });
   return t;
+}
+
+function gramsFromGold(g){
+  var w=g.weight||0;
+  if(g.unit==='oz')  return w*31.1035;
+  if(g.unit==='tola') return w*11.6638;
+  return w; // grams default
+}
+
+function totalGoldAED(){
+  return (data.goldHoldings||[]).reduce(function(s,g){
+    var grams=gramsFromGold(g);
+    return s+(goldCache.pricePerGram>0?grams*goldCache.pricePerGram:(g.costBasis||0));
+  },0);
+}
+function totalStocksAED(){
+  return (data.stockHoldings||[]).reduce(function(s,st){
+    var c=stocksCache[st.ticker];
+    return s+(c?st.shares*c.price*3.6725:st.shares*(st.costBasis||0));
+  },0);
 }
 function calcBudget(){
   var inc=totalIncome();
@@ -2782,6 +2840,13 @@ function getIcon(name, sz) {
       + '<path d="M7.5 3.5a2.5 2.5 0 0 1 5 0"/>';
   } else if(name === 'entertainment') {
     d = '<polygon points="7,4 17,10 7,16"/>';
+  } else if(name === 'gold') {
+    d = '<circle cx="10" cy="10" r="7"/>'
+      + '<path d="M7 10h6M10 7v6"/>'
+      + '<path d="M5.5 5.5l1.5 1.5M13 13l1.5 1.5M13 5.5L11.5 7M5.5 14.5L7 13"/>';
+  } else if(name === 'stock') {
+    d = '<polyline points="2,14 6,9 9,12 13,6 18,8"/>'
+      + '<path d="M18 6v4M18 6h-4"/>';
   } else if(name === 'credit-card') {
     d = '<rect x="2" y="5" width="16" height="11" rx="1.5"/>'
       + '<path d="M2 8.5h16"/>'
@@ -2886,7 +2951,7 @@ function getIcon(name, sz) {
 
 
 // ── Navigation ─────────────────────────────────────────────────────────────
-var MORE_TABS = ['budget','transactions','income','expenses','savings','credit','goals','advisor','activity','more'];
+var MORE_TABS = ['budget','transactions','income','expenses','savings','credit','goals','advisor','more'];
 
 
 
@@ -2990,6 +3055,52 @@ function setTxnType(btn, type){
   });
   var catGroup = document.getElementById('txn-cat-group');
   if(catGroup) catGroup.style.display = type === 'income' ? 'none' : 'block';
+}
+
+function submitGoldSheet(){
+  function g(id){return document.getElementById(id);}
+  function gv(id){var e=g(id);return e?e.value.trim():'';}
+  function gn(id){var e=g(id);return e?parseFloat(e.value)||0:0;}
+  var weight=gn('sh-gold-weight');
+  if(!weight){showToast('Enter a weight'); return;}
+  var holding={
+    id:Date.now(), label:gv('sh-gold-label')||'Gold',
+    form:gv('sh-gold-form')||'physical',
+    weight:weight, unit:gv('sh-gold-unit')||'grams',
+    costBasis:gn('sh-gold-cost'),
+    addedDate:new Date().toISOString()
+  };
+  data.goldHoldings=data.goldHoldings||[];
+  data.goldHoldings.push(holding);
+  earnXP('add-savings','Added gold holding');
+  save(); checkBadges();
+  document.getElementById('sheet-overlay').classList.remove('open');
+  fetchGoldPrice();
+  renderTab(currentTab); renderHome();
+  showToast('Gold added');
+}
+
+function submitStockSheet(){
+  function g(id){return document.getElementById(id);}
+  function gv(id){var e=g(id);return e?e.value.trim():'';}
+  function gn(id){var e=g(id);return e?parseFloat(e.value)||0:0;}
+  var ticker=(gv('sh-stock-ticker')||'').toUpperCase().replace(/\s/g,'');
+  var shares=gn('sh-stock-shares');
+  if(!ticker||!shares){showToast('Enter ticker and shares'); return;}
+  var holding={
+    id:Date.now(), ticker:ticker,
+    name:ticker, shares:shares,
+    costBasis:gn('sh-stock-cost'),
+    addedDate:new Date().toISOString()
+  };
+  data.stockHoldings=data.stockHoldings||[];
+  data.stockHoldings.push(holding);
+  earnXP('add-savings','Added stock: '+ticker);
+  save(); checkBadges();
+  document.getElementById('sheet-overlay').classList.remove('open');
+  fetchStockPrices();
+  renderTab(currentTab); renderHome();
+  showToast(ticker+' added');
 }
 
 function submitCreditSheet(){
@@ -3787,6 +3898,8 @@ var FAB_OPTIONS = [
   {id:'add-goal',        iconName:'goal',          label:'Goal',              sub:'Savings target with ETA',    color:'rgba(245,158,11,.06)',  accent:'#F59E0B'},
   {id:'add-savings',     iconName:'savings',       label:'Savings account',   sub:'Bank account or cash',       color:'rgba(91,155,213,.06)',  accent:'#5B9BD5'},
   {id:'add-credit',      iconName:'credit-card',   label:'Credit card',       sub:'Track limit, balance & due', color:'rgba(99,102,241,.06)',  accent:'#6366F1'},
+  {id:'add-gold',        iconName:'gold',          label:'Gold',              sub:'Physical, coins or ETF',     color:'rgba(245,158,11,.06)',  accent:'#F59E0B'},
+  {id:'add-stock',       iconName:'stock',         label:'Stock / ETF',       sub:'Any ticker: AAPL, TSLA…',    color:'rgba(16,185,129,.06)',  accent:'#10B981'},
 ];
 
 function makeFABItem(id, iconName, label, accent, fullWidth, hero){
@@ -3897,9 +4010,14 @@ function openFAB(){
   row2.appendChild(makeFABItem('add-collection', 'card',        'Card',        '#B57BE0', false, false));
   sheet.appendChild(row2);
   var row3 = fabGrid(2, 8);
-  row3.appendChild(makeFABItem('add-savings',    'savings',     'Savings',     '#5B9BD5', false, false));
-  row3.appendChild(makeFABItem('add-goal',       'goal',        'Goal',        '#F59E0B', false, false));
+  row3.appendChild(makeFABItem('add-savings', 'savings', 'Savings',   '#5B9BD5', false, false));
+  row3.appendChild(makeFABItem('add-goal',    'goal',    'Goal',      '#F59E0B', false, false));
   sheet.appendChild(row3);
+  var row3b = fabGrid(2, 8);
+  row3b.style.marginTop = '8px';
+  row3b.appendChild(makeFABItem('add-gold',  'gold',  'Gold',       '#F59E0B', false, false));
+  row3b.appendChild(makeFABItem('add-stock', 'stock', 'Stock / ETF','#10B981', false, false));
+  sheet.appendChild(row3b);
 
   // ── Credit card — full width, different feel ──────────────────────────
   sheet.appendChild(fabSectionLabel('Liabilities'));
@@ -4003,6 +4121,109 @@ function renderActivity(){
   if(barEl) setTimeout(function(){ barEl.style.width=pct+'%'; barEl.style.background=pct>=90?'#EF4444':pct>=75?'#F59E0B':'#10B981'; },80);
   if(pctEl) pctEl.textContent = pct+'% of income spent';
   if(remEl) remEl.textContent = fmt(Math.max(0,inc-txnSpent))+' '+curSym()+' remaining';
+
+  // ── Feature 1: Free to spend today ─────────────────────────────────────
+  (function(){
+    var freeEl = document.getElementById('act-free-spend');
+    if(!freeEl) return;
+    var daysInMonth = new Date(thisYear, thisMonth+1, 0).getDate();
+    var daysLeft    = daysInMonth - dayOfMonth;
+    var incBase     = totalIncome() || txnIncome;
+    var bills       = totalExpenses();
+    var creditPay   = (data.creditCards||[]).reduce(function(s,c){return s+(c.balance||0);},0);
+    var discretionary = incBase - bills - creditPay;
+    if(discretionary <= 0 || incBase <= 0){ freeEl.style.display='none'; return; }
+    var spentSoFar  = txnSpent;
+    var freeTotal   = Math.max(0, discretionary - spentSoFar);
+    var freePerDay  = daysLeft > 0 ? freeTotal / daysLeft : 0;
+    var onTrack     = spentSoFar <= (discretionary * dayOfMonth / daysInMonth);
+    var freeColor   = onTrack ? '#10B981' : (freePerDay < 50 ? '#EF4444' : '#F59E0B');
+    freeEl.style.display = 'block';
+    freeEl.innerHTML =
+      '<div style="background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">'
+        +'<div>'
+          +'<div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;">Free to spend</div>'
+          +'<div style="font-size:18px;font-weight:700;color:'+freeColor+';letter-spacing:-.5px;">'+fmt(freePerDay)+'<span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.4);margin-left:3px;">/day</span></div>'
+        +'</div>'
+        +'<div style="text-align:right;">'
+          +'<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.8);">'+fmt(freeTotal)+' '+curSym()+'</div>'
+          +'<div style="font-size:10px;color:rgba(255,255,255,.35);">'+daysLeft+' days left</div>'
+        +'</div>'
+      +'</div>';
+  })();
+
+  // ── Feature 2: Category budget rings ────────────────────────────────────
+  (function(){
+    var ringsEl = document.getElementById('act-cat-rings');
+    if(!ringsEl) return;
+
+    // Compute spend per category this month
+    var catSpend = {};
+    (data.transactions||[]).forEach(function(t){
+      var d2 = new Date(t.date);
+      if(d2.getMonth()===thisMonth && d2.getFullYear()===thisYear && t.type==='expense'){
+        catSpend[t.cat||'other'] = (catSpend[t.cat||'other']||0) + t.amt;
+      }
+    });
+
+    // Top 5 spending categories with enough data
+    var cats = Object.keys(catSpend).sort(function(a,b){return catSpend[b]-catSpend[a];}).slice(0,5);
+    if(!cats.length){ ringsEl.style.display='none'; return; }
+
+    var CAT_META = {
+      food:         {label:'Food',         color:'#F97316'},
+      transport:    {label:'Transport',     color:'#3B82F6'},
+      ess:          {label:'Essential',     color:'#EF4444'},
+      shopping:     {label:'Shopping',      color:'#A855F7'},
+      entertainment:{label:'Fun',           color:'#EC4899'},
+      health:       {label:'Health',        color:'#EF4444'},
+      sub:          {label:'Subs',          color:'#6366F1'},
+      saving:       {label:'Saving',        color:'#3B82F6'},
+      other:        {label:'Other',         color:'#64748B'},
+    };
+
+    // Use income to set a soft "budget" per category — just for ring visualisation
+    var incBase2 = totalIncome() || txnIncome || 1;
+    var softBudget = incBase2 * 0.6 / Math.max(cats.length, 1); // spread 60% of income across categories
+
+    ringsEl.style.display = 'block';
+    var R = 16; var C = Math.round(2 * 3.14159 * R);
+    var html = '<div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;">';
+    cats.forEach(function(cat){
+      var spent = catSpend[cat]||0;
+      var meta  = CAT_META[cat]||{label:cat,color:'#64748B'};
+      var pct   = Math.min(100, Math.round(spent/softBudget*100));
+      var color = pct>=90?'#EF4444':pct>=70?'#F59E0B':meta.color;
+      var offset= Math.round(C*(1-pct/100));
+      html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px;">'
+        +'<div style="position:relative;width:44px;height:44px;">'
+          +'<svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg);">'
+            +'<circle cx="22" cy="22" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/>'
+            +'<circle cx="22" cy="22" r="'+R+'" fill="none" stroke="'+color+'" stroke-width="4"'
+              +' stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"'
+              +' style="transition:stroke-dashoffset .8s cubic-bezier(0.16,1,0.3,1);" class="cat-ring-arc"/>'
+          +'</svg>'
+          +'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:700;color:'+color+';">'+pct+'%</div>'
+        +'</div>'
+        +'<div style="font-size:9px;color:rgba(255,255,255,.5);text-align:center;white-space:nowrap;">'+meta.label+'</div>'
+        +'<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.7);">'+fmt(spent)+'</div>'
+      +'</div>';
+    });
+    html += '</div>';
+    ringsEl.innerHTML = html;
+
+    // Animate rings after render
+    setTimeout(function(){
+      var arcs = ringsEl.querySelectorAll('.cat-ring-arc');
+      cats.forEach(function(cat,i){
+        var arc = arcs[i];
+        if(!arc) return;
+        var spent2 = catSpend[cat]||0;
+        var pct2 = Math.min(100, Math.round(spent2/softBudget*100));
+        arc.style.strokeDashoffset = Math.round(C*(1-pct2/100));
+      });
+    }, 80);
+  })();
 
   // vs last month
   var vsEl = document.getElementById('act-vs-last');
@@ -4273,7 +4494,8 @@ function handleImportFile(e){
       var msg='This will replace ALL your current data with the backup from '+(parsed.exported?parsed.exported.slice(0,10):'unknown')+'. Are you sure?';
       if(!window.confirm(msg)) return;
       ['currency','incomeSources','expenses','cryptoHoldings','mtgCards','pokemonCards',
-       'savingsAccounts','transactions','goals','snapshots','creditCards'].forEach(function(k){ if(imp[k]!==undefined) data[k]=imp[k]; });
+       'savingsAccounts','transactions','goals','snapshots','creditCards',
+       'goldHoldings','stockHoldings'].forEach(function(k){ if(imp[k]!==undefined) data[k]=imp[k]; });
       if(imp.hidden!==undefined) data.hidden=imp.hidden;
       save(); renderAll(); showToast('Data imported successfully');
     }catch(err){ showToast('Import failed: '+err.message); }
@@ -5111,12 +5333,16 @@ function renderHome(){
     var mtgVal    = data.mtgCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
     var pkVal     = data.pokemonCards.reduce(function(s,cv){return s+(cv.currentPrice||cv.addedPrice||0);},0);
     var total     = savVal+cryptoVal+mtgVal+pkVal+creditDebt||1;
+    var goldVal   = totalGoldAED();
+    var stocksVal = totalStocksAED();
     var segs = [
-      {label:'Savings',val:savVal,    color:'#3B82F6'},
-      {label:'Crypto', val:cryptoVal, color:'#F59E0B'},
-      {label:'MTG',    val:mtgVal,    color:'#E05010'},
-      {label:'Pokemon',val:pkVal,     color:'#F0B90B'},
-      {label:'Credit', val:-creditDebt,color:'#EF4444'},
+      {label:'Savings', val:savVal,     color:'#3B82F6'},
+      {label:'Crypto',  val:cryptoVal,  color:'#F59E0B'},
+      {label:'Gold',    val:goldVal,    color:'#F59E0B'},
+      {label:'Stocks',  val:stocksVal,  color:'#10B981'},
+      {label:'MTG',     val:mtgVal,     color:'#E05010'},
+      {label:'Pokemon', val:pkVal,      color:'#F0B90B'},
+      {label:'Credit',  val:-creditDebt,color:'#EF4444'},
     ].filter(function(sg){return sg.val!==0;});
     assetBarEl.innerHTML = segs.map(function(sg){
       var pct = (sg.val/total*100).toFixed(1);
@@ -5347,7 +5573,7 @@ function setPortFilter(btn, filter){
   document.querySelectorAll('.port-tab').forEach(function(b){
     b.classList.toggle('active', b === btn);
   });
-  var sections = ['all','crypto','cards','savings','credit','history'];
+  var sections = ['all','crypto','cards','savings','credit','gold','stocks','history'];
   sections.forEach(function(sec){
     var el = document.getElementById('port-section-'+sec);
     if(el) el.style.display = (sec === filter) ? 'block' : 'none';
@@ -5357,6 +5583,8 @@ function setPortFilter(btn, filter){
   if(filter === 'cards')   renderCollectionListTo('collection-list-2');
   if(filter === 'savings') renderSavingsListTo('savings-list-2');
   if(filter === 'credit')  renderCreditPortfolio('credit-list-2');
+  if(filter === 'gold')    renderGoldList('gold-list-2');
+  if(filter === 'stocks')  renderStocksList('stocks-list-2');
 }
 
 function renderCryptoListTo(elId){
@@ -5591,6 +5819,24 @@ function renderPortfolio(){
   renderCryptoList();
   renderCollectionList();
   renderSavingsPortfolio();
+  renderGoldList('gold-list');
+  renderStocksList('stocks-list');
+
+  // Progressive tabs — only show tabs for populated asset classes
+  (function(){
+    var tabs = [
+      {id:'port-tab-crypto',   cat:'crypto',   has:(data.cryptoHoldings||[]).length>0},
+      {id:'port-tab-cards',    cat:'cards',    has:((data.mtgCards||[]).length+(data.pokemonCards||[]).length)>0},
+      {id:'port-tab-savings',  cat:'savings',  has:(data.savingsAccounts||[]).length>0},
+      {id:'port-tab-credit',   cat:'credit',   has:(data.creditCards||[]).length>0},
+      {id:'port-tab-gold',     cat:'gold',     has:(data.goldHoldings||[]).length>0},
+      {id:'port-tab-stocks',   cat:'stocks',   has:(data.stockHoldings||[]).length>0},
+    ];
+    tabs.forEach(function(t){
+      var el = document.getElementById(t.id);
+      if(el) el.style.display = t.has ? '' : 'none';
+    });
+  })();
 }
 
 function drawSparkline(){
@@ -5725,6 +5971,76 @@ function deleteStack(type,indices){
   save();renderTab(currentTab);renderHome();
 }
 
+
+function renderGoldList(elId){
+  var el = document.getElementById(elId||'gold-list');
+  if(!el) return;
+  var holdings = data.goldHoldings||[];
+  // Hide section wrapper in "All assets" if empty
+  var wrap = document.getElementById('gold-all-section');
+  if(wrap) wrap.style.display = holdings.length ? '' : 'none';
+  if(!holdings.length){
+    el.innerHTML = emptyState('gold','No gold tracked','Add physical gold, coins or ETFs to track their value.','+ Add gold','openFABSheet(\'add-gold\')');
+    return;
+  }
+  var priceOk = goldCache.pricePerGram > 0;
+  var up = goldCache.change24h >= 0;
+  el.innerHTML = holdings.map(function(g,i){
+    var grams    = gramsFromGold(g);
+    var valAED   = priceOk ? grams*goldCache.pricePerGram : (g.costBasis||0);
+    var chgStr   = priceOk ? ((up?'+':'')+goldCache.change24h.toFixed(2)+'%') : '—';
+    var chgColor = priceOk ? (up?'#10B981':'#EF4444') : 'var(--text3)';
+    var unitLabel = (g.unit==='oz'?'troy oz':g.unit==='tola'?'tola':'g');
+    var priceLine = priceOk ? 'AED '+fmt(goldCache.pricePerGram,2)+'/g' : '';
+    return '<div class="holding-row item-in">'
+      +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:#F59E0B22;color:#F59E0B;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon('gold',18)+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div class="holding-name">'+(g.label||'Gold')+' <span style="font-size:10px;color:var(--text3);">('+g.form+')</span></div>'
+        +'<div class="holding-qty">'+g.weight+' '+unitLabel+' · '+grams.toFixed(2)+'g'+(priceLine?' · '+priceLine:'')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'
+        +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
+        +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
+      +'</div>'
+      +'<div onclick="deleteItem(\'gold\','+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;font-size:16px;">&#10005;</div>'
+    +'</div>';
+  }).join('');
+}
+
+function renderStocksList(elId){
+  var el = document.getElementById(elId||'stocks-list');
+  if(!el) return;
+  var holdings = data.stockHoldings||[];
+  var wrap = document.getElementById('stocks-all-section');
+  if(wrap) wrap.style.display = holdings.length ? '' : 'none';
+  if(!holdings.length){
+    el.innerHTML = emptyState('stock','No stocks tracked','Add stocks or ETFs by ticker symbol (AAPL, TSLA, VUSA…).','+ Add stock','openFABSheet(\'add-stock\')');
+    return;
+  }
+  el.innerHTML = holdings.map(function(s,i){
+    var cached = stocksCache[s.ticker];
+    var priceUSD = cached ? cached.price : (s.costBasis||0);
+    var valAED  = s.shares * priceUSD * 3.6725;
+    var chgNum  = cached ? cached.change : 0;
+    var up      = chgNum >= 0;
+    var chgStr  = cached ? ((up?'+':'')+chgNum.toFixed(2)+'%') : '—';
+    var chgColor = cached ? (up?'#10B981':'#EF4444') : 'var(--text3)';
+    var displayName = cached ? (cached.name||s.ticker) : s.name||s.ticker;
+    if(displayName.length>22) displayName = displayName.slice(0,20)+'…';
+    return '<div class="holding-row item-in">'
+      +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:#10B98122;color:#10B981;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:700;">'+s.ticker.slice(0,4)+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div class="holding-name">'+displayName+'</div>'
+        +'<div class="holding-qty">'+s.shares+' shares'+(cached?' · $'+cached.price.toFixed(2):'')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'
+        +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
+        +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
+      +'</div>'
+      +'<div onclick="deleteItem(\'stock\','+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;font-size:16px;">&#10005;</div>'
+    +'</div>';
+  }).join('');
+}
 
 function renderSavingsPortfolio(){
   var el=document.getElementById('savings-list');
@@ -6205,6 +6521,46 @@ function openSheet(type,idx,prefill){
       '<div class="field-group"><div class="field-label">Payment due date</div>' +
       '<input class="field-input" id="sh-cc-due" type="date" value="'+(pf.dueRaw?parseDueDate(pf.dueRaw)||'':'')+'"></div>' +
       '<button class="btn-primary" onclick="submitCreditSheet()">Add card</button>';
+
+  } else if(type === 'add-gold'){
+    title.textContent = 'Add gold holding';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Label</div>' +
+      '<input class="field-input" id="sh-gold-label" placeholder="e.g. Gold ring, Sovereign coin"></div>' +
+      '<div class="field-group"><div class="field-label">Form</div>' +
+      '<select class="select-input" id="sh-gold-form">' +
+        '<option value="physical">Physical gold</option>' +
+        '<option value="coin">Gold coin</option>' +
+        '<option value="etf">Gold ETF / fund</option>' +
+        '<option value="other">Other</option>' +
+      '</select></div>' +
+      '<div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:14px;">' +
+        '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Weight</div>' +
+        '<input class="field-input" id="sh-gold-weight" type="number" step="any" placeholder="0"></div>' +
+        '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Unit</div>' +
+        '<select class="select-input" id="sh-gold-unit">' +
+          '<option value="grams">grams</option>' +
+          '<option value="oz">troy oz</option>' +
+          '<option value="tola">tola</option>' +
+        '</select></div>' +
+      '</div>' +
+      '<div class="field-group"><div class="field-label">Cost paid (AED)</div>' +
+      '<input class="field-input" id="sh-gold-cost" type="number" placeholder="0">' +
+      '<div style="font-size:10px;color:var(--text3);margin-top:4px;">What you originally paid — used when live price unavailable</div></div>' +
+      '<button class="btn-primary" onclick="submitGoldSheet()">Add gold</button>';
+
+  } else if(type === 'add-stock'){
+    title.textContent = 'Add stock or ETF';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Ticker symbol</div>' +
+      '<input class="field-input" id="sh-stock-ticker" placeholder="AAPL, TSLA, VUSA, MSFT…" style="text-transform:uppercase;">' +
+      '<div style="font-size:10px;color:var(--text3);margin-top:4px;">Use the ticker from your broker. UAE stocks: EMAAR, FAB. US: AAPL, TSLA.</div></div>' +
+      '<div class="field-group"><div class="field-label">Number of shares</div>' +
+      '<input class="field-input" id="sh-stock-shares" type="number" step="any" placeholder="10"></div>' +
+      '<div class="field-group"><div class="field-label">Cost per share (USD)</div>' +
+      '<input class="field-input" id="sh-stock-cost" type="number" step="any" placeholder="0">' +
+      '<div style="font-size:10px;color:var(--text3);margin-top:4px;">Used when live price unavailable</div></div>' +
+      '<button class="btn-primary" onclick="submitStockSheet()">Add holding</button>';
   }
 
   setTimeout(function(){var fi=body.querySelector('input');if(fi)fi.focus();},200);
@@ -6331,6 +6687,8 @@ function execDelete(){
     else if(type==='mtg')data.mtgCards.splice(idx,1);
     else if(type==='poke')data.pokemonCards.splice(idx,1);
     else if(type==='goal')data.goals.splice(idx,1);
+    else if(type==='gold')(data.goldHoldings=data.goldHoldings||[]).splice(idx,1);
+    else if(type==='stock')(data.stockHoldings=data.stockHoldings||[]).splice(idx,1);
     save(); renderTab(currentTab); renderHome();
   }, 340);
 }
@@ -6338,7 +6696,8 @@ function execDelete(){
 function deleteItem(type, idx){
   var labels = {
     income:'income source', expense:'bill', savings:'savings account',
-    crypto:'holding', mtg:'card', poke:'card', goal:'goal'
+    crypto:'holding', mtg:'card', poke:'card', goal:'goal',
+    gold:'gold holding', stock:'stock holding'
   };
   var name = '';
   if(type==='income' && data.incomeSources[idx]) name = data.incomeSources[idx].name;
@@ -6348,6 +6707,8 @@ function deleteItem(type, idx){
   else if(type==='mtg' && data.mtgCards[idx]) name = data.mtgCards[idx].name;
   else if(type==='poke' && data.pokemonCards[idx]) name = data.pokemonCards[idx].name;
   else if(type==='goal' && data.goals[idx]) name = data.goals[idx].name;
+  else if(type==='gold' && (data.goldHoldings||[])[idx]) name = data.goldHoldings[idx].label||'Gold';
+  else if(type==='stock' && (data.stockHoldings||[])[idx]) name = data.stockHoldings[idx].ticker;
   var label = labels[type] || 'item';
   confirmDelete(type, idx, 'Delete ' + label + '?', name ? 'Remove "' + name + '"? This cannot be undone.' : 'This cannot be undone.');
 }
@@ -6748,6 +7109,48 @@ async function refreshMTGPrices(){
 
 
 // ── Crypto prices ──────────────────────────────────────────────────────────
+async function fetchGoldPrice(){
+  if(!(data.goldHoldings||[]).length) return;
+  try{
+    // PAXG = 1 troy oz of gold on CoinGecko — no API key, same domain we already trust
+    var r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
+    if(!r.ok) throw new Error('no response');
+    var d = await r.json();
+    if(d['pax-gold'] && d['pax-gold'].usd){
+      var pricePerOzUSD = d['pax-gold'].usd;
+      goldCache.pricePerGram = (pricePerOzUSD / 31.1035) * 3.6725; // AED per gram
+      goldCache.change24h = d['pax-gold'].usd_24h_change||0;
+      if(currentTab==='portfolio') renderPortfolio();
+      renderHome();
+    }
+  }catch(e){}
+}
+
+async function fetchStockPrices(){
+  if(!(data.stockHoldings||[]).length) return;
+  var tickers = data.stockHoldings.map(function(s){return s.ticker;}).join(',');
+  try{
+    var r = await fetch('https://query2.finance.yahoo.com/v7/finance/quote?symbols='+tickers);
+    if(!r.ok) throw new Error('no response');
+    var d = await r.json();
+    var results = d.quoteResponse && d.quoteResponse.result;
+    if(!results || !results.length) throw new Error('no data');
+    results.forEach(function(q){
+      if(q.symbol && q.regularMarketPrice){
+        stocksCache[q.symbol] = {
+          price:  q.regularMarketPrice,
+          change: q.regularMarketChangePercent||0,
+          name:   q.longName||q.shortName||q.symbol,
+        };
+      }
+    });
+    if(currentTab==='portfolio') renderPortfolio();
+    renderHome();
+  }catch(e){
+    // Fallback: use costBasis silently — no crash
+  }
+}
+
 async function fetchCryptoPrices(){
   if(!data.cryptoHoldings.length)return;
   showPriceStatus('Fetching prices…');
@@ -7457,7 +7860,7 @@ initSwipe();
     setTimeout(function(){ sp.style.display = 'none'; }, 620);
   }, 1500);
 })();
-setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); setTimeout(takeSnapshot, 3000); setTimeout(checkBudgetAlerts, 1500); autoLogRecurring(); checkAutoBriefing(); updateAlertsDot(); }, 200);
+setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); fetchGoldPrice(); fetchStockPrices(); setTimeout(takeSnapshot,3000); setTimeout(checkBudgetAlerts,1500); autoLogRecurring(); checkAutoBriefing(); updateAlertsDot(); }, 200);
 
 // ── Persistent save triggers for Android PWA ─────────────────────────────
 function emergencySave(){
