@@ -526,6 +526,105 @@ body.light .pager-dot.active{background:var(--green);}
 #home-goal-section{ gap:8px; }
 #home-goal-section .sec-hdr{ margin-bottom:0; }
 
+/* ── Mission Cards (Goals screen) ──────────────────────────────────────── */
+.mission-card{
+  position:relative;width:100%;height:200px;border-radius:20px;
+  overflow:hidden;cursor:pointer;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .12s ease,filter .12s ease;
+}
+.mission-card:active{transform:scale(.98);filter:brightness(1.06);}
+
+/* Layer: vignette */
+.mission-vignette{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.55) 100%);
+  pointer-events:none;
+}
+/* Layer: bottom scrim — text readability */
+.mission-scrim{
+  position:absolute;left:0;right:0;bottom:0;height:130px;
+  background:linear-gradient(to top,rgba(0,0,0,.80) 0%,transparent 100%);
+  pointer-events:none;
+}
+/* Layer: ghost icon */
+.mission-ghost-icon{
+  position:absolute;top:12px;right:16px;
+  width:80px;height:80px;opacity:.10;color:#fff;
+  pointer-events:none;
+}
+/* Status chip */
+.mission-chip{
+  position:absolute;top:14px;left:16px;
+  padding:3px 10px;border-radius:100px;
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(0,0,0,.35);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.12);
+}
+/* Health bar at very bottom */
+.mission-bar-track{
+  position:absolute;left:0;right:0;bottom:0;height:4px;
+  background:rgba(255,255,255,.10);
+}
+.mission-bar-fill{
+  height:4px;width:0%;
+  transition:width .9s cubic-bezier(0.34,1.1,0.64,1);
+}
+/* Text block */
+.mission-text{
+  position:absolute;bottom:16px;left:18px;right:18px;
+}
+.mission-sublabel{
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.45);margin-bottom:5px;
+}
+.mission-name{
+  font-size:22px;font-weight:700;color:#fff;line-height:1.15;
+  text-shadow:0 2px 12px rgba(0,0,0,.6);
+  margin-bottom:4px;
+  overflow:hidden;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;
+}
+.mission-amount{font-size:13px;color:rgba(255,255,255,.65);}
+
+/* Completed state */
+.mission-card.mission-complete{filter:saturate(.28) brightness(.72);}
+.mission-card.mission-complete .mission-name{
+  text-decoration:line-through;color:rgba(255,255,255,.55);
+}
+.mission-checkmark{
+  position:absolute;bottom:20px;right:18px;
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(34,197,94,.15);border:1.5px solid #4ADE80;
+  display:flex;align-items:center;justify-content:center;
+  animation:checkPop .5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes checkPop{
+  from{transform:scale(0) rotate(-20deg);opacity:0;}
+  60%{transform:scale(1.2) rotate(5deg);opacity:1;}
+  to{transform:scale(1) rotate(0);opacity:1;}
+}
+
+/* New mission slot */
+.mission-new-slot{
+  width:100%;height:200px;border-radius:20px;
+  border:2px dashed rgba(245,158,11,.22);
+  background:var(--surface2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+}
+.mission-new-slot:active{background:var(--surface3);border-color:rgba(245,158,11,.45);}
+
+/* Staggered entrance */
+@keyframes missionIn{
+  from{opacity:0;transform:translateY(22px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.mission-card,.mission-new-slot{
+  animation:missionIn .4s cubic-bezier(0.22,1,0.36,1) both;
+}
+
 /* ── Goal progress card ─────────────────────────────────────────────── */
 .goal-progress-card{background:var(--surface);border-radius:var(--r-md);padding:14px;border:0.5px solid rgba(255,255,255,.06);}
 .goal-progress-card:active{transform:scale(0.98);}
@@ -1605,28 +1704,17 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
     <div class="screen" id="screen-goals">
       <div class="pg" style="padding-top:20px;">
 
-        <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
+        <!-- header -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;" class="slide-up d1">
           <div>
-            <div style="font-size:18px;font-weight:600;">Goals</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:2px;">Track your financial targets</div>
+            <div style="font-size:18px;font-weight:600;">Mission Log</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:1px;" id="goals-summary-lbl">Your financial goals</div>
           </div>
           <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-goal')">+ Add</div>
         </div>
 
-        <!-- summary -->
-        <div class="stat-row slide-up d2">
-          <div class="stat-pill">
-            <div class="stat-lbl">Active goals</div>
-            <div class="stat-val" id="goals-count">0</div>
-          </div>
-          <div class="stat-pill">
-            <div class="stat-lbl">On track</div>
-            <div class="stat-val" id="goals-ontrack">0</div>
-          </div>
-        </div>
-
-        <!-- goals list -->
-        <div id="goals-list" class="slide-up d3"></div>
+        <!-- mission cards list -->
+        <div id="goals-list" style="display:flex;flex-direction:column;gap:12px;" class="slide-up d2"></div>
 
       </div>
     </div>
@@ -3273,12 +3361,12 @@ function renderTransactionsTab(){
 
 // ── Goals tracker ─────────────────────────────────────────────────────────
 var GOAL_COLORS = [
-  {name:'Gold',    accent:'#F59E0B', bg:'rgba(245,158,11,.12)',  text:'#1C1200'},
-  {name:'Blue',    accent:'#3B82F6', bg:'rgba(59,130,246,.12)',  text:'#fff'},
-  {name:'Emerald', accent:'#10B981', bg:'rgba(16,185,129,.12)',  text:'#fff'},
-  {name:'Red',     accent:'#EF4444', bg:'rgba(239,68,68,.12)',   text:'#fff'},
-  {name:'Purple',  accent:'#8B5CF6', bg:'rgba(139,92,246,.12)',  text:'#fff'},
-  {name:'Teal',   accent:'#5BCDD5', bg:'rgba(91,205,213,.12)',  text:'#0D2A2C'},
+  {name:'Gold',    accent:'#F59E0B', grad:'135deg,#100d04 0%,#1e1608 55%,#241a08 100%', bg:'rgba(245,158,11,.12)',  text:'#1C1200'},
+  {name:'Blue',    accent:'#3B82F6', grad:'135deg,#080d12 0%,#0c1d2a 55%,#0f2535 100%', bg:'rgba(59,130,246,.12)',  text:'#fff'},
+  {name:'Emerald', accent:'#10B981', grad:'135deg,#080e0a 0%,#0c1d12 55%,#0f2518 100%', bg:'rgba(16,185,129,.12)',  text:'#fff'},
+  {name:'Red',     accent:'#EF4444', grad:'135deg,#100808 0%,#200f0f 55%,#2a1010 100%', bg:'rgba(239,68,68,.12)',   text:'#fff'},
+  {name:'Purple',  accent:'#8B5CF6', grad:'135deg,#090810 0%,#13103a 55%,#191244 100%', bg:'rgba(139,92,246,.12)',  text:'#fff'},
+  {name:'Teal',    accent:'#5BCDD5', grad:'135deg,#080e0e 0%,#0d1e1e 55%,#102424 100%', bg:'rgba(91,205,213,.12)',  text:'#0D2A2C'},
 ];
 
 var GOAL_ICONS = ['🎯','🏠','✈️','🎓','💎','🚗','📱','💰','🏋️','🌍'];
@@ -3329,97 +3417,197 @@ function calcGoalETA(goal, prog){
 }
 
 function renderGoals(){
-  var el    = document.getElementById('goals-list');
-  var cntEl = document.getElementById('goals-count');
-  var onEl  = document.getElementById('goals-ontrack');
+  var el = document.getElementById('goals-list');
   if(!el) return;
-
   var goals = data.goals || [];
-  if(cntEl) cntEl.textContent = goals.length;
 
-  var onTrack = 0;
-  goals.forEach(function(g){
-    var p = calcGoalProgress(g);
-    if(p.pct >= 50) onTrack++;
-  });
-  if(onEl){ onEl.textContent = onTrack; onEl.style.color = onTrack > 0 ? 'var(--green)' : 'var(--text2)'; }
+  // Update summary label
+  var sumLbl = document.getElementById('goals-summary-lbl');
+  if(sumLbl){
+    var done = goals.filter(function(g){ return calcGoalProgress(g).pct>=100; }).length;
+    sumLbl.textContent = goals.length
+      ? done+' of '+goals.length+' missions complete'
+      : 'Your financial goals';
+  }
 
   if(!goals.length){
-    el.innerHTML = emptyState('goal','No goals yet','Tap + Add to set your first financial target.','','');
+    el.innerHTML = '';
+    // Just show the New Mission slot
+    el.appendChild(buildNewMissionSlot());
     return;
   }
 
-  var html = '';
+  el.innerHTML = '';
+
   goals.forEach(function(g, i){
-    var col  = getGoalColor(i);
-    var prog = calcGoalProgress(g);
-    var eta  = calcGoalETA(g, prog);
-    var pct  = prog.pct.toFixed(1);
-    var isComplete = prog.pct >= 100;
-    var gIconName = g.icon || 'goal-target';
-    var gIconIsEmoji = gIconName.length <= 4 && gIconName.charCodeAt(0) > 127;
-    var gIconHtml = gIconIsEmoji
-      ? '<div style="width:32px;height:32px;border-radius:var(--r-sm);background:' + col.bg + ';display:flex;align-items:center;justify-content:center;font-size:16px;">' + gIconName + '</div>'
-      : '<div style="width:32px;height:32px;border-radius:var(--r-sm);background:' + col.bg + ';color:' + col.accent + ';display:flex;align-items:center;justify-content:center;">' + getIcon(gIconName, 17) + '</div>';
-
-    var etaColor = isComplete ? 'var(--green)' : prog.pct >= 75 ? '#5BCDD5' : prog.pct >= 40 ? col.accent : 'var(--text3)';
-
-    html += '<div class="goal-card item-in" style="border:0.5px solid ' + col.accent + '33;cursor:pointer;" onclick="openSheet(\'edit-goal\',' + i + ')">'
-      + '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:' + col.accent + ';border-radius:3px 3px 0 0;"></div>'
-
-      // header
-      + '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">'
-        + '<div style="display:flex;align-items:center;gap:8px;">'
-          + gIconHtml
-          + '<div>'
-            + '<div class="goal-title">' + g.name + '</div>'
-            + '<div class="goal-sub">' + (g.desc || getGoalTrackLabel(g)) + '</div>'
-          + '</div>'
-        + '</div>'
-        + '<div onclick="event.stopPropagation();deleteGoal(' + i + ')" style="cursor:pointer;color:var(--text3);padding:4px;font-size:14px;">&#10005;</div>'
-      + '</div>'
-
-      // progress bar
-      + '<div class="goal-bar-track">'
-        + '<div class="goal-bar-fill" id="gbar-' + i + '" style="width:0%;background:' + col.accent + ';"></div>'
-      + '</div>'
-
-      // stats row
-      + '<div class="goal-row">'
-        + '<div>'
-          + '<div class="goal-pct" style="color:' + col.accent + ';">' + (isComplete ? '100' : pct) + '%</div>'
-          + '<div style="font-size:11px;color:var(--text3);">' + fmt(prog.current) + ' / ' + fmt(g.targetAmt) + ' ' + curSym() + '</div>'
-        + '</div>'
-        + '<div style="text-align:right;">'
-          + '<div style="font-size:10px;color:var(--text3);">ETA</div>'
-          + '<div class="goal-eta" style="color:' + etaColor + ';">' + eta + '</div>'
-        + '</div>'
-      + '</div>'
-
-      // auto-track badge or manual update button
-      + (g.autoTrack
-          ? '<div style="margin-top:10px;display:flex;align-items:center;gap:5px;">'
-              + '<svg width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--text3);"><path d="M4 10a6 6 0 1 0 1.5-3.9"/><path d="M4 6v4h4"/></svg>'
-              + '<span style="font-size:11px;color:var(--text3);">Synced from ' + getGoalTrackLabel(g) + '</span>'
-            + '</div>'
-          : '<div class="goal-actions">'
-              + '<button class="goal-action-btn" onclick="updateGoalAmt(' + i + ')" style="background:' + col.bg + ';color:' + col.accent + ';">Update amount</button>'
-            + '</div>'
-        )
-
-    + '</div>';
+    el.appendChild(buildMissionCard(g, i));
   });
 
-  el.innerHTML = html;
+  // New Mission slot at end
+  el.appendChild(buildNewMissionSlot());
 
-  // Animate bars after render
+  // Animate health bars in after render
   setTimeout(function(){
     goals.forEach(function(g, i){
-      var bar  = document.getElementById('gbar-' + i);
+      var fill = document.getElementById('mbar-'+i);
       var prog = calcGoalProgress(g);
-      if(bar) bar.style.width = Math.min(100, prog.pct).toFixed(1) + '%';
+      if(fill){
+        var pct = Math.min(100, prog.pct);
+        fill.style.width = pct.toFixed(1)+'%';
+      }
     });
   }, 80);
+}
+
+function buildMissionCard(g, i){
+  var col        = getGoalColor(i);
+  var prog       = calcGoalProgress(g);
+  var pct        = Math.min(100, prog.pct);
+  var isComplete = pct >= 100;
+  var eta        = calcGoalETA(g, prog);
+
+  // ETA urgency — check if within 30 days
+  var isUrgent = false;
+  if(!isComplete && g.autoTrack === null || !g.autoTrack){
+    var b = calcBudget();
+    if(b.sav > 0){
+      var remaining = g.targetAmt - prog.current;
+      var monthsLeft = remaining > 0 ? Math.ceil(remaining / b.sav) : 0;
+      isUrgent = monthsLeft > 0 && monthsLeft <= 1;
+    }
+  }
+
+  // Status chip
+  var chipText, chipBg, chipBorder, chipColor;
+  if(isComplete){
+    chipText='COMPLETE'; chipBg='rgba(34,197,94,.18)'; chipBorder='rgba(74,222,128,.45)'; chipColor='#4ADE80';
+  } else if(isUrgent){
+    chipText='URGENT'; chipBg='rgba(239,68,68,.18)'; chipBorder='rgba(239,68,68,.45)'; chipColor='#EF4444';
+  } else {
+    chipText='IN PROGRESS'; chipBg='rgba(0,0,0,.35)'; chipBorder='rgba(255,255,255,.12)'; chipColor='rgba(255,255,255,.65)';
+  }
+
+  // Ghost icon name for background
+  var iconName = g.icon || 'goal-target';
+
+  // Glow on health bar — stronger as pct rises
+  var glowSpread = pct < 30 ? 4 : pct < 70 ? 7 : 11;
+  var barGlow = 'box-shadow:0 0 '+glowSpread+'px '+Math.round(glowSpread/2)+'px '+col.accent+'99,0 0 2px 0 '+col.accent;
+
+  var card = document.createElement('div');
+  card.className = 'mission-card' + (isComplete ? ' mission-complete' : '');
+  card.style.cssText = 'background:linear-gradient('+col.grad+');animation-delay:'+(i*0.07)+'s;';
+  card.setAttribute('data-goal-idx', i);
+
+  card.innerHTML =
+    // Vignette
+    '<div class="mission-vignette"></div>'
+    // Bottom scrim
+    + '<div class="mission-scrim"></div>'
+    // Ghost icon (large, faded, decorative)
+    + '<div class="mission-ghost-icon">'+getIcon(iconName, 80)+'</div>'
+    // Status chip
+    + '<div class="mission-chip" style="background:'+chipBg+';border-color:'+chipBorder+';color:'+chipColor+';">'+chipText+'</div>'
+    // Delete button
+    + '<div onclick="event.stopPropagation();deleteGoal('+i+')" style="position:absolute;top:12px;right:14px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.45);font-size:14px;z-index:2;">&#10005;</div>'
+    // Completion checkmark
+    + (isComplete ? '<div class="mission-checkmark"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#4ADE80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4 4 8-8"/></svg></div>' : '')
+    // Text block
+    + '<div class="mission-text">'
+      + '<div class="mission-sublabel">'+(eta !== 'Set a savings rate to see ETA' && eta !== 'Achieved!' ? 'Target '+eta : (isComplete?'Achieved!':'Set income to see ETA'))+'</div>'
+      + '<div class="mission-name">'+g.name+'</div>'
+      + '<div class="mission-amount">'
+        + '<span style="color:'+col.accent+';font-weight:600;">'+fmt(prog.current)+' '+curSym()+'</span>'
+        + ' <span style="color:rgba(255,255,255,.4);">/ '+fmt(g.targetAmt)+' '+curSym()+'</span>'
+      + '</div>'
+    + '</div>'
+    // Health bar
+    + '<div class="mission-bar-track">'
+      + '<div class="mission-bar-fill" id="mbar-'+i+'" style="background:'+col.accent+';'+barGlow+';">'
+        // Leading edge tip
+        + '<div style="position:absolute;right:0;top:-3px;width:2px;height:10px;background:rgba(255,255,255,.75);filter:blur(1px);"></div>'
+      + '</div>'
+    + '</div>';
+
+  card.addEventListener('click', function(){ openGoalDetail(i); });
+  return card;
+}
+
+function buildNewMissionSlot(){
+  var slot = document.createElement('div');
+  slot.className = 'mission-new-slot';
+  slot.style.animationDelay = ((data.goals||[]).length * 0.07 + 0.05) + 's';
+  slot.innerHTML =
+    '<svg width="32" height="32" viewBox="0 0 20 20" fill="none" stroke="rgba(245,158,11,.5)" stroke-width="1.8" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>'
+    + '<div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.25);">New mission</div>';
+  slot.addEventListener('click', function(){ openSheet('add-goal'); });
+  return slot;
+}
+
+function openGoalDetail(idx){
+  var g    = (data.goals||[])[idx];
+  if(!g) return;
+  var col  = getGoalColor(idx);
+  var prog = calcGoalProgress(g);
+  var eta  = calcGoalETA(g, prog);
+  var pct  = Math.min(100, prog.pct);
+
+  // Bottom sheet detail
+  var overlay = document.createElement('div');
+  overlay.id  = 'goal-detail-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.6);display:flex;flex-direction:column;justify-content:flex-end;';
+
+  var sheet = document.createElement('div');
+  sheet.style.cssText = 'background:var(--surface);border-radius:28px 28px 0 0;padding:0 20px 48px;'
+    + 'animation:sheetSpring .4s cubic-bezier(0.32,0.72,0,1) both;max-height:80vh;overflow-y:auto;';
+
+  sheet.innerHTML =
+    '<div style="width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:12px auto 18px;"></div>'
+    // Mini card preview strip
+    + '<div style="height:6px;border-radius:6px;background:linear-gradient('+col.grad+');margin-bottom:20px;position:relative;overflow:hidden;">'
+      + '<div style="position:absolute;left:0;top:0;height:100%;background:'+col.accent+';width:'+pct.toFixed(1)+'%;transition:width .8s cubic-bezier(0.16,1,0.3,1);"></div>'
+    + '</div>'
+    // Goal name + icon
+    + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">'
+      + '<div style="width:44px;height:44px;border-radius:12px;background:'+col.grad.replace('135deg,','linear-gradient(135deg,')+');display:flex;align-items:center;justify-content:center;color:'+col.accent+';border:1px solid '+col.accent+'33;">'
+        + getIcon(g.icon||'goal-target',22)
+      + '</div>'
+      + '<div>'
+        + '<div style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.3px;">'+g.name+'</div>'
+        + '<div style="font-size:12px;color:var(--text3);margin-top:2px;">'+getGoalTrackLabel(g)+'</div>'
+      + '</div>'
+    + '</div>'
+    // Stats row
+    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:16px 0;">'
+      + '<div style="background:var(--surface2);border-radius:var(--r-sm);padding:10px;text-align:center;">'
+        + '<div style="font-size:22px;font-weight:800;color:'+col.accent+';letter-spacing:-.5px;">'+Math.round(pct)+'<span style="font-size:13px;">%</span></div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:2px;">Progress</div>'
+      + '</div>'
+      + '<div style="background:var(--surface2);border-radius:var(--r-sm);padding:10px;text-align:center;">'
+        + '<div style="font-size:13px;font-weight:700;color:var(--text);">'+fmt(prog.current)+'</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:2px;">Saved ('+curSym()+')</div>'
+      + '</div>'
+      + '<div style="background:var(--surface2);border-radius:var(--r-sm);padding:10px;text-align:center;">'
+        + '<div style="font-size:13px;font-weight:700;color:var(--text);">'+fmt(g.targetAmt)+'</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:2px;">Target ('+curSym()+')</div>'
+      + '</div>'
+    + '</div>'
+    // ETA
+    + '<div style="font-size:12px;color:var(--text3);margin-bottom:20px;">ETA: <span style="color:var(--text2);">'+eta+'</span>'+(g.desc?'  ·  <span style="color:var(--text3);">'+g.desc+'</span>':'')+'</div>'
+    // Buttons
+    + '<div style="display:flex;gap:8px;">'
+      + '<button onclick="closeGoalDetail();updateGoalAmt('+idx+')" style="flex:1;padding:14px;background:'+col.accent+';color:#1A1918;border:none;border-radius:var(--r-md);font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">+ Update amount</button>'
+      + '<button onclick="closeGoalDetail();openSheet(\'edit-goal\','+idx+')" style="flex:1;padding:14px;background:var(--surface2);color:var(--text);border:none;border-radius:var(--r-md);font-size:14px;font-weight:500;cursor:pointer;font-family:DM Sans,sans-serif;">Edit goal</button>'
+    + '</div>';
+
+  overlay.appendChild(sheet);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeGoalDetail(); });
+  document.getElementById('app').appendChild(overlay);
+}
+
+function closeGoalDetail(){
+  var el = document.getElementById('goal-detail-overlay');
+  if(el && el.parentNode) el.parentNode.removeChild(el);
 }
 
 function deleteGoal(idx){
