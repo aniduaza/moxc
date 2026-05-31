@@ -3991,18 +3991,24 @@ function openFAB(){
     + 'display:flex;flex-direction:column;justify-content:flex-end;';
 
   var sheet = document.createElement('div');
+  sheet.id = 'fab-sheet';
   sheet.style.cssText = 'background:var(--surface);border-radius:28px 28px 0 0;padding:0 16px 44px;'
-    + 'animation:sheetSpring .44s cubic-bezier(0.32,0.72,0,1) both;';
+    + 'animation:sheetSpring .44s cubic-bezier(0.32,0.72,0,1) both;'
+    + 'will-change:transform;touch-action:pan-x;user-select:none;';
 
-  // Handle + header
+  // Drag handle — large tap target, clearly afforded
   var header = document.createElement('div');
+  header.id = 'fab-drag-handle';
+  header.style.cssText = 'padding:14px 0 6px;cursor:grab;display:flex;flex-direction:column;align-items:center;gap:10px;';
   header.innerHTML =
-    '<div style="width:36px;height:5px;background:rgba(255,255,255,.14);border-radius:3px;margin:12px auto 18px;"></div>'
-    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'
+    // Wide handle pill
+    '<div style="width:48px;height:5px;background:rgba(255,255,255,.18);border-radius:3px;"></div>'
+    // Title row — no close button, gesture + backdrop are the exits
+    + '<div style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 2px;">'
       + '<div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px;">Track</div>'
-      + '<div onclick="closeFAB()" style="width:28px;height:28px;border-radius:50%;background:var(--surface2);'
-          + 'display:flex;align-items:center;justify-content:center;color:var(--text3);cursor:pointer;">'
-        + '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 4l12 12M16 4L4 16"/></svg>'
+      + '<div style="font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px;">'
+        + '<svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5;"><path d="M10 4v12M4 14l6 6 6-6"/></svg>'
+        + 'swipe down to close'
       + '</div>'
     + '</div>';
   sheet.appendChild(header);
@@ -4058,6 +4064,54 @@ function openFAB(){
     + '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l5 5-5 5"/></svg>';
   row4.appendChild(ccItem);
   sheet.appendChild(row4);
+
+  // ── Drag-to-dismiss ──────────────────────────────────────────────────────
+  var dragStartY = 0, dragCurY = 0, dragging = false, sheetH = 0;
+
+  function onFabTouchStart(e){
+    dragging = true;
+    dragStartY = e.touches[0].clientY;
+    dragCurY   = dragStartY;
+    sheetH     = sheet.offsetHeight || 400;
+    sheet.style.transition = 'none';
+  }
+
+  function onFabTouchMove(e){
+    if(!dragging) return;
+    dragCurY = e.touches[0].clientY;
+    var dy = dragCurY - dragStartY;
+    if(dy < 0) dy = 0; // don't allow dragging up
+    sheet.style.transform = 'translateY('+dy+'px)';
+    // Fade backdrop as user drags
+    var pct = Math.min(1, dy / sheetH);
+    overlay.style.background = 'rgba(0,0,0,'+(0.75*(1-pct))+')';
+  }
+
+  function onFabTouchEnd(e){
+    if(!dragging) return;
+    dragging = false;
+    var dy  = dragCurY - dragStartY;
+    var vel = e.changedTouches.length
+      ? (e.changedTouches[0].clientY - dragStartY) / Math.max(1, Date.now() - (Date.now()-100))
+      : 0;
+    // Dismiss if dragged > 28% of sheet height OR fast downward flick
+    if(dy > sheetH * 0.28 || (dy > 60 && vel > 0.5)){
+      sheet.style.transition = 'transform .28s cubic-bezier(0.4,0,1,1)';
+      sheet.style.transform  = 'translateY('+sheetH+'px)';
+      overlay.style.transition = 'opacity .28s ease';
+      overlay.style.opacity    = '0';
+      setTimeout(closeFAB, 300);
+    } else {
+      // Spring back
+      sheet.style.transition = 'transform .38s cubic-bezier(0.16,1,0.3,1)';
+      sheet.style.transform  = 'translateY(0)';
+      overlay.style.background = 'rgba(0,0,0,.75)';
+    }
+  }
+
+  sheet.addEventListener('touchstart', onFabTouchStart, {passive:true});
+  sheet.addEventListener('touchmove',  onFabTouchMove,  {passive:true});
+  sheet.addEventListener('touchend',   onFabTouchEnd,   {passive:true});
 
   overlay.appendChild(sheet);
   overlay.addEventListener('click', function(e){ if(e.target===overlay) closeFAB(); });
