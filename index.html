@@ -358,8 +358,9 @@ body.light #advisor-setup-fields{border-color:rgba(0,0,0,.08)!important;backgrou
 body.light #bg-canvas{opacity:.25;}
 
 /* ── Transactions ────────────────────────────────────────────────────── */
-.txn-filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
+.txn-filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-mask-image:linear-gradient(to right,black calc(100% - 32px),transparent 100%);mask-image:linear-gradient(to right,black calc(100% - 32px),transparent 100%);}
 .txn-filter-row::-webkit-scrollbar{display:none;}
+.delete-btn{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);margin-left:4px;border-radius:var(--r-sm);flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 .txn-filter-btn{padding:5px 14px;border-radius:var(--r-md);font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .txn-filter-btn.active{background:var(--green);color:var(--green-dark);}
 .txn-filter-btn:not(.active){background:var(--surface);color:var(--text3);}
@@ -920,15 +921,21 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
           <!-- sparkline (collapsible) -->
           <div id="spark-collapse" class="spark-collapse">
-            <div><canvas id="assets-spark" height="64" style="width:100%;height:64px;display:block;"></canvas></div>
+            <div>
+              <canvas id="assets-spark" height="64" style="width:100%;height:64px;display:block;margin-bottom:4px;"></canvas>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span id="spark-date-start" style="font-size:10px;color:var(--text3);"></span>
+                <span id="spark-date-end" style="font-size:10px;color:var(--text3);"></span>
+              </div>
+            </div>
           </div>
 
           <!-- breakdown bar -->
           <div id="asset-bar" style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:flex;gap:1px;"></div>
           <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
 
-          <!-- sparkline toggle -->
-          <div class="spark-toggle" id="spark-toggle" onclick="toggleSparkline()">
+          <!-- sparkline toggle — only shown when real history exists -->
+          <div class="spark-toggle" id="spark-toggle" onclick="toggleSparkline()" style="display:none;">
             <div class="spark-toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5l4 4 4-4"/></svg></div>
           </div>
 
@@ -1157,8 +1164,8 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
               <div class="act-stat-val act-spent-val" id="act-spent">—</div>
             </div>
             <div class="act-stat-pill">
-              <div class="act-stat-lbl">Saved</div>
-              <div class="act-stat-val" style="color:var(--blue);" id="act-saved">—</div>
+              <div class="act-stat-lbl">Net</div>
+              <div class="act-stat-val" id="act-saved">—</div>
             </div>
           </div>
 
@@ -1226,6 +1233,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <!-- Profile hero -->
         <div id="more-profile-card" class="slide-up d1" style="margin-bottom:16px;"></div>
 
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:0 0 10px;" class="slide-up d2">Progress</div>
         <div class="slide-up d2">
           <div class="more-item item-in" onclick="switchTab('goals')">
             <div class="more-item-icon" style="background:rgba(245,158,11,.12);color:#F59E0B;">
@@ -1248,6 +1256,8 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <div class="more-item-info"><div class="more-item-title">AI Advisor</div><div class="more-item-sub">Ask Claude about your finances</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
+          <div style="height:0.5px;background:rgba(255,255,255,.06);margin:8px 0;"></div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 4px;">Finance</div>
           <div class="more-item item-in" onclick="switchTab('income')">
             <div class="more-item-icon" style="background:rgba(16,185,129,.12);color:#10B981;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 13V7M7.5 9.5L10 7L12.5 9.5"/></svg>
@@ -1840,10 +1850,13 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
   </div>
 
   <!-- ═══ XP TOAST ═══ -->
-  <div id="xp-toast" style="position:absolute;top:56px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1A1814;color:#F59E0B;font-size:12px;font-weight:600;padding:7px 16px;border-radius:20px;z-index:9000;pointer-events:none;opacity:0;transition:opacity .3s ease,transform .3s ease;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25);"></div>
+  <div id="xp-toast" style="position:absolute;top:60px;left:50%;transform:translateX(-50%) translateY(-10px);background:rgba(28,18,0,.92);border:1px solid rgba(245,158,11,.3);padding:8px 18px;border-radius:24px;z-index:9000;pointer-events:none;opacity:0;transition:opacity .25s ease,transform .3s cubic-bezier(0.16,1,0.3,1);white-space:nowrap;box-shadow:0 4px 24px rgba(245,158,11,.2);backdrop-filter:blur(8px);"></div>
 
   <!-- ═══ XP LEVEL-UP CARD ═══ -->
   <div id="xp-levelup" style="display:none;position:absolute;top:80px;left:50%;transform:translateX(-50%) translateY(-12px) scale(0.95);background:var(--surface);border:1.5px solid #F59E0B;border-radius:var(--r-lg);padding:20px 28px;z-index:9001;pointer-events:none;opacity:0;transition:opacity .4s ease,transform .4s ease;flex-direction:column;align-items:center;gap:6px;text-align:center;box-shadow:0 8px 32px rgba(245,158,11,.25);min-width:200px;"></div>
+
+  <!-- ═══ BADGE FULLSCREEN OVERLAY ═══ -->
+  <div id="badge-fs-overlay" onclick="closeBadgeOverlay()" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;cursor:pointer;"></div>
 
   <!-- ═══ MORE SCREEN BACKDROP ═══ -->
   <div id="more-backdrop" onclick="closeMoreScreen()" style="display:none;pointer-events:none;position:absolute;top:0;left:0;right:0;z-index:45;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);transition:opacity .3s ease;opacity:0;"></div>
@@ -1982,24 +1995,28 @@ function earnXP(actionKey, customLabel) {
   if (newLevel.level > prevLevel.level) {
     showXPLevelUp(newLevel);
   } else {
-    showXPToast('+' + action.xp + ' XP — ' + (customLabel || action.label));
+    showXPToast(action.xp, customLabel || action.label);
     pulseXPWidget();
   }
   renderXPWidget();
 }
 
 var _xpToastTimer = null;
-function showXPToast(msg) {
+function showXPToast(xp, label) {
   var el = document.getElementById('xp-toast');
   if (!el) return;
-  el.textContent = msg;
+  el.innerHTML = '<div style="display:flex;align-items:center;gap:6px;">'
+    + '<span style="display:flex;align-items:center;color:#F59E0B;">'+getIcon('streak-fire',14)+'</span>'
+    + '<span style="font-size:15px;font-weight:800;color:#F59E0B;letter-spacing:-.3px;">+'+xp+' XP</span>'
+    + (label ? '<span style="font-size:11px;color:rgba(255,255,255,.5);margin-left:2px;">'+label+'</span>' : '')
+    + '</div>';
   el.style.opacity = '1';
-  el.style.transform = 'translateY(0)';
+  el.style.transform = 'translateX(-50%) translateY(0)';
   clearTimeout(_xpToastTimer);
   _xpToastTimer = setTimeout(function() {
     el.style.opacity = '0';
-    el.style.transform = 'translateY(-8px)';
-  }, 2200);
+    el.style.transform = 'translateX(-50%) translateY(-10px)';
+  }, 2400);
 }
 
 function showXPLevelUp(lvl) {
@@ -2205,6 +2222,26 @@ function renderXPWidget() {
   }
   dotsHtml += '</div>';
 
+  // ── 30-day activity grid ─────────────────────────────────────────────
+  var activeDays = {};
+  (data.xpLog||[]).forEach(function(entry){
+    if(entry.date){ activeDays[entry.date.slice(0,10)] = true; }
+  });
+  var monthHtml = '<div style="margin-top:8px;">'
+    + '<div style="font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">30-day activity</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:3px;">';
+  for(var md = 29; md >= 0; md--){
+    var d2 = new Date(todayDate); d2.setDate(todayDate.getDate() - md);
+    var dk = d2.getFullYear()+'-'+String(d2.getMonth()+1).padStart(2,'0')+'-'+String(d2.getDate()).padStart(2,'0');
+    var isAct = activeDays[dk];
+    var isTod = md === 0;
+    monthHtml += '<div style="width:9px;height:9px;border-radius:2px;background:'
+      + (isTod ? '#F59E0B' : isAct ? '#F59E0B88' : 'rgba(255,255,255,.08)')
+      + ';' + (isTod ? 'box-shadow:0 0 4px rgba(245,158,11,.4);' : '')
+      + '"></div>';
+  }
+  monthHtml += '</div></div>';
+
   // ── Segmented XP bar — 12 segments ─────────────────────────────────
   var SEGS      = 12;
   var filledSegs = Math.round(lvl.pct / 100 * SEGS);
@@ -2258,6 +2295,8 @@ function renderXPWidget() {
     + '</div>'
     // 7-day dot row
     + dotsHtml
+    // 30-day activity grid
+    + monthHtml
     // Segmented bar
     + segsHtml
     // XP labels
@@ -2414,26 +2453,20 @@ function getStreakStatus() {
 
 function showStreakMilestone(m) {
   launchConfetti('fire');
-  var el = document.getElementById('xp-levelup');
+  var el = document.getElementById('badge-fs-overlay');
   if (!el) return;
-  el.innerHTML = '<div style="width:48px;height:48px;border-radius:14px;background:rgba(239,68,68,.12);border:1.5px solid #EF4444;display:flex;align-items:center;justify-content:center;color:#EF4444;">' + getIcon(m.icon, 24) + '</div>'
-    + '<div style="font-weight:700;font-size:17px;color:#EF4444;margin-top:8px;">' + m.label + '</div>'
-    + '<div style="font-size:13px;color:var(--text2);margin-top:2px;">+' + m.xp + ' bonus XP</div>'
-    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">Keep the momentum going!</div>';
+  el.innerHTML =
+    '<div style="font-size:11px;font-weight:700;color:#F59E0B;letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;">Streak Milestone!</div>'
+    + '<div style="width:96px;height:96px;border-radius:50%;background:rgba(245,158,11,.12);border:2px solid #F59E0B;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 40px rgba(245,158,11,.3);">'
+      + '<span style="display:flex;align-items:center;color:#F59E0B;">'+getIcon('streak-fire',48)+'</span>'
+    + '</div>'
+    + '<div style="font-size:28px;font-weight:800;color:#F59E0B;letter-spacing:-.5px;margin-bottom:6px;">' + m.label + '</div>'
+    + '<div style="font-size:15px;color:var(--text2);margin-bottom:8px;">+' + m.xp + ' bonus XP earned</div>'
+    + '<div style="font-size:13px;color:var(--text3);margin-bottom:32px;">Keep the momentum going!</div>'
+    + '<div style="font-size:12px;color:var(--text3);opacity:.6;">Tap anywhere to continue</div>';
   el.style.display = 'flex';
   el.style.opacity = '0';
-  el.style.transform = 'translateY(16px) scale(0.9)';
-  setTimeout(function() {
-    el.style.transition = 'opacity .35s ease, transform .35s cubic-bezier(0.16,1,0.3,1)';
-    el.style.opacity = '1';
-    el.style.transform = 'translateY(0) scale(1)';
-  }, 30);
-  setTimeout(function() {
-    el.style.transition = 'opacity .3s ease, transform .3s ease';
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(-10px) scale(0.95)';
-    setTimeout(function() { el.style.display = 'none'; el.style.transition = ''; }, 320);
-  }, 3200);
+  setTimeout(function(){ el.style.transition = 'opacity .4s ease'; el.style.opacity = '1'; }, 20);
 }
 
 // ── Badge / Achievements system ───────────────────────────────────────────
@@ -2610,27 +2643,47 @@ function checkBadges() {
 
 function showBadgeUnlock(b) {
   launchConfetti('gold');
-  var el = document.getElementById('xp-levelup');
+  var el = document.getElementById('badge-fs-overlay');
   if (!el) return;
   el.innerHTML =
-    '<div style="font-size:11px;font-weight:600;color:' + b.color + ';letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;">Badge Unlocked!</div>'
-    + '<div style="width:52px;height:52px;border-radius:14px;background:' + b.color + '22;border:2px solid ' + b.color + ';display:flex;align-items:center;justify-content:center;font-size:26px;">' + b.icon + '</div>'
-    + '<div style="font-weight:700;font-size:16px;color:var(--text);margin-top:8px;">' + b.name + '</div>'
-    + '<div style="font-size:12px;color:var(--text2);margin-top:2px;text-align:center;">' + b.desc + '</div>';
+    '<div style="font-size:11px;font-weight:700;color:'+b.color+';letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;opacity:.9;">Badge Unlocked!</div>'
+    + '<div style="width:96px;height:96px;border-radius:24px;background:'+b.color+'18;border:2px solid '+b.color+';display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:20px;box-shadow:0 0 40px '+b.color+'44;">'+b.icon+'</div>'
+    + '<div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:8px;">'+b.name+'</div>'
+    + '<div style="font-size:14px;color:var(--text2);max-width:240px;line-height:1.5;margin-bottom:32px;">'+b.desc+'</div>'
+    + '<div style="font-size:12px;color:var(--text3);opacity:.6;">Tap anywhere to continue</div>';
   el.style.display = 'flex';
   el.style.opacity = '0';
-  el.style.transform = 'translateY(16px) scale(0.9)';
-  setTimeout(function() {
-    el.style.transition = 'opacity .35s ease, transform .35s cubic-bezier(0.16,1,0.3,1)';
-    el.style.opacity = '1';
-    el.style.transform = 'translateY(0) scale(1)';
-  }, 30);
-  setTimeout(function() {
-    el.style.transition = 'opacity .3s ease, transform .3s ease';
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(-10px) scale(0.95)';
-    setTimeout(function() { el.style.display = 'none'; el.style.transition = ''; }, 320);
-  }, 3400);
+  setTimeout(function(){ el.style.transition = 'opacity .4s ease'; el.style.opacity = '1'; }, 20);
+}
+
+function closeBadgeOverlay() {
+  var el = document.getElementById('badge-fs-overlay');
+  if (!el) return;
+  el.style.transition = 'opacity .25s ease';
+  el.style.opacity = '0';
+  setTimeout(function(){ el.style.display = 'none'; el.style.transition = ''; }, 260);
+}
+
+function showBadgeDetail(b) {
+  var isUnlocked = (data.unlockedBadges||[]).indexOf(b.id) !== -1;
+  var el = document.getElementById('badge-fs-overlay');
+  if (!el) return;
+  var pp = null;
+  if (!isUnlocked && b.prog) { try { pp = b.prog(data); } catch(e){} }
+  var pctW = pp && pp.t > 0 ? Math.round(pp.c/pp.t*100) : 0;
+  el.innerHTML =
+    '<div style="font-size:11px;font-weight:700;color:'+(isUnlocked?b.color:'var(--text3)')+';letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;">'+(isUnlocked?'Earned':'Locked')+'</div>'
+    + '<div style="width:96px;height:96px;border-radius:24px;background:'+b.color+'18;border:2px solid '+(isUnlocked?b.color:'rgba(255,255,255,.1)')+';display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:20px;'+(isUnlocked?'box-shadow:0 0 40px '+b.color+'44;':'filter:grayscale(1);opacity:.5;')+'>'+b.icon+'</div>'
+    + '<div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:8px;">'+b.name+'</div>'
+    + '<div style="font-size:14px;color:var(--text2);max-width:240px;line-height:1.5;margin-bottom:'+(pp&&pctW>0?'16px':'32px')+';">'+b.desc+'</div>'
+    + (pp && pctW > 0 ? '<div style="width:200px;margin-bottom:32px;">'
+        + '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:5px;"><span>Progress</span><span style="color:'+b.color+';">'+pctW+'%</span></div>'
+        + '<div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;"><div style="height:5px;border-radius:3px;background:'+b.color+';width:'+pctW+'%;"></div></div>'
+      + '</div>' : '')
+    + '<div style="font-size:12px;color:var(--text3);opacity:.6;">Tap anywhere to close</div>';
+  el.style.display = 'flex';
+  el.style.opacity = '0';
+  setTimeout(function(){ el.style.transition = 'opacity .3s ease'; el.style.opacity = '1'; }, 20);
 }
 
 function renderBadges() {
@@ -2698,7 +2751,7 @@ function renderBadges() {
       var b = group[i];
       var isUnlocked = data.unlockedBadges.indexOf(b.id) !== -1;
       if (isUnlocked) {
-        gridHtml += '<div class="item-in" style="background:var(--surface);border-radius:var(--r-md);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;border:1px solid '+b.color+'33;">'
+        gridHtml += '<div class="item-in" onclick="showBadgeDetail(BADGES.filter(function(x){return x.id===\''+b.id+'\';})[0])" style="background:var(--surface);border-radius:var(--r-md);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;border:1px solid '+b.color+'33;cursor:pointer;">'
           +'<div style="width:44px;height:44px;border-radius:12px;background:'+b.color+'22;border:1.5px solid '+b.color+';display:flex;align-items:center;justify-content:center;font-size:22px;">'+b.icon+'</div>'
           +'<div style="font-size:11px;font-weight:600;color:var(--text);line-height:1.2;">'+b.name+'</div>'
           +'<div style="font-size:9px;color:var(--text3);line-height:1.3;">'+b.desc+'</div>'
@@ -2717,7 +2770,7 @@ function renderBadges() {
             }
           } catch(e){}
         }
-        gridHtml += '<div style="background:var(--surface2);border-radius:var(--r-md);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;">'
+        gridHtml += '<div onclick="showBadgeDetail(BADGES.filter(function(x){return x.id===\''+b.id+'\';})[0])" style="background:var(--surface2);border-radius:var(--r-md);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;cursor:pointer;">'
           +'<div style="width:44px;height:44px;border-radius:12px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:22px;filter:grayscale(1);opacity:.5;">'+b.icon+'</div>'
           +'<div style="font-size:11px;font-weight:600;color:var(--text3);line-height:1.2;opacity:.7;">'+b.name+'</div>'
           +'<div style="font-size:9px;color:var(--text3);line-height:1.3;opacity:.6;">'+b.desc+'</div>'
@@ -2861,6 +2914,37 @@ function gramsFromGold(g){
   if(g.unit==='oz')  return w*31.1035;
   if(g.unit==='tola') return w*11.6638;
   return w; // grams default
+}
+
+function calcHealthScore(){
+  var b = calcBudget();
+  var score = 0;
+  // Savings rate (0-30 pts)
+  if(b.rate >= 20) score += 30;
+  else if(b.rate >= 10) score += 20;
+  else if(b.rate > 0) score += 10;
+  // Streak (0-20 pts)
+  score += Math.min((data.streak||0) * 2, 20);
+  // Goal progress (0-20 pts)
+  var goals = (data.goals||[]).filter(function(g){ return calcGoalProgress(g).pct < 100; });
+  if(goals.length){
+    var avgPct = goals.reduce(function(s,g){ return s + calcGoalProgress(g).pct; },0) / goals.length;
+    score += Math.round(avgPct * 0.2);
+  } else if((data.goals||[]).length > 0){
+    score += 20; // all goals complete
+  }
+  // Credit utilisation (0-20 pts)
+  var cards = data.creditCards||[];
+  if(!cards.length){ score += 20; }
+  else {
+    var lim = totalCreditLimit(); var debt = totalCreditDebt();
+    var util = lim > 0 ? debt/lim : 0;
+    if(util < 0.3) score += 20;
+    else if(util < 0.5) score += 10;
+  }
+  // Budget discipline (0-10 pts)
+  if(b.inc <= 0 || b.actual <= b.inc) score += 10;
+  return Math.min(score, 100);
 }
 
 function totalGoldAED(){
@@ -3124,11 +3208,22 @@ function updateCurrencyToggle(){
 // ── HOME ───────────────────────────────────────────────────────────────────
 
 function drawAssetsSpark(){
-  // Only draw when sparkline is expanded
   var collapse = document.getElementById('spark-collapse');
   if(!collapse || !collapse.classList.contains('expanded')) return;
-  // White line on amber hero card for contrast
+  var pts = getSnapshotRange(currentRange);
+  // Need at least 2 real snapshots — flat line is meaningless
+  if(pts.length < 2) return;
   drawRealSparkline('assets-spark', currentRange, {lineWidth:2, color:'#FFFFFF', fillAlphaTop:0.18, fillAlphaBottom:0});
+  // Populate date labels
+  var fmt2 = function(dateStr){
+    if(!dateStr) return '';
+    var d = new Date(dateStr);
+    return d.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+  };
+  var startEl = document.getElementById('spark-date-start');
+  var endEl   = document.getElementById('spark-date-end');
+  if(startEl) startEl.textContent = fmt2(pts[0].date);
+  if(endEl)   endEl.textContent   = 'Today';
 }
 
 function toggleSparkline(){
@@ -3149,10 +3244,17 @@ function toggleSparkline(){
 }
 
 function initSparkToggle(){
+  var toggle = document.getElementById('spark-toggle');
+  // Only show the toggle when real history exists (≥2 snapshots)
+  var pts = getSnapshotRange(currentRange);
+  if(pts.length < 2){
+    if(toggle) toggle.style.display = 'none';
+    return;
+  }
+  if(toggle) toggle.style.display = 'flex';
   var saved = localStorage.getItem('moxcoin_spark_expanded');
   if(saved === '1'){
     var collapse = document.getElementById('spark-collapse');
-    var toggle   = document.getElementById('spark-toggle');
     if(collapse) collapse.classList.add('expanded');
     if(toggle)   toggle.classList.add('expanded');
   }
@@ -3401,7 +3503,7 @@ function renderTransactions(){
           + '<div class="txn-amount-val" style="color:' + amtColor + ';font-weight:600;">' + amtSign + fmt(t.amt) + ' ' + curSym() + '</div>'
           + '<div class="txn-amount-time">' + time + '</div>'
         + '</div>'
-        + '<div onclick="deleteTxn(' + t.id + ')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;font-size:16px;">&#10005;</div>'
+        + '<div onclick="deleteTxn(' + t.id + ')" class="delete-btn">&#10005;</div>'
       + '</div>';
     });
   });
@@ -4147,7 +4249,7 @@ var FAB_OPTIONS = [
   {id:'add-stock',       iconName:'stock',         label:'Stock / ETF',       sub:'Any ticker: AAPL, TSLA…',    color:'rgba(16,185,129,.06)',  accent:'#10B981'},
 ];
 
-function makeFABItem(id, iconName, label, accent, fullWidth, hero){
+function makeFABItem(id, iconName, label, accent, fullWidth, hero, subtitle){
   var el = document.createElement('div');
   el.className = 'fab-in';
   el.setAttribute('data-id', id);
@@ -4202,7 +4304,8 @@ function makeFABItem(id, iconName, label, accent, fullWidth, hero){
         + getIcon(iconName, 20)
       + '</div>'
       // Label — slightly bolder
-      + '<div style="font-size:12px;font-weight:700;color:var(--text);line-height:1.3;letter-spacing:-.1px;">'+label+'</div>';
+      + '<div style="font-size:12px;font-weight:700;color:var(--text);line-height:1.3;letter-spacing:-.1px;">'+label+'</div>'
+      + (subtitle ? '<div style="font-size:10px;color:var(--text3);margin-top:3px;line-height:1.3;">'+subtitle+'</div>' : '');
   }
 
   el.addEventListener('click', function(){
@@ -4248,12 +4351,15 @@ function openFAB(){
   header.innerHTML =
     // Wide handle pill
     '<div style="width:48px;height:5px;background:rgba(255,255,255,.18);border-radius:3px;"></div>'
-    // Title row — no close button, gesture + backdrop are the exits
+    // Title row
     + '<div style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 2px;">'
-      + '<div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px;">Track</div>'
-      + '<div style="font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px;">'
-        + '<svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5;"><path d="M10 4v12M4 14l6 6 6-6"/></svg>'
-        + 'swipe down to close'
+      + '<div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px;">Quick Add</div>'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+        + '<div style="font-size:10px;color:var(--text3);display:flex;align-items:center;gap:3px;">'
+          + '<svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.5;"><path d="M4 6l6 6 6-6"/></svg>'
+          + 'swipe to close'
+        + '</div>'
+        + '<div onclick="closeFAB()" style="width:28px;height:28px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);font-size:14px;">&#10005;</div>'
       + '</div>'
     + '</div>';
   sheet.appendChild(header);
@@ -4265,28 +4371,29 @@ function openFAB(){
   sheet.appendChild(heroGrid);
 
   // ── Money in / out ───────────────────────────────────────────────────────
-  sheet.appendChild(fabSectionLabel('Money in / out'));
+  var moneyLabel = fabSectionLabel('Money in / out');
+  moneyLabel.style.marginTop = '16px';
+  sheet.appendChild(moneyLabel);
   var row1 = fabGrid(2, 8);
-  row1.appendChild(makeFABItem('add-income',  'income', 'Income', '#10B981', false, false));
-  row1.appendChild(makeFABItem('add-expense', 'bill',   'Bill',   '#EF4444', false, false));
+  row1.appendChild(makeFABItem('add-income',  'income', 'Income', '#10B981', false, false, 'Add a salary or income'));
+  row1.appendChild(makeFABItem('add-expense', 'bill',   'Bill',   '#EF4444', false, false, 'Log a recurring expense'));
   sheet.appendChild(row1);
 
-  // ── Assets & tracking ───────────────────────────────────────────────────
-  sheet.appendChild(fabSectionLabel('Assets & tracking'));
-  var row2 = fabGrid(2, 8);
-  row2.style.marginBottom = '8px';
-  row2.appendChild(makeFABItem('add-crypto',     'crypto',      'Crypto',      '#F7A400', false, false));
-  row2.appendChild(makeFABItem('add-collection', 'card',        'Card',        '#B57BE0', false, false));
+  // ── Assets ───────────────────────────────────────────────────────────────
+  sheet.appendChild(fabSectionLabel('Assets'));
+  var row2 = fabGrid(3, 8);
+  row2.appendChild(makeFABItem('add-crypto', 'crypto', 'Crypto',  '#F7A400', false, false, 'Track a holding'));
+  row2.appendChild(makeFABItem('add-gold',   'gold',   'Gold',    '#F59E0B', false, false, 'Physical or ETF'));
+  row2.appendChild(makeFABItem('add-stock',  'stock',  'Stocks',  '#10B981', false, false, 'Shares & ETFs'));
   sheet.appendChild(row2);
-  var row3 = fabGrid(2, 8);
-  row3.appendChild(makeFABItem('add-savings', 'savings', 'Savings',   '#5B9BD5', false, false));
-  row3.appendChild(makeFABItem('add-goal',    'goal',    'Goal',      '#F59E0B', false, false));
+
+  // ── Track ─────────────────────────────────────────────────────────────────
+  sheet.appendChild(fabSectionLabel('Track'));
+  var row3 = fabGrid(3, 8);
+  row3.appendChild(makeFABItem('add-collection', 'card',    'Collection', '#B57BE0', false, false, 'MTG & Pokémon'));
+  row3.appendChild(makeFABItem('add-savings',    'savings', 'Savings',    '#5B9BD5', false, false, 'Add an account'));
+  row3.appendChild(makeFABItem('add-goal',       'goal',    'Goal',       '#F59E0B', false, false, 'Savings target'));
   sheet.appendChild(row3);
-  var row3b = fabGrid(2, 8);
-  row3b.style.marginTop = '8px';
-  row3b.appendChild(makeFABItem('add-gold',  'gold',  'Gold',       '#F59E0B', false, false));
-  row3b.appendChild(makeFABItem('add-stock', 'stock', 'Stock / ETF','#10B981', false, false));
-  sheet.appendChild(row3b);
 
   // ── Credit card — full width, different feel ──────────────────────────
   sheet.appendChild(fabSectionLabel('Liabilities'));
@@ -4423,7 +4530,12 @@ function renderActivity(){
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   set('act-income', fmt(txnIncome)+' '+curSym());
   set('act-spent',  fmt(txnSpent)+' '+curSym());
-  set('act-saved',  fmt(txnSaved > 0 ? txnSaved : 0)+' '+curSym());
+  var savedEl = document.getElementById('act-saved');
+  if(savedEl){
+    var netAmt = txnSaved;
+    savedEl.textContent = (netAmt >= 0 ? '+' : '-') + fmt(Math.abs(netAmt)) + ' ' + curSym();
+    savedEl.style.color = netAmt >= 0 ? 'var(--green)' : 'var(--red)';
+  }
   set('act-saved2', fmt(txnSaved > 0 ? txnSaved : 0));
   set('act-ess',  fmt(txnEss));
   set('act-subs', fmt(txnSubs));
@@ -4732,7 +4844,7 @@ function renderActivityTxns(){
           +'<div class="txn-amount-val" style="color:'+amtColor+';font-weight:600;">'+sign+fmt(t.amt)+' '+curSym()+'</div>'
           +'<div class="txn-amount-time">'+time+'</div>'
         +'</div>'
-        +'<div onclick="deleteTxn('+t.id+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;font-size:16px;">&#10005;</div>'
+        +'<div onclick="deleteTxn('+t.id+')" class="delete-btn">&#10005;</div>'
       +'</div>';
     });
   });
@@ -5297,18 +5409,22 @@ function renderMore(){
     if(!el) return;
     var lvl = getLevel(data.xp || 0);
     var st  = getStreakStatus();
-    var name = data.userName || 'Moxcoin';
-    var parts = name.trim().split(/\s+/);
-    var initials = parts.length >= 2
-      ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
-      : name.slice(0,2).toUpperCase() || 'MX';
+    var name = data.userName || '';
+    var hasName = name.trim().length > 0;
+    var parts = hasName ? name.trim().split(/\s+/) : [];
+    var initials = hasName
+      ? (parts.length >= 2 ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase() : name.slice(0,2).toUpperCase())
+      : '';
+    var avatarInner = hasName
+      ? '<span style="font-size:20px;font-weight:700;color:#1C1200;">'+initials+'</span>'
+      : '<span style="display:flex;align-items:center;color:#1C1200;">'+getIcon('user',24)+'</span>';
     var streakColor = st.status==='active' ? '#F59E0B' : st.status==='at-risk' ? '#F97316' : 'var(--text3)';
     el.innerHTML =
       '<div style="background:linear-gradient(135deg,var(--surface),var(--surface2));border-radius:var(--r-lg);padding:18px;border:0.5px solid rgba(255,255,255,.06);">'
       + '<div style="display:flex;align-items:center;gap:14px;">'
-        + '<div onclick="editUserName()" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#1C1200;cursor:pointer;flex-shrink:0;box-shadow:0 0 0 3px rgba(245,158,11,.2);">'+initials+'</div>'
+        + '<div onclick="editUserName()" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 0 0 3px rgba(245,158,11,.2);">'+avatarInner+'</div>'
         + '<div style="flex:1;min-width:0;">'
-          + '<div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.4px;">'+name+'</div>'
+          + '<div style="font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.4px;">'+(hasName ? name : 'Set your name')+'</div>'
           + '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
             + '<div style="display:inline-flex;align-items:center;gap:4px;background:rgba(245,158,11,.12);border-radius:20px;padding:2px 9px;">'
               + '<span style="display:inline-flex;align-items:center;color:#F59E0B;">'+getIcon(lvl.icon,11)+'</span>'
@@ -5323,7 +5439,10 @@ function renderMore(){
           + '<div style="font-size:10px;color:var(--text3);margin-top:1px;">Total XP</div>'
         + '</div>'
         + '<div style="background:rgba('+( st.status==='active' ? '245,158,11' : '100,116,139' )+',.07);border-radius:var(--r-sm);padding:10px;text-align:center;">'
-          + '<div style="font-size:18px;font-weight:700;color:'+streakColor+';">'+(data.streak||0)+'</div>'
+          + '<div style="display:flex;align-items:center;justify-content:center;gap:3px;">'
+            + ((data.streak||0) > 0 ? '<span style="display:flex;align-items:center;color:'+streakColor+';">'+getIcon('streak-fire',14)+'</span>' : '')
+            + '<span style="font-size:18px;font-weight:700;color:'+streakColor+';">'+(data.streak||0)+'</span>'
+          + '</div>'
           + '<div style="font-size:10px;color:var(--text3);margin-top:1px;">Day streak</div>'
         + '</div>'
         + '<div style="background:rgba(139,92,246,.07);border-radius:var(--r-sm);padding:10px;text-align:center;">'
@@ -5331,6 +5450,24 @@ function renderMore(){
           + '<div style="font-size:10px;color:var(--text3);margin-top:1px;">Badges</div>'
         + '</div>'
       + '</div>'
+      // Financial Health Score
+      + (function(){
+          var hs = calcHealthScore();
+          var hsCol = hs >= 80 ? '#10B981' : hs >= 60 ? '#F59E0B' : hs >= 40 ? '#F97316' : '#EF4444';
+          var hsLbl = hs >= 80 ? 'Excellent' : hs >= 60 ? 'Good' : hs >= 40 ? 'Fair' : 'Needs work';
+          return '<div style="margin-top:14px;padding-top:12px;border-top:0.5px solid rgba(255,255,255,.07);">'
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">'
+              + '<span style="font-size:11px;font-weight:600;color:var(--text2);">Financial health</span>'
+              + '<span style="font-size:11px;font-weight:700;color:'+hsCol+';">'+hsLbl+'</span>'
+            + '</div>'
+            + '<div style="display:flex;align-items:center;gap:10px;">'
+              + '<div style="flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;">'
+                + '<div style="height:5px;border-radius:3px;background:'+hsCol+';width:'+hs+'%;transition:width .9s cubic-bezier(0.16,1,0.3,1);"></div>'
+              + '</div>'
+              + '<span style="font-size:13px;font-weight:700;color:'+hsCol+';min-width:32px;text-align:right;">'+hs+'</span>'
+            + '</div>'
+          + '</div>';
+        })()
     + '</div>';
   })();
 
@@ -5506,11 +5643,18 @@ function renderHomeGoal(){
   // SVG ring — r=32, size=80px
   var R = 32; var C = Math.round(2 * 3.14159 * R);
   var offset = Math.round(C * (1 - Math.min(1, prog.pct / 100)));
+  // Milestone dot positions (25%, 50%, 75%) on the ring — SVG angles before -90deg CSS rotation
+  var milestones = [{pct:25,x:40,y:72},{pct:50,x:8,y:40},{pct:75,x:40,y:8}];
+  var milestoneDots = milestones.map(function(ms){
+    var passed = prog.pct >= ms.pct;
+    return '<circle cx="'+ms.x+'" cy="'+ms.y+'" r="3.5" fill="'+(passed ? col.accent : 'rgba(255,255,255,.12)')+'" stroke="var(--surface)" stroke-width="1.5"/>';
+  }).join('');
   var ringHtml = '<svg width="80" height="80" viewBox="0 0 80 80" style="position:absolute;top:0;left:0;transform:rotate(-90deg);">'
     + '<circle cx="40" cy="40" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="6"/>'
     + '<circle cx="40" cy="40" r="'+R+'" fill="none" stroke="'+col.accent+'" stroke-width="6"'
       + ' stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"'
       + ' id="home-goal-ring" style="transition:stroke-dashoffset .9s cubic-bezier(0.16,1,0.3,1);"/>'
+    + milestoneDots
     + '</svg>'
     + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1.1;">'
       + '<div style="font-size:18px;font-weight:800;color:'+col.accent+';letter-spacing:-.5px;">'+Math.round(prog.pct)+'</div>'
@@ -5639,12 +5783,30 @@ function renderHome(){
     requestAnimationFrame(countTick);
   }
 
-  // P&L badge
+  // P&L badge — use yesterday snapshot vs today for real daily change
   var plEl = document.getElementById('home-pl-badge');
   if(plEl){
-    var plPct = (Math.random()*4-1).toFixed(2);
-    var up    = parseFloat(plPct) >= 0;
-    plEl.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;background:'+(up?'rgba(255,255,255,.25)':'rgba(0,0,0,.2)')+';color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-md);">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
+    var todayTotal = totalAssets();
+    var plPct = null;
+    // Try snapshot from yesterday
+    var snaps = data.snapshots || [];
+    var yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+    var yk = yesterday.getFullYear()+'-'+String(yesterday.getMonth()+1).padStart(2,'0')+'-'+String(yesterday.getDate()).padStart(2,'0');
+    var ysSnap = null;
+    for(var si = snaps.length-1; si >= 0; si--){
+      if(snaps[si].date <= yk){ ysSnap = snaps[si]; break; }
+    }
+    if(ysSnap && ysSnap.total > 0){
+      plPct = ((todayTotal - ysSnap.total) / ysSnap.total * 100).toFixed(2);
+    }
+    if(plPct !== null){
+      var up = parseFloat(plPct) >= 0;
+      var col = up ? '#10B981' : '#EF4444';
+      var bg  = up ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.15)';
+      plEl.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;background:'+bg+';color:'+col+';font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-md);">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
+    } else {
+      plEl.innerHTML = '';
+    }
   }
 
   // Sparkline — restore toggle state first, then draw if expanded
@@ -5918,7 +6080,7 @@ function renderCryptoListTo(elId){
         +'<div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
         +chgBadge
       +'</div>'
-      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
 }
@@ -5952,7 +6114,7 @@ function renderSavingsListTo(elId){
       +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
       +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
       +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
-      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML = html;
@@ -6175,7 +6337,7 @@ function renderCryptoList(){
         +'<div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
         +chgBadge
       +'</div>'
-      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
 }
@@ -6268,7 +6430,7 @@ function renderCollectionList(){
       +'</div>'
       +'<div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;"><div class="holding-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+s.name+'</div>'+badge+'</div>'+setLbl+'</div>'
       +'<div style="text-align:right;flex-shrink:0;"><div class="holding-val">'+fmt(val)+' '+curSym()+'</div>'+usdLine+chgLine+'</div>'
-      +'<div onclick="deleteStack(\''+delType+'\','+idxJson+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;">&#10005;</div>'
+      +'<div onclick="deleteStack(\''+delType+'\','+idxJson+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=html;
@@ -6312,7 +6474,7 @@ function renderGoldList(elId){
         +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
         +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
       +'</div>'
-      +'<div onclick="deleteItem(\'gold\','+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;font-size:16px;">&#10005;</div>'
+      +'<div onclick="deleteItem(\'gold\','+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
 }
@@ -6347,7 +6509,7 @@ function renderStocksList(elId){
         +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
         +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
       +'</div>'
-      +'<div onclick="deleteItem(\'stock\','+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);padding:4px;font-size:16px;">&#10005;</div>'
+      +'<div onclick="deleteItem(\'stock\','+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
 }
@@ -6365,7 +6527,7 @@ function renderSavingsPortfolio(){
       +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
       +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
       +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
-      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" style="margin-left:8px;cursor:pointer;color:var(--text3);">&#10005;</div>'
+      +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
   el.innerHTML=html;
@@ -8135,6 +8297,9 @@ function switchTab(tab){
       + 'transform:translateX(110%);transition:transform .34s cubic-bezier(0.32,0.72,0,1);'
       + 'box-shadow:0 8px 40px rgba(0,0,0,.6);';
     addBackButton(el);
+    // Make inner .pg scrollable (outer has overflow:hidden for rounded corners)
+    var pg = el.querySelector('.pg');
+    if(pg){ pg.style.overflowY='auto'; pg.style.webkitOverflowScrolling='touch'; pg.style.flex='1'; pg.style.minHeight='0'; }
     showMoreBackdrop(off.bottom);
     setTimeout(function(){ el.style.transform = 'translateX(0)'; }, 20);
   }
