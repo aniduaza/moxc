@@ -142,7 +142,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#110F0F;color:#fff;fo
 .action-btn-green span{color:var(--green-dark);}
 
 /* ── Stat pills row ── */
-.spark-collapse{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(0.16,1,0.3,1),opacity .3s ease,margin .4s cubic-bezier(0.16,1,0.3,1);opacity:0;margin-bottom:0;}
+.spark-collapse{display:grid;grid-template-rows:0fr;overflow:hidden;transition:grid-template-rows .4s cubic-bezier(0.16,1,0.3,1),opacity .3s ease,margin .4s cubic-bezier(0.16,1,0.3,1);opacity:0;margin-bottom:0;}
 .spark-collapse>*{overflow:hidden;min-height:0;}
 .spark-collapse.expanded{grid-template-rows:1fr;opacity:1;margin-bottom:10px;}
 .spark-toggle{display:flex;justify-content:center;align-items:center;min-height:44px;margin-top:-6px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
@@ -965,10 +965,6 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
         <!-- top goal -->
         <div class="slide-up d5" id="home-goal-section" style="display:none;">
-          <div class="sec-hdr">
-            <span class="sec-title">Top goal</span>
-            <span class="sec-link" onclick="switchTab('goals')">All goals &#8250;</span>
-          </div>
           <div id="home-goal-card"></div>
         </div>
 
@@ -2163,13 +2159,13 @@ function renderXPWidget() {
   var flameBg = st.status === 'active' ? 'rgba(245,158,11,.1)'
               : st.status === 'at-risk' ? 'rgba(249,115,22,.1)'
               : 'var(--surface3)';
-  var flameHtml = '<div style="display:flex;align-items:center;gap:3px;background:'+flameBg
-    +';border-radius:20px;padding:3px 9px;flex-shrink:0;">'
-    + '<span style="display:flex;align-items:center;color:'+flameColor+';">'+getIcon('streak-fire',14)+'</span>'
-    + '<span style="font-size:13px;font-weight:800;color:'+flameColor+';letter-spacing:-.3px;">'
-      + (streak > 0 ? streak : (st.status === 'at-risk' ? streak : '—'))
-    + '</span>'
-  + '</div>';
+  var flameHtml = (streak > 0 || st.status === 'at-risk')
+    ? '<div style="display:flex;align-items:center;gap:3px;background:'+flameBg
+        +';border-radius:20px;padding:3px 9px;flex-shrink:0;">'
+        + '<span style="display:flex;align-items:center;color:'+flameColor+';">'+getIcon('streak-fire',14)+'</span>'
+        + '<span style="font-size:13px;font-weight:800;color:'+flameColor+';letter-spacing:-.3px;">'+streak+'</span>'
+      + '</div>'
+    : '';
 
   // ── 7-day dot row ───────────────────────────────────────────────────
   var DAY_LABELS = ['Mo','Tu','We','Th','Fr','Sa','Su'];
@@ -5018,7 +5014,7 @@ function renderDailyMissions(){
         +(allDone?'All done! 🎉':earnedXP+' / '+totalXP+' XP')
       +'</div>'
     +'</div>'
-    +'<div style="font-size:10px;color:var(--text3);margin-bottom:10px;">Resets at midnight</div>'
+    +'<div style="font-size:10px;color:var(--text3);margin-top:3px;margin-bottom:10px;">Resets at midnight</div>'
     +missionHtml
   +'</div>';
 }
@@ -5518,7 +5514,7 @@ function renderHomeGoal(){
     + '</svg>'
     + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1.1;">'
       + '<div style="font-size:18px;font-weight:800;color:'+col.accent+';letter-spacing:-.5px;">'+Math.round(prog.pct)+'</div>'
-      + '<div style="font-size:9px;font-weight:600;color:'+col.accent+';opacity:.7;">%</div>'
+      + ''
     + '</div>';
 
   // ETA — split into target date and "X mo left"
@@ -5529,14 +5525,20 @@ function renderHomeGoal(){
     ? '<div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);font-size:44px;opacity:.08;pointer-events:none;line-height:1;">'+iconName+'</div>'
     : '<div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);color:'+col.accent+';opacity:.1;pointer-events:none;">'+getIcon(iconName,56)+'</div>';
 
-  var html = '<div class="goal-card item-in" style="border:0.5px solid '+col.accent+'33;cursor:pointer;" onclick="switchTab(\'goals\')">'
-    + '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,'+col.accent+','+col.accent+'44);border-radius:3px 3px 0 0;"></div>'
+  var html = '<div class="goal-card item-in" style="'
+      + 'background:linear-gradient(135deg,'+col.accent+'12 0%,'+col.accent+'04 100%);'
+      + 'border:0.5px solid '+col.accent+'33;cursor:pointer;" onclick="switchTab(\'goals\')">'
     + ghostHtml
+    // sec-hdr inside card
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+      + '<span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">Top goal</span>'
+      + '<span style="font-size:12px;color:'+col.accent+';cursor:pointer;" onclick="event.stopPropagation();switchTab(\'goals\')">All goals &#8250;</span>'
+    + '</div>'
     + '<div style="display:flex;align-items:center;gap:14px;">'
       + '<div style="position:relative;width:80px;height:80px;flex-shrink:0;">' + ringHtml + '</div>'
-      + '<div style="flex:1;min-width:0;">'
+      + '<div style="flex:1;min-width:0;padding-right:52px;">'
         + '<div class="goal-title" style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">'+best.name+'</div>'
-        + '<div style="font-size:13px;color:var(--text2);font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(prog.current)+' <span style="color:var(--text2);opacity:.6;">/ '+fmt(best.targetAmt)+' '+curSym()+'</span></div>'
+        + '<div style="font-size:13px;color:var(--text2);font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(prog.current)+' <span style="color:var(--text2);opacity:.75;">/ '+fmt(best.targetAmt)+' '+curSym()+'</span></div>'
         + '<div style="font-size:11px;color:var(--text3);">'+etaMo+(etaDate ? ' &nbsp;&middot;&nbsp; <span style="color:'+col.accent+';opacity:.8;">'+etaDate+'</span>' : '')+'</div>'
       + '</div>'
     + '</div>'
@@ -5704,10 +5706,10 @@ function renderHome(){
     streakEl.innerHTML = streak4 > 0
       ? '<span style="display:inline-flex;align-items:center;gap:3px;vertical-align:middle;">'
           + '<span style="display:flex;align-items:center;">'+getIcon('streak-fire',14)+'</span>'
-          + streak4
+          + streak4 + 'd'
         + '</span>'
-      : '<span style="color:var(--text3);">—</span>';
-    streakEl.style.color = streak4 > 0 ? '#F59E0B' : '';
+      : '<span style="color:var(--text3);">0d</span>';
+    streakEl.style.color = streak4 > 0 ? '#F59E0B' : 'var(--text3)';
   }
 
   // Record first use date for longevity badges
