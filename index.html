@@ -967,6 +967,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <!-- Daily missions -->
         <div id="home-missions" class="slide-up d3"></div>
 
+        <!-- Spending challenges -->
+        <div id="home-challenges" class="slide-up d3"></div>
+
         <!-- XP widget -->
         <div class="card slide-up d4" id="xp-widget" style="padding:16px 18px;"></div>
 
@@ -2184,45 +2187,8 @@ function renderXPWidget() {
       + '</div>'
     : '';
 
-  // ── 7-day dot row ───────────────────────────────────────────────────
-  var DAY_LABELS = ['Mo','Tu','We','Th','Fr','Sa','Su'];
-  var todayDate = new Date();
-  var todayDow  = (todayDate.getDay() + 6) % 7; // Mon=0 … Sun=6
-  var dotsHtml  = '<div style="display:flex;gap:0;justify-content:space-between;margin:10px 0 2px;">';
-  for (var d = 0; d < 7; d++) {
-    var daysAgo  = todayDow - d;
-    var isFuture = d > todayDow;
-    var isToday  = d === todayDow;
-    var isFilled = !isFuture && daysAgo < streak;
-    var dotBg = (isFilled || isToday)
-      ? 'linear-gradient(135deg,#D97706,#F59E0B)'
-      : 'var(--surface3)';
-    var ring = isToday
-      ? 'box-shadow:0 0 0 2px #F59E0B,0 0 0 3.5px rgba(245,158,11,.25);'
-      : '';
-    // Calculate calendar date for this dot
-    var dotDateObj = new Date(todayDate);
-    dotDateObj.setDate(todayDate.getDate() - daysAgo);
-    var dotDateNum = dotDateObj.getDate();
-    // Inner content: checkmark for filled past, date number for today, greyed number for future
-    var innerHtml = isToday
-      ? '<span style="font-size:9px;font-weight:800;color:#1C1200;line-height:1;">' + dotDateNum + '</span>'
-      : isFilled
-        ? '<span style="font-size:10px;font-weight:800;color:#1C1200;line-height:1;">&#10003;</span>'
-        : '<span style="font-size:9px;font-weight:600;color:'+(isFuture?'rgba(255,255,255,.2)':'rgba(255,255,255,.35)')+';line-height:1;">' + dotDateNum + '</span>';
-    dotsHtml += '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">'
-      + '<div style="width:20px;height:20px;border-radius:50%;background:'+dotBg+';'+ring
-        +'display:flex;align-items:center;justify-content:center;">'
-        + innerHtml
-      + '</div>'
-      + '<span style="font-size:8px;font-weight:600;color:'+(isToday?'#F59E0B':'var(--text3)')+';letter-spacing:.02em;">'
-        + DAY_LABELS[d]
-      + '</span>'
-    + '</div>';
-  }
-  dotsHtml += '</div>';
-
   // ── 30-day activity grid ─────────────────────────────────────────────
+  var todayDate = new Date();
   var activeDays = {};
   (data.xpLog||[]).forEach(function(entry){
     if(entry.date){ activeDays[entry.date.slice(0,10)] = true; }
@@ -2293,8 +2259,6 @@ function renderXPWidget() {
         + '<div style="font-size:11px;color:var(--text2);margin-top:1px;">/ ' + (lvl.xpInLevel + lvl.xpToNext).toLocaleString() + ' XP</div>'
       + '</div>'
     + '</div>'
-    // 7-day dot row
-    + dotsHtml
     // 30-day activity grid
     + monthHtml
     // Segmented bar
@@ -2856,7 +2820,7 @@ function load(){
         'mtgCards','pokemonCards','savingsAccounts','transactions','goals',
         'snapshots','userName','lastAutoLog',
         'xp','xpLog','streak','longestStreak','lastStreakDate','unlockedBadges',
-        'creditCards','missionsLog','firstUseDate'
+        'creditCards','missionsLog','firstUseDate','spendingChallenges'
       ];
       fields.forEach(function(k){
         if(d[k] !== undefined) data[k] = d[k];
@@ -3310,21 +3274,32 @@ function submitGoldSheet(){
   function gn(id){var e=g(id);return e?parseFloat(e.value)||0:0;}
   var weight=gn('sh-gold-weight');
   if(!weight){showToast('Enter a weight'); return;}
-  var holding={
-    id:Date.now(), label:gv('sh-gold-label')||'Gold',
-    form:gv('sh-gold-form')||'physical',
-    weight:weight, unit:gv('sh-gold-unit')||'grams',
-    costBasis:gn('sh-gold-cost'),
-    addedDate:new Date().toISOString()
-  };
   data.goldHoldings=data.goldHoldings||[];
-  data.goldHoldings.push(holding);
-  earnXP('add-savings','Added gold holding');
+  if(currentSheet==='edit-gold'){
+    var existing=data.goldHoldings[currentSheetIdx]||{};
+    data.goldHoldings[currentSheetIdx]={
+      id:existing.id||Date.now(), label:gv('sh-gold-label')||'Gold',
+      form:gv('sh-gold-form')||'physical',
+      weight:weight, unit:gv('sh-gold-unit')||'grams',
+      costBasis:gn('sh-gold-cost'),
+      addedDate:existing.addedDate||new Date().toISOString()
+    };
+    showToast('Gold updated');
+  } else {
+    data.goldHoldings.push({
+      id:Date.now(), label:gv('sh-gold-label')||'Gold',
+      form:gv('sh-gold-form')||'physical',
+      weight:weight, unit:gv('sh-gold-unit')||'grams',
+      costBasis:gn('sh-gold-cost'),
+      addedDate:new Date().toISOString()
+    });
+    earnXP('add-savings','Added gold holding');
+    showToast('Gold added');
+  }
   save(); checkBadges();
   document.getElementById('sheet-overlay').classList.remove('open');
   fetchGoldPrice();
   renderTab(currentTab); renderHome();
-  showToast('Gold added');
 }
 
 function submitStockSheet(){
@@ -3334,20 +3309,30 @@ function submitStockSheet(){
   var ticker=(gv('sh-stock-ticker')||'').toUpperCase().replace(/\s/g,'');
   var shares=gn('sh-stock-shares');
   if(!ticker||!shares){showToast('Enter ticker and shares'); return;}
-  var holding={
-    id:Date.now(), ticker:ticker,
-    name:ticker, shares:shares,
-    costBasis:gn('sh-stock-cost'),
-    addedDate:new Date().toISOString()
-  };
   data.stockHoldings=data.stockHoldings||[];
-  data.stockHoldings.push(holding);
-  earnXP('add-savings','Added stock: '+ticker);
+  if(currentSheet==='edit-stock'){
+    var existing=data.stockHoldings[currentSheetIdx]||{};
+    data.stockHoldings[currentSheetIdx]={
+      id:existing.id||Date.now(), ticker:ticker,
+      name:ticker, shares:shares,
+      costBasis:gn('sh-stock-cost'),
+      addedDate:existing.addedDate||new Date().toISOString()
+    };
+    showToast(ticker+' updated');
+  } else {
+    data.stockHoldings.push({
+      id:Date.now(), ticker:ticker,
+      name:ticker, shares:shares,
+      costBasis:gn('sh-stock-cost'),
+      addedDate:new Date().toISOString()
+    });
+    earnXP('add-savings','Added stock: '+ticker);
+    showToast(ticker+' added');
+  }
   save(); checkBadges();
   document.getElementById('sheet-overlay').classList.remove('open');
   fetchStockPrices();
   renderTab(currentTab); renderHome();
-  showToast(ticker+' added');
 }
 
 function submitCreditSheet(){
@@ -5613,6 +5598,123 @@ function emptyState(icon, title, sub, btnLabel, btnAction){
     +'</div>';
 }
 
+// ── Spending Challenges ───────────────────────────────────────────────────
+function renderSpendingChallenges(){
+  var el = document.getElementById('home-challenges');
+  if(!el) return;
+  data.spendingChallenges = data.spendingChallenges || [];
+  var active = null;
+  for(var ci = 0; ci < data.spendingChallenges.length; ci++){
+    if(data.spendingChallenges[ci].active){ active = data.spendingChallenges[ci]; break; }
+  }
+  if(!active){
+    el.innerHTML = '<div class="card" style="padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openSheet(\'add-challenge\')">'
+      +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:rgba(245,158,11,.1);color:#F59E0B;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">&#127942;</div>'
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-size:13px;font-weight:700;color:var(--text);">21-Day Spending Challenge</div>'
+        +'<div style="font-size:11px;color:var(--text3);margin-top:2px;">Pick a category, set a daily limit, go 21 days</div>'
+      +'</div>'
+      +'<div style="font-size:12px;font-weight:600;color:#F59E0B;white-space:nowrap;">Start &rsaquo;</div>'
+    +'</div>';
+    return;
+  }
+  var cat = active.category;
+  var limit = active.dailyLimit;
+  var catInfo = TXN_CATS[cat] || TXN_CATS.other;
+  var startDate = new Date(active.startDate + 'T00:00:00');
+  var todayObj = new Date(); todayObj.setHours(0,0,0,0);
+  var dayResults = [];
+  for(var d = 0; d < 21; d++){
+    var dayDate = new Date(startDate); dayDate.setDate(startDate.getDate() + d); dayDate.setHours(0,0,0,0);
+    var isFuture = dayDate > todayObj;
+    var isToday = dayDate.getTime() === todayObj.getTime();
+    var dk = dayDate.getFullYear()+'-'+(dayDate.getMonth()<9?'0':'')+(dayDate.getMonth()+1)+'-'+(dayDate.getDate()<10?'0':'')+dayDate.getDate();
+    var spent = 0;
+    if(!isFuture){
+      (data.transactions||[]).forEach(function(t){
+        if(t.type==='expense' && t.cat===cat && t.date && t.date.slice(0,10)===dk){ spent += t.amt; }
+      });
+    }
+    dayResults.push({dk:dk, spent:spent, won:!isFuture && spent<=limit, isToday:isToday, isFuture:isFuture});
+  }
+  var wonCount = 0;
+  for(var wi = 0; wi < dayResults.length; wi++){ if(dayResults[wi].won && !dayResults[wi].isFuture) wonCount++; }
+  var passedDays = 0;
+  for(var pi = 0; pi < dayResults.length; pi++){ if(!dayResults[pi].isFuture) passedDays++; }
+  if(passedDays >= 21 && wonCount >= 21 && !active.completedAt){
+    active.completedAt = new Date().toISOString();
+    active.active = false;
+    earnXP('challenge-complete','21-day '+catInfo.label+' challenge complete!');
+    save();
+  }
+  var currentDay = Math.min(passedDays, 21);
+  var todaySpent = 0;
+  for(var ti2 = 0; ti2 < dayResults.length; ti2++){ if(dayResults[ti2].isToday){ todaySpent = dayResults[ti2].spent; break; } }
+  var pct = Math.min(todaySpent / limit * 100, 100);
+  var barColor = pct >= 100 ? '#EF4444' : pct >= 75 ? '#F97316' : '#10B981';
+  var dotsHtml = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:10px 0 8px;">';
+  for(var di = 0; di < 21; di++){
+    var dr = dayResults[di];
+    var bg2 = dr.isFuture ? 'rgba(255,255,255,.07)' : dr.won ? '#10B981' : '#EF4444';
+    var ring2 = dr.isToday ? 'box-shadow:0 0 0 2px '+catInfo.color+',0 0 0 4px '+catInfo.color+'33;' : '';
+    dotsHtml += '<div style="aspect-ratio:1/1;border-radius:4px;background:'+bg2+';'+ring2+'"></div>';
+  }
+  dotsHtml += '</div>';
+  el.innerHTML = '<div class="card" style="padding:14px 16px;">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+      +'<div style="display:flex;align-items:center;gap:8px;">'
+        +'<div style="width:32px;height:32px;border-radius:8px;background:'+catInfo.bg+';color:'+catInfo.color+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon(catInfo.icon,15)+'</div>'
+        +'<div>'
+          +'<div style="font-size:13px;font-weight:700;color:var(--text);">'+catInfo.label+' Challenge</div>'
+          +'<div style="font-size:10px;color:var(--text3);">Max '+fmt(limit)+' AED / day</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="background:'+catInfo.bg+';color:'+catInfo.color+';border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;flex-shrink:0;">Day '+currentDay+' / 21</div>'
+    +'</div>'
+    +dotsHtml
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">'
+      +'<div style="font-size:11px;color:var(--text3);">Today</div>'
+      +'<div style="font-size:11px;font-weight:600;color:'+barColor+';">'+fmt(todaySpent)+' / '+fmt(limit)+' AED</div>'
+    +'</div>'
+    +'<div style="height:4px;border-radius:2px;background:rgba(255,255,255,.08);">'
+      +'<div style="height:4px;border-radius:2px;background:'+barColor+';width:'+pct+'%;transition:width .4s ease;"></div>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">'
+      +'<div style="font-size:11px;color:var(--text3);">'+wonCount+' / '+currentDay+' days won</div>'
+      +'<div onclick="abandonChallenge()" style="font-size:11px;color:var(--text3);cursor:pointer;-webkit-tap-highlight-color:transparent;padding:4px 0 4px 12px;">Give up</div>'
+    +'</div>'
+  +'</div>';
+}
+
+function abandonChallenge(){
+  confirmDelete('_chal', 0, 'Give up challenge?', 'Your progress will be lost.');
+  var btn = document.getElementById('del-confirm-btn');
+  if(btn) btn.onclick = function(){
+    hideDel();
+    setTimeout(function(){
+      (data.spendingChallenges||[]).forEach(function(c){ c.active = false; });
+      save(); renderHome();
+    }, 340);
+  };
+}
+
+function submitChallengeSheet(){
+  function gv(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+  function gn(id){var e=document.getElementById(id);return e?parseFloat(e.value)||0:0;}
+  var cat = gv('sh-chal-cat');
+  var limit = gn('sh-chal-limit');
+  if(!limit){ showToast('Enter a daily limit'); return; }
+  data.spendingChallenges = data.spendingChallenges || [];
+  data.spendingChallenges.forEach(function(c){ c.active = false; });
+  var td = new Date();
+  var todayStr = td.getFullYear()+'-'+(td.getMonth()<9?'0':'')+(td.getMonth()+1)+'-'+(td.getDate()<10?'0':'')+td.getDate();
+  data.spendingChallenges.push({id:Date.now(), category:cat, dailyLimit:limit, startDate:todayStr, active:true, completedAt:null});
+  save();
+  document.getElementById('sheet-overlay').classList.remove('open');
+  renderHome();
+  showToast('Challenge started! Good luck!');
+}
+
 // ── Home screen top goal ──────────────────────────────────────────────────
 function renderHomeGoal(){
   var section = document.getElementById('home-goal-section');
@@ -6080,6 +6182,7 @@ function renderCryptoListTo(elId){
         +'<div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
         +chgBadge
       +'</div>'
+      +'<div onclick="openSheet(\'edit-crypto\','+i+')" class="delete-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
@@ -6337,6 +6440,7 @@ function renderCryptoList(){
         +'<div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
         +chgBadge
       +'</div>'
+      +'<div onclick="openSheet(\'edit-crypto\','+i+')" class="delete-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
@@ -6474,6 +6578,7 @@ function renderGoldList(elId){
         +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
         +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
       +'</div>'
+      +'<div onclick="openSheet(\'edit-gold\','+i+')" class="delete-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(\'gold\','+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
@@ -6509,6 +6614,7 @@ function renderStocksList(elId){
         +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
         +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
       +'</div>'
+      +'<div onclick="openSheet(\'edit-stock\','+i+')" class="delete-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(\'stock\','+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
@@ -7033,6 +7139,69 @@ function openSheet(type,idx,prefill){
       '<input class="field-input" id="sh-stock-cost" type="number" step="any" placeholder="0">' +
       '<div style="font-size:10px;color:var(--text3);margin-top:4px;">Used when live price unavailable</div></div>' +
       '<button class="btn-primary" onclick="submitStockSheet()">Add holding</button>';
+
+  } else if(type === 'edit-gold'){
+    var gh = (data.goldHoldings||[])[currentSheetIdx];
+    if(!gh) return;
+    title.textContent = 'Edit gold holding';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Label</div>' +
+      '<input class="field-input" id="sh-gold-label" value="'+(gh.label||'Gold')+'"></div>' +
+      '<div class="field-group"><div class="field-label">Form</div>' +
+      '<select class="select-input" id="sh-gold-form">' +
+        '<option value="physical"'+(gh.form==='physical'?' selected':'')+'>Physical gold</option>' +
+        '<option value="coin"'+(gh.form==='coin'?' selected':'')+'>Gold coin</option>' +
+        '<option value="etf"'+(gh.form==='etf'?' selected':'')+'>Gold ETF / fund</option>' +
+        '<option value="other"'+(gh.form==='other'?' selected':'')+'>Other</option>' +
+      '</select></div>' +
+      '<div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:14px;">' +
+        '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Weight</div>' +
+        '<input class="field-input" id="sh-gold-weight" type="number" step="any" value="'+gh.weight+'"></div>' +
+        '<div class="field-group" style="margin-bottom:0;"><div class="field-label">Unit</div>' +
+        '<select class="select-input" id="sh-gold-unit">' +
+          '<option value="grams"'+(gh.unit==='grams'?' selected':'')+'>grams</option>' +
+          '<option value="oz"'+(gh.unit==='oz'?' selected':'')+'>troy oz</option>' +
+          '<option value="tola"'+(gh.unit==='tola'?' selected':'')+'>tola</option>' +
+        '</select></div>' +
+      '</div>' +
+      '<div class="field-group"><div class="field-label">Cost paid (AED)</div>' +
+      '<input class="field-input" id="sh-gold-cost" type="number" value="'+(gh.costBasis||0)+'">' +
+      '<div style="font-size:10px;color:var(--text3);margin-top:4px;">What you originally paid — used when live price unavailable</div></div>' +
+      '<button class="btn-primary" onclick="submitGoldSheet()">Save changes</button>';
+
+  } else if(type === 'edit-stock'){
+    var shh = (data.stockHoldings||[])[currentSheetIdx];
+    if(!shh) return;
+    title.textContent = 'Edit stock holding';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Ticker symbol</div>' +
+      '<input class="field-input" id="sh-stock-ticker" value="'+shh.ticker+'" style="text-transform:uppercase;">' +
+      '<div style="font-size:10px;color:var(--text3);margin-top:4px;">Use the ticker from your broker. UAE stocks: EMAAR, FAB. US: AAPL, TSLA.</div></div>' +
+      '<div class="field-group"><div class="field-label">Number of shares</div>' +
+      '<input class="field-input" id="sh-stock-shares" type="number" step="any" value="'+shh.shares+'"></div>' +
+      '<div class="field-group"><div class="field-label">Cost per share (USD)</div>' +
+      '<input class="field-input" id="sh-stock-cost" type="number" step="any" value="'+(shh.costBasis||0)+'">' +
+      '<div style="font-size:10px;color:var(--text3);margin-top:4px;">Used when live price unavailable</div></div>' +
+      '<button class="btn-primary" onclick="submitStockSheet()">Save changes</button>';
+
+  } else if(type === 'edit-crypto'){
+    var ch = data.cryptoHoldings[currentSheetIdx];
+    if(!ch) return;
+    title.textContent = 'Edit crypto holding';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Symbol</div>' +
+      '<select class="select-input" id="sh-sym">' +
+      '<option value="bitcoin" data-sym="BTC"'+(ch.id==='bitcoin'?' selected':'')+'>Bitcoin (BTC)</option>' +
+      '<option value="ethereum" data-sym="ETH"'+(ch.id==='ethereum'?' selected':'')+'>Ethereum (ETH)</option>' +
+      '<option value="solana" data-sym="SOL"'+(ch.id==='solana'?' selected':'')+'>Solana (SOL)</option>' +
+      '<option value="cardano" data-sym="ADA"'+(ch.id==='cardano'?' selected':'')+'>Cardano (ADA)</option>' +
+      '<option value="binancecoin" data-sym="BNB"'+(ch.id==='binancecoin'?' selected':'')+'>BNB (BNB)</option>' +
+      '</select></div>' +
+      '<div class="field-group"><div class="field-label">Quantity</div>' +
+      '<input class="field-input" id="sh-qty" type="number" step="any" value="'+ch.qty+'"></div>' +
+      '<div class="field-group"><div class="field-label">Cost basis (AED)</div>' +
+      '<input class="field-input" id="sh-cost" type="number" value="'+(ch.costBasis||0)+'"></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Save changes</button>';
   }
 
   setTimeout(function(){var fi=body.querySelector('input');if(fi)fi.focus();},200);
@@ -7090,6 +7259,13 @@ function submitSheet(){
     if(!name||!balance)return;
     data.savingsAccounts.push({name:name,bank:bank,balance:balance});
     earnXP('add-savings', 'Added savings: '+name);
+  } else if(currentSheet==='edit-crypto'){
+    var sel=g('sh-sym');
+    var id=gv('sh-sym'),sym=sel?sel.options[sel.selectedIndex].dataset.sym:'BTC';
+    var qty=gn('sh-qty'),cost=gn('sh-cost');
+    if(!qty)return;
+    data.cryptoHoldings[currentSheetIdx]={id:id,sym:sym,name:sel?sel.options[sel.selectedIndex].text.split(' ')[0]:'',qty:qty,costBasis:cost};
+    fetchCryptoPrices();
   } else if(currentSheet==='add-crypto'){
     var sel=g('sh-sym');
     var id=gv('sh-sym'),sym=sel?sel.options[sel.selectedIndex].dataset.sym:'BTC';
@@ -7945,7 +8121,8 @@ function generateBriefing(){
   advisorBriefingDone = true;
   var el = document.getElementById('advisor-briefing');
   if(!el) return;
-  // Show collapsed loading state
+  var cached = getBriefingState();
+  var bodyText = (cached.date === todayKey() && cached.text) ? cached.text : null;
   el.style.maxHeight = '36px';
   el.setAttribute('data-open','0');
   el.innerHTML = '<div class="briefing-card" style="cursor:pointer;" onclick="toggleAdvisorBriefing()">'
@@ -7953,11 +8130,18 @@ function generateBriefing(){
     + '<div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;">Daily briefing</div>'
     + '<svg id="briefing-arrow" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" style="transition:transform .3s;flex-shrink:0;"><path d="M5 8l5 5 5-5"/></svg>'
     + '</div>'
-    + '<div id="briefing-body" style="font-size:13px;color:var(--text2);line-height:1.6;margin-top:8px;font-style:italic;color:var(--text3);">Generating...</div>'
+    + '<div id="briefing-body" style="font-size:13px;color:var(--text2);line-height:1.6;margin-top:8px;">'
+    + (bodyText ? '<span style="color:var(--text);">' + bodyText.replace(/\n/g,'<br>') + '</span>'
+                : '<span style="font-style:italic;color:var(--text3);">Generating...</span>')
+    + '</div>'
     + '</div>';
+  if(bodyText) return;
   callClaude('Give me a brief 2-3 sentence summary of my current financial situation and one specific recommendation for today. Be direct and use my actual numbers.').then(function(reply){
+    var s = getBriefingState();
+    s.date = todayKey(); s.text = reply;
+    saveBriefingState(s);
     var body = document.getElementById('briefing-body');
-    if(body) body.innerHTML = '<span style="color:var(--text);font-style:normal;">' + reply.replace(/\n/g,'<br>') + '</span>';
+    if(body) body.innerHTML = '<span style="color:var(--text);">' + reply.replace(/\n/g,'<br>') + '</span>';
   }).catch(function(){
     var body = document.getElementById('briefing-body');
     if(body) body.textContent = 'Could not generate briefing.';
