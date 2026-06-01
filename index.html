@@ -142,10 +142,15 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#110F0F;color:#fff;fo
 .action-btn-green span{color:var(--green-dark);}
 
 /* ── Stat pills row ── */
-.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.stat-pill{background:var(--surface);border-radius:var(--r-md);padding:14px;}
-.stat-lbl{font-size:11px;color:var(--text3);margin-bottom:4px;}
-.stat-val{font-size:18px;font-weight:600;color:var(--text);}
+.spark-collapse{overflow:hidden;transition:max-height .4s cubic-bezier(0.16,1,0.3,1),opacity .3s ease;max-height:0;opacity:0;}
+.spark-collapse.expanded{max-height:80px;opacity:1;margin-bottom:10px;}
+.spark-toggle{display:flex;justify-content:center;align-items:center;padding:6px 0 0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.spark-toggle-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);transition:transform .35s ease,color .2s;}
+.spark-toggle.expanded .spark-toggle-icon{transform:rotate(180deg);color:rgba(255,255,255,.5);}
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
+.stat-pill{background:var(--surface);border-radius:var(--r-md);padding:12px 10px;}
+.stat-lbl{font-size:9px;font-weight:600;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}
+.stat-val{font-size:15px;font-weight:700;color:var(--text);}
 .stat-sub{font-size:10px;color:var(--text3);margin-top:2px;}
 
 /* ── Bar track ── */
@@ -912,26 +917,39 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <!-- change badge -->
           <div id="home-pl-badge" style="margin-bottom:12px;"></div>
 
-          <!-- sparkline -->
-          <canvas id="assets-spark" height="64" style="width:100%;height:64px;display:block;margin-bottom:10px;"></canvas>
+          <!-- sparkline (collapsible) -->
+          <div id="spark-collapse" class="spark-collapse">
+            <canvas id="assets-spark" height="64" style="width:100%;height:64px;display:block;"></canvas>
+          </div>
 
           <!-- breakdown bar -->
           <div id="asset-bar" style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:flex;gap:1px;"></div>
           <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
 
+          <!-- sparkline toggle -->
+          <div class="spark-toggle" id="spark-toggle" onclick="toggleSparkline()">
+            <div class="spark-toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5l4 4 4-4"/></svg></div>
+          </div>
+
         </div>
 
-        <!-- 2 key stats -->
+        <!-- 4 key stats -->
         <div class="stat-row slide-up d2">
           <div class="stat-pill">
-            <div class="stat-lbl">Savings rate</div>
-            <div class="stat-val" id="home-rate" style="color:var(--green);">—</div>
-            <div class="stat-sub">of income</div>
+            <div class="stat-lbl">Income</div>
+            <div class="stat-val" id="home-stat-income">—</div>
           </div>
           <div class="stat-pill">
-            <div class="stat-lbl" id="home-spent-lbl">Spent this month</div>
-            <div class="stat-val" id="home-spent">—</div>
-            <div class="stat-sub" id="home-spent-of">of — AED</div>
+            <div class="stat-lbl">Spent</div>
+            <div class="stat-val" id="home-stat-spent">—</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-lbl">Saved</div>
+            <div class="stat-val" id="home-stat-saved" style="color:var(--green);">—</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-lbl">Streak</div>
+            <div class="stat-val" id="home-stat-streak">—</div>
           </div>
         </div>
 
@@ -2154,8 +2172,9 @@ function renderXPWidget() {
 
   // ── 7-day dot row ───────────────────────────────────────────────────
   var DAY_LABELS = ['Mo','Tu','We','Th','Fr','Sa','Su'];
-  var todayDow = (new Date().getDay() + 6) % 7; // Mon=0 … Sun=6
-  var dotsHtml = '<div style="display:flex;gap:0;justify-content:space-between;margin:10px 0 2px;">';
+  var todayDate = new Date();
+  var todayDow  = (todayDate.getDay() + 6) % 7; // Mon=0 … Sun=6
+  var dotsHtml  = '<div style="display:flex;gap:0;justify-content:space-between;margin:10px 0 2px;">';
   for (var d = 0; d < 7; d++) {
     var daysAgo  = todayDow - d;
     var isFuture = d > todayDow;
@@ -2167,10 +2186,20 @@ function renderXPWidget() {
     var ring = isToday
       ? 'box-shadow:0 0 0 2px #F59E0B,0 0 0 3.5px rgba(245,158,11,.25);'
       : '';
+    // Calculate calendar date for this dot
+    var dotDateObj = new Date(todayDate);
+    dotDateObj.setDate(todayDate.getDate() - daysAgo);
+    var dotDateNum = dotDateObj.getDate();
+    // Inner content: checkmark for filled past, date number for today, greyed number for future
+    var innerHtml = isToday
+      ? '<span style="font-size:9px;font-weight:800;color:#1C1200;line-height:1;">' + dotDateNum + '</span>'
+      : isFilled
+        ? '<span style="font-size:10px;font-weight:800;color:#1C1200;line-height:1;">&#10003;</span>'
+        : '<span style="font-size:9px;font-weight:600;color:'+(isFuture?'rgba(255,255,255,.2)':'rgba(255,255,255,.35)')+';line-height:1;">' + dotDateNum + '</span>';
     dotsHtml += '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">'
       + '<div style="width:20px;height:20px;border-radius:50%;background:'+dotBg+';'+ring
         +'display:flex;align-items:center;justify-content:center;">'
-        + (isFilled || isToday ? '<span style="width:6px;height:6px;border-radius:50%;background:#1C1200;display:block;"></span>' : '')
+        + innerHtml
       + '</div>'
       + '<span style="font-size:8px;font-weight:600;color:'+(isToday?'#F59E0B':'var(--text3)')+';letter-spacing:.02em;">'
         + DAY_LABELS[d]
@@ -2214,20 +2243,21 @@ function renderXPWidget() {
   }
 
   el.innerHTML =
-    // Top row: level icon + info + flame
+    // Top row: icon + level/title stack | spacer | flame + large XP number
     '<div style="display:flex;align-items:center;gap:12px;">'
       + '<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,rgba(217,119,6,.25),rgba(245,158,11,.15));'
           + 'border:1.5px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;color:#F59E0B;flex-shrink:0;">'
         + getIcon(lvl.icon, 20)
       + '</div>'
       + '<div style="flex:1;min-width:0;">'
-        + '<div style="font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.2px;">'
-          + 'Level ' + lvl.level + ' <span style="color:rgba(245,158,11,.4);">·</span> ' + lvl.title
-        + '</div>'
-        + '<div style="font-size:11px;color:var(--text3);margin-top:1px;">' + (data.xp || 0) + ' XP total</div>'
-        + lastXPHtml
+        + '<div style="font-size:10px;font-weight:700;color:#F59E0B;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Level ' + lvl.level + '</div>'
+        + '<div style="font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + lvl.title + '</div>'
       + '</div>'
       + flameHtml
+      + '<div style="text-align:right;flex-shrink:0;">'
+        + '<div style="font-size:26px;font-weight:800;color:#F59E0B;letter-spacing:-1px;line-height:1;">' + (data.xp || 0).toLocaleString() + '</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-top:1px;">/ ' + (lvl.xpInLevel + lvl.xpToNext).toLocaleString() + ' XP</div>'
+      + '</div>'
     + '</div>'
     // 7-day dot row
     + dotsHtml
@@ -2235,10 +2265,10 @@ function renderXPWidget() {
     + segsHtml
     // XP labels
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">'
-      + '<div style="font-size:11px;color:var(--text3);">' + lvl.xpInLevel + ' / ' + (lvl.xpInLevel + lvl.xpToNext) + ' XP</div>'
+      + '<div style="font-size:11px;color:var(--text3);">' + lvl.xpInLevel.toLocaleString() + ' XP earned</div>'
       + (lvl.maxed
         ? '<div style="font-size:11px;font-weight:700;color:#F59E0B;">MAX LEVEL</div>'
-        : '<div style="font-size:11px;font-weight:600;color:#F59E0B;">' + lvl.xpToNext + ' XP to ' + lvl.nextTitle + '</div>')
+        : '<div style="font-size:11px;font-weight:600;color:#F59E0B;">' + lvl.xpToNext.toLocaleString() + ' to next level</div>')
     + '</div>'
     // Milestone nudge (only near milestones)
     + milestoneHtml;
@@ -3097,8 +3127,38 @@ function updateCurrencyToggle(){
 // ── HOME ───────────────────────────────────────────────────────────────────
 
 function drawAssetsSpark(){
+  // Only draw when sparkline is expanded
+  var collapse = document.getElementById('spark-collapse');
+  if(!collapse || !collapse.classList.contains('expanded')) return;
   // White line on amber hero card for contrast
   drawRealSparkline('assets-spark', currentRange, {lineWidth:2, color:'#FFFFFF', fillAlphaTop:0.18, fillAlphaBottom:0});
+}
+
+function toggleSparkline(){
+  var collapse = document.getElementById('spark-collapse');
+  var toggle   = document.getElementById('spark-toggle');
+  if(!collapse) return;
+  var isExpanded = collapse.classList.contains('expanded');
+  if(isExpanded){
+    collapse.classList.remove('expanded');
+    if(toggle) toggle.classList.remove('expanded');
+    localStorage.setItem('moxcoin_spark_expanded', '0');
+  } else {
+    collapse.classList.add('expanded');
+    if(toggle) toggle.classList.add('expanded');
+    localStorage.setItem('moxcoin_spark_expanded', '1');
+    setTimeout(drawAssetsSpark, 50);
+  }
+}
+
+function initSparkToggle(){
+  var saved = localStorage.getItem('moxcoin_spark_expanded');
+  if(saved === '1'){
+    var collapse = document.getElementById('spark-collapse');
+    var toggle   = document.getElementById('spark-toggle');
+    if(collapse) collapse.classList.add('expanded');
+    if(toggle)   toggle.classList.add('expanded');
+  }
 }
 
 function selectGoalIcon(el, icon){
@@ -5446,35 +5506,33 @@ function renderHomeGoal(){
     ? '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+iconName+'</div>'
     : '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';color:'+col.accent+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon(iconName,18)+'</div>';
 
-  // SVG ring — r=27, size=68px
-  var R = 27; var C = Math.round(2 * 3.14159 * R);
+  // SVG ring — r=32, size=80px
+  var R = 32; var C = Math.round(2 * 3.14159 * R);
   var offset = Math.round(C * (1 - Math.min(1, prog.pct / 100)));
-  var ringHtml = '<svg width="68" height="68" viewBox="0 0 68 68" style="flex-shrink:0;transform:rotate(-90deg);">'
-    + '<circle cx="34" cy="34" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5.5"/>'
-    + '<circle cx="34" cy="34" r="'+R+'" fill="none" stroke="'+col.accent+'" stroke-width="5.5"'
+  var ringHtml = '<svg width="80" height="80" viewBox="0 0 80 80" style="position:absolute;top:0;left:0;transform:rotate(-90deg);">'
+    + '<circle cx="40" cy="40" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="6"/>'
+    + '<circle cx="40" cy="40" r="'+R+'" fill="none" stroke="'+col.accent+'" stroke-width="6"'
       + ' stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"'
       + ' id="home-goal-ring" style="transition:stroke-dashoffset .9s cubic-bezier(0.16,1,0.3,1);"/>'
     + '</svg>'
-    + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1;">'
-      + '<div style="font-size:15px;font-weight:800;color:'+col.accent+';letter-spacing:-.5px;">'+Math.round(prog.pct)+'</div>'
+    + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1.1;">'
+      + '<div style="font-size:18px;font-weight:800;color:'+col.accent+';letter-spacing:-.5px;">'+Math.round(prog.pct)+'</div>'
       + '<div style="font-size:9px;font-weight:600;color:'+col.accent+';opacity:.7;">%</div>'
     + '</div>';
 
-  // ETA — show month+year only, no redundant "N months" prefix
-  var etaShort = eta.indexOf('·') >= 0 ? eta.split('·')[1].trim() : eta;
+  // ETA — split into target date and "X mo left"
+  var etaDate = eta.indexOf('·') >= 0 ? eta.split('·')[0].trim() : eta;
+  var etaMo   = eta.indexOf('·') >= 0 ? eta.split('·')[1].trim() : '';
 
   var html = '<div class="goal-card item-in" style="border:0.5px solid '+col.accent+'33;cursor:pointer;" onclick="switchTab(\'goals\')">'
     + '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,'+col.accent+','+col.accent+'44);border-radius:3px 3px 0 0;"></div>'
-    + '<div style="display:flex;align-items:center;gap:12px;">'
+    + '<div style="display:flex;align-items:center;gap:14px;">'
+      + '<div style="position:relative;width:80px;height:80px;flex-shrink:0;">' + ringHtml + '</div>'
       + '<div style="flex:1;min-width:0;">'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'
-          + iconHtml
-          + '<div class="goal-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+best.name+'</div>'
-        + '</div>'
-        + '<div style="font-size:11px;color:var(--text3);margin-bottom:4px;">'+fmt(prog.current)+' / '+fmt(best.targetAmt)+' '+curSym()+'</div>'
-        + '<div style="font-size:10px;color:var(--text3);">'+etaShort+'</div>'
+        + '<div class="goal-title" style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">'+best.name+'</div>'
+        + '<div style="font-size:13px;color:var(--text2);font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(prog.current)+' <span style="color:var(--text3);">/ '+fmt(best.targetAmt)+' '+curSym()+'</span></div>'
+        + '<div style="font-size:11px;color:var(--text3);">'+etaMo+(etaDate ? ' &nbsp;&middot;&nbsp; <span style="color:'+col.accent+';opacity:.8;">'+etaDate+'</span>' : '')+'</div>'
       + '</div>'
-      + '<div style="position:relative;width:68px;height:68px;flex-shrink:0;">' + ringHtml + '</div>'
     + '</div>'
   + '</div>';
 
@@ -5581,7 +5639,8 @@ function renderHome(){
     plEl.innerHTML = '<div style="display:inline-flex;align-items:center;gap:4px;background:'+(up?'rgba(255,255,255,.25)':'rgba(0,0,0,.2)')+';color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-md);">'+(up?'&#9650;':'&#9660;')+' '+Math.abs(plPct)+'% today</div>';
   }
 
-  // Sparkline
+  // Sparkline — restore toggle state first, then draw if expanded
+  initSparkToggle();
   setTimeout(drawAssetsSpark, 50);
 
   // Breakdown bar
@@ -5615,57 +5674,32 @@ function renderHome(){
     }).join('');
   }
 
-  // Stat: savings rate
+  // 4-stat row: Income | Spent | Saved | Streak
   var overBudget = b.inc > 0 && b.actual > b.inc;
-  var rateEl = document.getElementById('home-rate');
-  if(rateEl){
-    rateEl.textContent = overBudget ? '0%' : b.rate+'%';
-    rateEl.style.color = overBudget ? 'var(--red)' : 'var(--green)';
+  var streak4 = data.streak || 0;
+
+  var incEl = document.getElementById('home-stat-income');
+  if(incEl) incEl.textContent = fmt(b.inc);
+
+  var spentEl4 = document.getElementById('home-stat-spent');
+  if(spentEl4){
+    spentEl4.textContent = fmt(b.actual);
+    spentEl4.style.color = overBudget ? 'var(--red)' : 'var(--text)';
   }
 
-  // Stat: spent this month
-  var spentEl   = document.getElementById('home-spent');
-  var spentOfEl = document.getElementById('home-spent-of');
-  var spentLblEl = document.getElementById('home-spent-lbl');
-  if(spentLblEl) spentLblEl.textContent = overBudget ? 'Over budget' : 'Spent this month';
-  if(spentEl){
-    spentEl.innerHTML = fmt(b.actual) + '<span style="font-size:12px;font-weight:500;color:var(--text3);margin-left:3px;">' + curSym() + '</span>';
-    spentEl.style.color = overBudget ? 'var(--red)' : 'var(--text)';
-  }
-  if(spentOfEl){
-    spentOfEl.textContent = overBudget
-      ? fmt(b.actual - b.inc) + ' ' + curSym() + ' over budget'
-      : 'of ' + fmt(b.inc) + ' ' + curSym();
-    spentOfEl.style.color = overBudget ? 'var(--red)' : '';
+  var savedEl = document.getElementById('home-stat-saved');
+  if(savedEl){
+    savedEl.textContent = (overBudget ? '0' : b.rate) + '%';
+    savedEl.style.color = overBudget ? 'var(--red)' : 'var(--green)';
   }
 
-  // Contextual insight on right stat pill
-  (function(){
-    var lbl = document.getElementById('home-spent-lbl');
-    var val = document.getElementById('home-spent');
-    var sub = document.getElementById('home-spent-of');
-    var streak = data.streak || 0;
-    var badges = (data.unlockedBadges || []).length;
-    var nextM = null;
-    for(var i = 0; i < STREAK_MILESTONES.length; i++){
-      if(STREAK_MILESTONES[i].days > streak){ nextM = STREAK_MILESTONES[i]; break; }
-    }
-    // Right pill: always a DIFFERENT insight from the left (which shows savings rate)
-    // Priority: over-budget > streak > badges > spent this month
-    if(overBudget){
-      // keep default over-budget display already set above
-    } else if(streak >= 3 && nextM){
-      if(lbl) lbl.textContent = 'Streak';
-      if(val){ val.textContent = streak + ' days'; val.style.color = '#F59E0B'; }
-      if(sub){ sub.textContent = (nextM.days - streak) + ' day'+(nextM.days-streak===1?'':'s')+' to +' + nextM.xp + ' XP'; sub.style.color = '#F59E0B'; }
-    } else if(badges >= 1){
-      if(lbl) lbl.textContent = 'Achievements';
-      if(val){ val.textContent = badges + ''; val.style.color = '#8B5CF6'; }
-      if(sub){ sub.textContent = badges + ' of 24 badges'; sub.style.color = '#8B5CF6'; }
-    } else {
-      // Fallback: spent this month (already set by default code above)
-    }
-  })();
+  var streakEl = document.getElementById('home-stat-streak');
+  if(streakEl){
+    streakEl.innerHTML = streak4 > 0
+      ? '&#128293; ' + streak4
+      : '<span style="color:var(--text3);">—</span>';
+    streakEl.style.color = streak4 > 0 ? '#F59E0B' : '';
+  }
 
   // Record first use date for longevity badges
   if(!data.firstUseDate){ data.firstUseDate = new Date().toISOString(); save(); }
