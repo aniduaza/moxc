@@ -5525,8 +5525,13 @@ function renderHomeGoal(){
   var etaDate = eta.indexOf('·') >= 0 ? eta.split('·')[0].trim() : eta;
   var etaMo   = eta.indexOf('·') >= 0 ? eta.split('·')[1].trim() : '';
 
+  var ghostHtml = iconIsEmoji
+    ? '<div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);font-size:44px;opacity:.08;pointer-events:none;line-height:1;">'+iconName+'</div>'
+    : '<div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);color:'+col.accent+';opacity:.1;pointer-events:none;">'+getIcon(iconName,56)+'</div>';
+
   var html = '<div class="goal-card item-in" style="border:0.5px solid '+col.accent+'33;cursor:pointer;" onclick="switchTab(\'goals\')">'
     + '<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,'+col.accent+','+col.accent+'44);border-radius:3px 3px 0 0;"></div>'
+    + ghostHtml
     + '<div style="display:flex;align-items:center;gap:14px;">'
       + '<div style="position:relative;width:80px;height:80px;flex-shrink:0;">' + ringHtml + '</div>'
       + '<div style="flex:1;min-width:0;">'
@@ -5806,20 +5811,25 @@ function renderMovers(){
     var chgStr=asset.chg==null?'—':(up?'+':'')+asset.chg.toFixed(2)+'%';
     var valStr=fmt(asset.value);
     var priceStr=asset.price&&asset.price>=1000?(asset.price/1000).toFixed(2)+'k':asset.price&&asset.price>=1?asset.price.toFixed(2):asset.price?asset.price.toFixed(4):'';
-    var badgeHtml = asset.chg == null
-      ? '<span style="font-size:10px;color:var(--text3);">—</span>'
-      : '<span class="mover-badge '+(up?'up':'down')+'" style="font-size:10px;padding:1px 6px;">'+chgStr+'</span>';
-    html+='<div class="item-in" style="background:var(--surface);border-radius:var(--r-md);padding:10px 12px;'
-        +'border:0.5px solid var(--stone2);position:relative;overflow:hidden;'
-        +'flex-shrink:0;width:120px;">'
-      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;background:'+asset.color+';"></div>'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
-        +(asset.type==='crypto' ? cryptoIconHtml(asset.sym,24) : '<div style="width:24px;height:24px;border-radius:6px;background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:'+asset.color+';">'+asset.sym+'</div>')
-        +badgeHtml
+    var chgColor = asset.chg == null ? 'var(--text3)' : up ? '#10B981' : 'var(--red)';
+    var chgDisplay = asset.chg == null
+      ? (asset.type === 'savings' ? 'Stable' : '—')
+      : chgStr;
+    html+='<div class="item-in" style="'
+        +'background:linear-gradient(135deg,'+asset.color+'1A 0%,'+asset.color+'08 100%);'
+        +'border:0.5px solid '+asset.color+'30;'
+        +'border-radius:var(--r-md);padding:12px;'
+        +'flex-shrink:0;width:120px;cursor:pointer;">'
+      // Icon row
+      +'<div style="margin-bottom:8px;">'
+        +(asset.type==='crypto' ? cryptoIconHtml(asset.sym,28) : '<div style="width:28px;height:28px;border-radius:8px;background:'+asset.color+'22;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:'+asset.color+';">'+asset.sym+'</div>')
       +'</div>'
-      +'<div style="font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+asset.name+'</div>'
-      +'<div style="font-size:12px;font-weight:700;color:var(--text);margin-top:3px;font-variant-numeric:tabular-nums;">'+valStr+'</div>'
-      +(priceStr?'<div style="font-size:9px;color:var(--text3);margin-top:1px;">$'+priceStr+'</div>':'')
+      // Name
+      +'<div style="font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;">'+asset.name+'</div>'
+      // Value
+      +'<div style="font-size:14px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;margin-bottom:3px;">'+valStr+'</div>'
+      // % change — hero
+      +'<div style="font-size:13px;font-weight:700;color:'+chgColor+';font-variant-numeric:tabular-nums;">'+chgDisplay+'</div>'
     +'</div>';
   });
   el.innerHTML=html;
