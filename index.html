@@ -142,14 +142,15 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#110F0F;color:#fff;fo
 .action-btn-green span{color:var(--green-dark);}
 
 /* ── Stat pills row ── */
-.spark-collapse{overflow:hidden;transition:max-height .4s cubic-bezier(0.16,1,0.3,1),opacity .3s ease;max-height:0;opacity:0;}
-.spark-collapse.expanded{max-height:80px;opacity:1;margin-bottom:10px;}
-.spark-toggle{display:flex;justify-content:center;align-items:center;padding:6px 0 0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.spark-collapse{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(0.16,1,0.3,1),opacity .3s ease,margin .4s cubic-bezier(0.16,1,0.3,1);opacity:0;margin-bottom:0;}
+.spark-collapse>*{overflow:hidden;min-height:0;}
+.spark-collapse.expanded{grid-template-rows:1fr;opacity:1;margin-bottom:10px;}
+.spark-toggle{display:flex;justify-content:center;align-items:center;min-height:44px;margin-top:-6px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .spark-toggle-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);transition:transform .35s ease,color .2s;}
 .spark-toggle.expanded .spark-toggle-icon{transform:rotate(180deg);color:rgba(255,255,255,.5);}
 .stat-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
 .stat-pill{background:var(--surface);border-radius:var(--r-md);padding:12px 10px;}
-.stat-lbl{font-size:9px;font-weight:600;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}
+.stat-lbl{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
 .stat-val{font-size:15px;font-weight:700;color:var(--text);}
 .stat-sub{font-size:10px;color:var(--text3);margin-top:2px;}
 
@@ -919,7 +920,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
           <!-- sparkline (collapsible) -->
           <div id="spark-collapse" class="spark-collapse">
-            <canvas id="assets-spark" height="64" style="width:100%;height:64px;display:block;"></canvas>
+            <div><canvas id="assets-spark" height="64" style="width:100%;height:64px;display:block;"></canvas></div>
           </div>
 
           <!-- breakdown bar -->
@@ -972,12 +973,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- daily movers -->
-        <div class="slide-up d5" style="display:flex;flex-direction:column;gap:8px;">
-          <div class="sec-hdr" style="margin-bottom:0;">
+        <div class="card slide-up d5" style="padding:14px 16px;">
+          <div class="sec-hdr" style="margin-bottom:10px;">
             <span class="sec-title">Daily movers</span>
             <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
           </div>
-          <div id="home-movers" style="display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;"></div>
+          <div id="home-movers" style="display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px 2px;"></div>
         </div>
 
       </div>
@@ -2164,7 +2165,7 @@ function renderXPWidget() {
               : 'var(--surface3)';
   var flameHtml = '<div style="display:flex;align-items:center;gap:3px;background:'+flameBg
     +';border-radius:20px;padding:3px 9px;flex-shrink:0;">'
-    + '<span style="font-size:13px;line-height:1;">&#128293;</span>'
+    + '<span style="display:flex;align-items:center;color:'+flameColor+';">'+getIcon('streak-fire',14)+'</span>'
     + '<span style="font-size:13px;font-weight:800;color:'+flameColor+';letter-spacing:-.3px;">'
       + (streak > 0 ? streak : (st.status === 'at-risk' ? streak : '—'))
     + '</span>'
@@ -2227,7 +2228,7 @@ function renderXPWidget() {
     var daysLeft = nextM.days - streak;
     milestoneHtml = '<div style="display:flex;align-items:center;gap:6px;background:rgba(245,158,11,.07);'
       + 'border-radius:var(--r-sm);padding:6px 10px;margin-top:8px;">'
-      + '<span style="font-size:12px;line-height:1;">&#128293;</span>'
+      + '<span style="display:flex;align-items:center;color:#F59E0B;">'+getIcon('streak-fire',13)+'</span>'
       + '<span style="font-size:11px;color:var(--text2);">'
         + (daysLeft === 1 ? 'One more day' : daysLeft + ' days')
         + ' to <b style="color:#F59E0B;">'+nextM.label+'</b> &middot; +'+nextM.xp+' XP</span>'
@@ -2256,7 +2257,7 @@ function renderXPWidget() {
       + flameHtml
       + '<div style="text-align:right;flex-shrink:0;">'
         + '<div style="font-size:26px;font-weight:800;color:#F59E0B;letter-spacing:-1px;line-height:1;">' + (data.xp || 0).toLocaleString() + '</div>'
-        + '<div style="font-size:11px;color:var(--text3);margin-top:1px;">/ ' + (lvl.xpInLevel + lvl.xpToNext).toLocaleString() + ' XP</div>'
+        + '<div style="font-size:11px;color:var(--text2);margin-top:1px;">/ ' + (lvl.xpInLevel + lvl.xpToNext).toLocaleString() + ' XP</div>'
       + '</div>'
     + '</div>'
     // 7-day dot row
@@ -2280,7 +2281,7 @@ function renderXPWidget() {
         setTimeout(function() {
           var seg = document.getElementById('xp-seg-'+idx);
           if (seg) { seg.classList.remove('empty'); seg.classList.add('filled'); }
-        }, idx * 40);
+        }, idx * 25);
       })(s);
     }
   }, 80);
@@ -2341,7 +2342,7 @@ function renderCheckIn(){
   el.innerHTML = '<div class="checkin-card">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">'
       + '<div style="display:flex;align-items:center;gap:8px;">'
-        + '<span style="font-size:20px;line-height:1;">&#128293;</span>'
+        + '<span style="display:flex;align-items:center;color:'+streakColor+';">'+getIcon('streak-fire',20)+'</span>'
         + '<div>'
           + '<div style="font-size:15px;font-weight:700;color:'+streakColor+';letter-spacing:-.3px;">'+streak+' day'+(streak!==1?'s':'')+' streak</div>'
           + '<div style="font-size:10px;color:var(--text3);margin-top:1px;">'+(st.status==='active'?'Keep it up!':st.status==='at-risk'?'Log today to keep your streak!':'Start logging to build a streak')+'</div>'
@@ -5530,7 +5531,7 @@ function renderHomeGoal(){
       + '<div style="position:relative;width:80px;height:80px;flex-shrink:0;">' + ringHtml + '</div>'
       + '<div style="flex:1;min-width:0;">'
         + '<div class="goal-title" style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">'+best.name+'</div>'
-        + '<div style="font-size:13px;color:var(--text2);font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(prog.current)+' <span style="color:var(--text3);">/ '+fmt(best.targetAmt)+' '+curSym()+'</span></div>'
+        + '<div style="font-size:13px;color:var(--text2);font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(prog.current)+' <span style="color:var(--text2);opacity:.6;">/ '+fmt(best.targetAmt)+' '+curSym()+'</span></div>'
         + '<div style="font-size:11px;color:var(--text3);">'+etaMo+(etaDate ? ' &nbsp;&middot;&nbsp; <span style="color:'+col.accent+';opacity:.8;">'+etaDate+'</span>' : '')+'</div>'
       + '</div>'
     + '</div>'
@@ -5696,7 +5697,10 @@ function renderHome(){
   var streakEl = document.getElementById('home-stat-streak');
   if(streakEl){
     streakEl.innerHTML = streak4 > 0
-      ? '&#128293; ' + streak4
+      ? '<span style="display:inline-flex;align-items:center;gap:3px;vertical-align:middle;">'
+          + '<span style="display:flex;align-items:center;">'+getIcon('streak-fire',14)+'</span>'
+          + streak4
+        + '</span>'
       : '<span style="color:var(--text3);">—</span>';
     streakEl.style.color = streak4 > 0 ? '#F59E0B' : '';
   }
