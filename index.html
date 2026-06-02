@@ -767,6 +767,14 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 @keyframes obFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes obRingFill{from{stroke-dashoffset:364}to{stroke-dashoffset:100}}
 @keyframes obBarGrow{from{width:0}to{width:80%}}
+@keyframes obLvl2Ring{0%{stroke-dashoffset:127;opacity:1}50%{stroke-dashoffset:0;opacity:1}62%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes obLvl3Ring{0%,62%{stroke-dashoffset:314;opacity:0}68%{stroke-dashoffset:314;opacity:1}100%{stroke-dashoffset:63;opacity:1}}
+@keyframes obLvl2Num{0%,48%{opacity:1;transform:scale(1);transform-origin:64px 64px}58%{opacity:0;transform:scale(1.5);transform-origin:64px 64px}100%{opacity:0}}
+@keyframes obLvl3Num{0%,58%{opacity:0;transform:scale(1.8);transform-origin:64px 64px}70%{opacity:1;transform:scale(1.06);transform-origin:64px 64px}82%,100%{opacity:1;transform:scale(1);transform-origin:64px 64px}}
+@keyframes obLevelLbl{0%,48%{fill:rgba(255,255,255,.35)}56%{fill:#fff}68%,100%{fill:rgba(255,255,255,.4)}}
+@keyframes obLvlUpTxt{0%,52%{opacity:0;transform:translate(-50%,-50%) scale(0.3)}57%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}66%{opacity:1;transform:translate(-50%,-50%) scale(1)}75%{opacity:0;transform:translate(-50%,-50%) scale(0.8)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.8)}}
+@keyframes obBurstCircle{0%,52%{opacity:0;transform:scale(0.7)}57%{opacity:.9;transform:scale(1)}72%{opacity:0;transform:scale(1.8)}100%{opacity:0}}
+@keyframes obXpLvlSeq{0%{width:60%;background:linear-gradient(90deg,#7C3AED,#A855F7)}50%{width:98%;background:linear-gradient(90deg,#7C3AED,#A855F7)}57%{width:100%;background:#fff}63%{width:0%;background:linear-gradient(90deg,#7C3AED,#A855F7)}100%{width:80%;background:linear-gradient(90deg,#7C3AED,#A855F7)}}
 @keyframes obShapeA{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(7deg) scale(1.05)}}
 @keyframes obShapeB{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(-6deg) scale(1.03)}}
 @keyframes obShapeC{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(14deg) scale(1.1)}}
@@ -8915,29 +8923,44 @@ function buildOnboarding(){
       // small purple accent mid-right
       +'<div style="position:absolute;top:42%;right:5%;width:10%;height:10%;background:#A855F7;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeC 8s ease-in-out -3s infinite;opacity:.5;"></div>'
       +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 58%,rgba(8,5,16,.84) 0%,transparent 70%);pointer-events:none;"></div>'
-      // ── Slide 2 mockup: XP ring + badges ──
+      // ── Slide 2 mockup: Level 2 → 3 animation ──
       +'<div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;">'
-        +'<div style="position:relative;animation:obFloat 4s ease-in-out infinite;">'
+        +'<div style="position:relative;">'
           +'<svg width="128" height="128" viewBox="0 0 128 128">'
+            // track
             +'<circle cx="64" cy="64" r="50" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="8"/>'
-            +'<circle cx="64" cy="64" r="50" fill="none" stroke="#A855F7" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" style="transform:rotate(-90deg);transform-origin:64px 64px;animation:obRingFill 1.8s cubic-bezier(0.16,1,0.3,1) .4s both;"/>'
-            +'<text x="64" y="59" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="DM Sans,sans-serif" font-weight="600" letter-spacing="2">LEVEL</text>'
-            +'<text x="64" y="79" text-anchor="middle" fill="#A855F7" font-size="26" font-family="DM Sans,sans-serif" font-weight="800">3</text>'
+            // Level 2 ring: starts 60% full, fills to 100%, then fades out
+            +'<circle cx="64" cy="64" r="50" fill="none" stroke="#A855F7" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="127" style="transform:rotate(-90deg);transform-origin:64px 64px;animation:obLvl2Ring 3.2s ease .5s both;"/>'
+            // Level 3 ring: hidden, then fills from 0 to 80%
+            +'<circle cx="64" cy="64" r="50" fill="none" stroke="#A855F7" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" style="transform:rotate(-90deg);transform-origin:64px 64px;animation:obLvl3Ring 3.2s ease .5s both;opacity:0;"/>'
+            // LEVEL label (flashes white at level-up)
+            +'<text x="64" y="59" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="9" font-family="DM Sans,sans-serif" font-weight="600" letter-spacing="2" style="animation:obLevelLbl 3.2s ease .5s both;">LEVEL</text>'
+            // "2" — scales up and fades out
+            +'<text x="64" y="79" text-anchor="middle" fill="#A855F7" font-size="26" font-family="DM Sans,sans-serif" font-weight="800" style="animation:obLvl2Num 3.2s ease .5s both;">2</text>'
+            // "3" — scales in from large
+            +'<text x="64" y="79" text-anchor="middle" fill="#A855F7" font-size="26" font-family="DM Sans,sans-serif" font-weight="800" style="animation:obLvl3Num 3.2s ease .5s both;opacity:0;">3</text>'
           +'</svg>'
+          // Burst circle (expands and fades at level-up moment)
+          +'<div style="position:absolute;inset:0;border-radius:50%;border:2.5px solid rgba(255,255,255,.85);pointer-events:none;animation:obBurstCircle 3.2s ease .5s both;opacity:0;"></div>'
+          // "LEVEL UP!" text
+          +'<div style="position:absolute;top:50%;left:50%;white-space:nowrap;font-size:10px;font-weight:800;color:#fff;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;animation:obLvlUpTxt 3.2s ease .5s both;opacity:0;">LEVEL UP!</div>'
+          // floating badge: gold star
           +'<div style="position:absolute;top:-6px;right:-38px;width:34px;height:34px;background:rgba(245,158,11,.2);border:1.5px solid rgba(245,158,11,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:obFloat 3s ease-in-out -.5s infinite;">'
             +'<svg width="15" height="15" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>'
           +'</div>'
+          // floating badge: green check
           +'<div style="position:absolute;bottom:-6px;left:-38px;width:30px;height:30px;background:rgba(16,185,129,.2);border:1.5px solid rgba(16,185,129,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:obFloat 3.5s ease-in-out -2s infinite;">'
             +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>'
           +'</div>'
         +'</div>'
+        // XP progress bar (sequences through level-up)
         +'<div style="background:rgba(8,5,16,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(168,85,247,.22);border-radius:12px;padding:9px 16px;width:150px;">'
           +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">'
             +'<span style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;">XP Progress</span>'
             +'<span style="font-size:9px;font-weight:700;color:#A855F7;">240 / 300</span>'
           +'</div>'
-          +'<div style="height:4px;border-radius:2px;background:rgba(255,255,255,.08);">'
-            +'<div style="height:4px;border-radius:2px;background:linear-gradient(90deg,#7C3AED,#A855F7);animation:obBarGrow 1.5s cubic-bezier(0.16,1,0.3,1) .6s both;width:0;"></div>'
+          +'<div style="height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;">'
+            +'<div style="height:4px;border-radius:2px;animation:obXpLvlSeq 3.2s ease .5s both;width:60%;"></div>'
           +'</div>'
         +'</div>'
       +'</div>'
