@@ -914,14 +914,14 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             </div>
           </div>
           <!-- right: actions -->
-          <div style="display:flex;align-items:center;gap:6px;">
-            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(245,158,11,.1);padding:5px 12px;border-radius:var(--r-md);cursor:pointer;">AED</div>
-            <div id="briefing-btn" onclick="onBriefingBtnTap()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(245,158,11,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(245,158,11,.1);padding:0 12px;border-radius:var(--r-md);cursor:pointer;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;">AED</div>
+            <div id="briefing-btn" onclick="onBriefingBtnTap()" style="min-width:44px;min-height:44px;border-radius:var(--r-md);background:rgba(245,158,11,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
               <div id="briefing-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--green);"></div>
               <div id="alerts-home-dot" style="display:none;position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#E24B4A;border:1.5px solid var(--bg);"></div>
             </div>
-            <div id="theme-toggle" onclick="toggleTheme()" style="width:34px;height:34px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
+            <div id="theme-toggle" onclick="toggleTheme()" style="min-width:44px;min-height:44px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
           </div>
         </div>
 
@@ -983,7 +983,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           </div>
           <div class="stat-pill">
             <div class="stat-lbl">Saved</div>
-            <div class="stat-val" id="home-stat-saved" style="color:var(--green);">—</div>
+            <div class="stat-val" id="home-stat-saved">—</div>
           </div>
           <div class="stat-pill">
             <div class="stat-lbl">Streak</div>
@@ -1212,7 +1212,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           </div>
 
           <!-- breakdown pills -->
-          <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <div id="act-mini-row" style="display:flex;gap:6px;margin-bottom:10px;">
             <div class="act-mini-pill">
               <div class="act-mini-lbl">Essentials</div>
               <div class="act-mini-val" id="act-ess">—</div>
@@ -1234,13 +1234,13 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
 
         <!-- search -->
-        <div class="search-wrap slide-up d3">
+        <div id="act-search-wrap" class="search-wrap slide-up d3">
           <div class="search-icon"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="8.5" r="5"/><path d="M13.5 13.5L17.5 17.5"/></svg></div>
           <input class="txn-search" id="act-search" placeholder="Search transactions..." oninput="renderActivity()" style="border-radius:var(--r-sm);padding-left:38px;">
         </div>
 
         <!-- filter pills -->
-        <div style="position:relative;" class="slide-up d3">
+        <div id="act-filter-wrap" style="position:relative;" class="slide-up d3">
           <div class="txn-filter-row">
             <button class="txn-filter-btn active" onclick="setActFilter(this,'all')">All</button>
             <button class="txn-filter-btn" onclick="setActFilter(this,'income')">Income</button>
@@ -1268,13 +1268,6 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:0 0 10px;" class="slide-up d2">Progress</div>
         <div class="slide-up d2">
-          <div class="more-item item-in" onclick="switchTab('goals')">
-            <div class="more-item-icon" style="background:rgba(245,158,11,.12);color:#F59E0B;">
-              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><circle cx="10" cy="10" r="4.5"/><circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none"/></svg>
-            </div>
-            <div class="more-item-info"><div class="more-item-title">Goals</div><div class="more-item-sub" id="more-goals-sub">Track your financial targets</div></div>
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
-          </div>
           <div class="more-item item-in" onclick="switchTab('badges');renderBadges();">
             <div class="more-item-icon" style="background:rgba(245,158,11,.12);color:#F59E0B;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l1.8 4.7L17 9l-4 3.8 1 5.2L10 15.5 6 18l1-5.2L3 9l5.2-2.3L10 2Z"/></svg>
@@ -2246,7 +2239,12 @@ function renderXPWidget() {
       + ';' + (isTod ? 'box-shadow:0 0 4px rgba(245,158,11,.4);' : '')
       + '"></div>';
   }
-  monthHtml += '</div></div>';
+  monthHtml += '</div>';
+  var activeDayCount = Object.keys(activeDays).length;
+  if(activeDayCount === 0){
+    monthHtml += '<div style="font-size:10px;color:var(--text3);margin-top:5px;">Log transactions to fill your activity grid</div>';
+  }
+  monthHtml += '</div>';
 
   // ── Segmented XP bar — 12 segments ─────────────────────────────────
   var SEGS      = 12;
@@ -2819,8 +2817,8 @@ function initTheme(){
   try{
     var saved = localStorage.getItem('moxcoin_theme');
     if(saved) isDark = saved === 'dark';
-    else isDark = false;
-  }catch(e){ isDark = false; }
+    else isDark = true;
+  }catch(e){ isDark = true; }
   applyTheme();
 }
 
@@ -4558,23 +4556,37 @@ function renderActivity(){
   var savedEl = document.getElementById('act-saved');
   if(savedEl){
     var netAmt = txnSaved;
-    savedEl.textContent = (netAmt >= 0 ? '+' : '-') + fmt(Math.abs(netAmt)) + ' ' + curSym();
-    savedEl.style.color = netAmt >= 0 ? 'var(--green)' : 'var(--red)';
+    savedEl.textContent = (netAmt > 0 ? '+' : netAmt < 0 ? '-' : '') + fmt(Math.abs(netAmt)) + ' ' + curSym();
+    savedEl.style.color = netAmt > 0 ? 'var(--green)' : netAmt < 0 ? 'var(--red)' : 'var(--text2)';
   }
   set('act-saved2', fmt(txnSaved > 0 ? txnSaved : 0));
   set('act-ess',  fmt(txnEss));
   set('act-subs', fmt(txnSubs));
   set('act-daily', fmt(dailyRate)+'/day');
+  // Show/hide search, filters and breakdown pills only when transactions exist
+  var hasTxns = (txnIncome > 0 || txnSpent > 0);
+  var miniRow = document.getElementById('act-mini-row');
+  var searchWrap = document.getElementById('act-search-wrap');
+  var filterWrap = document.getElementById('act-filter-wrap');
+  if(miniRow) miniRow.style.display = hasTxns ? 'flex' : 'none';
+  if(searchWrap) searchWrap.style.display = hasTxns ? 'block' : 'none';
+  if(filterWrap) filterWrap.style.display = hasTxns ? 'block' : 'none';
 
   // Progress bar — vs income
-  var inc   = totalIncome() || txnIncome || 1;
-  var pct   = Math.min(100, Math.round(txnSpent / inc * 100));
+  var inc   = totalIncome() || txnIncome;
   var barEl = document.getElementById('act-bar');
   var pctEl = document.getElementById('act-pct');
   var remEl = document.getElementById('act-remaining');
-  if(barEl) setTimeout(function(){ barEl.style.width=pct+'%'; barEl.style.background=pct>=90?'#EF4444':pct>=75?'#F59E0B':'#10B981'; },80);
-  if(pctEl) pctEl.textContent = pct+'% of income spent';
-  if(remEl) remEl.textContent = fmt(Math.max(0,inc-txnSpent))+' '+curSym()+' remaining';
+  if(!inc){
+    if(barEl) barEl.style.width='0%';
+    if(pctEl) pctEl.textContent='';
+    if(remEl) remEl.textContent='';
+  } else {
+    var pct = Math.min(100, Math.round(txnSpent / inc * 100));
+    if(barEl) setTimeout(function(){ barEl.style.width=pct+'%'; barEl.style.background=pct>=90?'#EF4444':pct>=75?'#F59E0B':'#10B981'; },80);
+    if(pctEl) pctEl.textContent = pct+'% of income spent';
+    if(remEl) remEl.textContent = fmt(Math.max(0,inc-txnSpent))+' '+curSym()+' remaining';
+  }
 
   // ── Feature 1: Free to spend today ─────────────────────────────────────
   (function(){
@@ -5151,7 +5163,7 @@ function renderDailyMissions(){
         +(allDone?'All done! 🎉':earnedXP+' / '+totalXP+' XP')
       +'</div>'
     +'</div>'
-    +'<div style="font-size:10px;color:var(--text3);margin-top:3px;margin-bottom:10px;">Resets at midnight</div>'
+    +'<div style="font-size:11px;color:var(--text2);margin-top:3px;margin-bottom:10px;">Resets at midnight</div>'
     +missionHtml
   +'</div>';
 }
@@ -5458,6 +5470,14 @@ function renderMore(){
           + '</div>'
         + '</div>'
       + '</div>'
+      + (function(){
+          var allZero = !(data.xp||0) && !(data.streak||0) && !(data.unlockedBadges||[]).length;
+          if(!allZero) return '';
+          return '<div onclick="openFABSheet(\'add-transaction\')" style="margin-top:12px;background:rgba(245,158,11,.07);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">'
+            +'<div style="font-size:12px;color:var(--text2);line-height:1.4;">Log your first transaction to<br>earn XP &amp; start your streak</div>'
+            +'<div style="font-size:13px;font-weight:600;color:var(--green);white-space:nowrap;margin-left:8px;">+ Log &rsaquo;</div>'
+            +'</div>';
+        })()
       + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;">'
         + '<div style="background:rgba(245,158,11,.07);border-radius:var(--r-sm);padding:10px;text-align:center;">'
           + '<div style="font-size:18px;font-weight:700;color:#F59E0B;">'+(data.xp||0)+'</div>'
@@ -5477,6 +5497,14 @@ function renderMore(){
       + '</div>'
       // Financial Health Score
       + (function(){
+          var hasSetup = (data.incomeSources||[]).length > 0 || (data.transactions||[]).length > 0;
+          if(!hasSetup){
+            return '<div style="margin-top:14px;padding-top:12px;border-top:0.5px solid rgba(255,255,255,.07);">'
+              +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+                +'<span style="font-size:11px;font-weight:600;color:var(--text2);">Financial health</span>'
+                +'<span style="font-size:11px;color:var(--text3);">Complete setup to calculate</span>'
+              +'</div></div>';
+          }
           var hs = calcHealthScore();
           var hsCol = hs >= 80 ? '#10B981' : hs >= 60 ? '#F59E0B' : hs >= 40 ? '#F97316' : '#EF4444';
           var hsLbl = hs >= 80 ? 'Excellent' : hs >= 60 ? 'Good' : hs >= 40 ? 'Fair' : 'Needs work';
@@ -6226,8 +6254,9 @@ function renderHome(){
 
   var savedEl = document.getElementById('home-stat-saved');
   if(savedEl){
-    savedEl.textContent = (overBudget ? '0' : b.rate) + '%';
-    savedEl.style.color = overBudget ? 'var(--red)' : 'var(--green)';
+    var savedRate = overBudget ? 0 : b.rate;
+    savedEl.textContent = savedRate + '%';
+    savedEl.style.color = overBudget ? 'var(--red)' : savedRate > 0 ? 'var(--green)' : 'var(--text2)';
   }
 
   var streakEl = document.getElementById('home-stat-streak');
@@ -6323,10 +6352,9 @@ function renderMovers(){
   }
 
   if(!assets.length){
-    el.innerHTML='<div style="background:var(--surface2);border-radius:var(--r-md);padding:20px 16px;text-align:center;width:100%;">'
-      +'<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">No assets tracked yet</div>'
-      +'<div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Add crypto or cards in Portfolio</div>'
-      +'<button onclick="switchTab(\'portfolio\')" style="background:var(--green);color:#1C1200;border:none;border-radius:20px;padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer;">Go to Portfolio</button>'
+    el.innerHTML='<div onclick="switchTab(\'portfolio\')" style="display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;">'
+      +'<div style="font-size:13px;color:var(--text2);">No assets tracked yet</div>'
+      +'<div style="font-size:12px;font-weight:600;color:var(--green);">Add in Portfolio &rsaquo;</div>'
       +'</div>';
     return;
   }
@@ -6632,6 +6660,8 @@ function renderPortfolio(){
   var plLineEl=document.getElementById('port-pl-line');
   var dateStartEl=document.getElementById('port-date-start');
   var dateEndEl=document.getElementById('port-date-end');
+  var rangeToggles = document.querySelectorAll('.toggle-btn');
+  for(var ri=0;ri<rangeToggles.length;ri++){ rangeToggles[ri].style.visibility=''; }
   if(snaps.length>=2 && total>0){
     var rangeMs={'1W':7,'1M':30,'3M':90,'6M':180,'1Y':365,'ALL':36500}[currentRange]||90;
     var cutoff=Date.now()-rangeMs*86400000;
@@ -6652,9 +6682,31 @@ function renderPortfolio(){
     if(dateStartEl && older) dateStartEl.textContent=new Date(older.date).toLocaleDateString('en',{day:'numeric',month:'short',year:'numeric'});
     if(dateEndEl) dateEndEl.textContent='Today';
   } else {
-    if(plLineEl) plLineEl.textContent='';
+    if(plLineEl) plLineEl.innerHTML='<span style="color:var(--text3);font-size:11px;">Snapshot added automatically each day you open the app</span>';
     if(dateStartEl) dateStartEl.textContent='';
     if(dateEndEl) dateEndEl.textContent='';
+    // Hide time range toggles when no chart data
+    var rangeToggles = document.querySelectorAll('.toggle-btn');
+    for(var ri=0;ri<rangeToggles.length;ri++){ rangeToggles[ri].style.visibility='hidden'; }
+    // Draw ghost placeholder line on canvas
+    (function(){
+      var cv = document.getElementById('sparkline-canvas');
+      if(!cv) return;
+      var dpr = window.devicePixelRatio||1;
+      cv.width = cv.offsetWidth * dpr;
+      cv.height = 70 * dpr;
+      var ctx = cv.getContext('2d');
+      ctx.clearRect(0,0,cv.width,cv.height);
+      ctx.setLineDash([5,5]);
+      ctx.strokeStyle = isDark ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.08)';
+      ctx.lineWidth = 1.5;
+      var w = cv.width, h = cv.height;
+      ctx.beginPath();
+      ctx.moveTo(0, h*0.6);
+      ctx.bezierCurveTo(w*0.25, h*0.3, w*0.45, h*0.65, w*0.65, h*0.35);
+      ctx.bezierCurveTo(w*0.8, h*0.15, w*0.9, h*0.22, w, h*0.18);
+      ctx.stroke();
+    })();
   }
 
   drawSparkline();
@@ -6821,7 +6873,7 @@ function renderGoldList(elId){
   var holdings = data.goldHoldings||[];
   // Hide section wrapper in "All assets" if empty
   var wrap = document.getElementById('gold-all-section');
-  if(wrap) wrap.style.display = holdings.length ? '' : 'none';
+  if(wrap) wrap.style.display = '';
   if(!holdings.length){
     el.innerHTML = emptyState('gold','No gold tracked','Add physical gold, coins or ETFs to track their value.','+ Add gold','openFABSheet(\'add-gold\')');
     return;
@@ -6856,7 +6908,7 @@ function renderStocksList(elId){
   if(!el) return;
   var holdings = data.stockHoldings||[];
   var wrap = document.getElementById('stocks-all-section');
-  if(wrap) wrap.style.display = holdings.length ? '' : 'none';
+  if(wrap) wrap.style.display = '';
   if(!holdings.length){
     el.innerHTML = emptyState('stock','No stocks tracked','Add stocks or ETFs by ticker symbol (AAPL, TSLA, VUSA…).','+ Add stock','openFABSheet(\'add-stock\')');
     return;
