@@ -8822,7 +8822,7 @@ function buildOnboarding(){
 
   // ── Slide 0: Brand splash ─────────────────────────────────────────────────
   var s0 = '<div class="ob-step active" id="ob-s0" style="background:#09060A;">'
-    +'<div class="ob-graphic" style="background:#09060A;overflow:hidden;">'
+    +'<div class="ob-graphic" style="background:#09060A;overflow:hidden;visibility:hidden;">'
       // top-right large amber shape
       +'<div style="position:absolute;top:-18%;right:-18%;width:75%;height:70%;background:linear-gradient(135deg,#F59E0B,#D97706 55%,#92400E);clip-path:polygon(35% 0,100% 0,100% 65%,55% 100%,0 55%);animation:obEnterTR .8s cubic-bezier(.16,1,.3,1) both,obShapeA 16s ease-in-out .8s infinite;transform-origin:75% 25%;"></div>'
       // bottom-left large amber shape
@@ -9103,12 +9103,16 @@ function buildOnboarding(){
 
   var container = document.getElementById('app') || document.body;
   container.appendChild(el);
-  // Restart slide 0 enter animations after splash screen clears (~2120ms)
+  // Reveal slide 0 shapes after splash clears (~2120ms) with fresh enter animations
   setTimeout(function(){
     var s0el = document.getElementById('ob-s0');
     if(s0el){
       var g = s0el.querySelector('.ob-graphic');
-      if(g && g.parentNode){ var gc = g.cloneNode(true); g.parentNode.replaceChild(gc, g); }
+      if(g && g.parentNode){
+        var gc = g.cloneNode(true);
+        gc.style.visibility = 'visible';
+        g.parentNode.replaceChild(gc, g);
+      }
     }
   }, 2200);
   var swipeEl = document.getElementById('swipe-container');
@@ -9190,6 +9194,7 @@ function obGoTo(idx){
         var graphic = slide.querySelector('.ob-graphic');
         if(graphic && graphic.parentNode){
           var gclone = graphic.cloneNode(true);
+          gclone.style.visibility = 'visible';
           graphic.parentNode.replaceChild(gclone, graphic);
         }
       }
