@@ -840,29 +840,53 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 /* ── Splash screen ──────────────────────────────────────────────────────── */
 #splash-screen{
   position:absolute;inset:0;z-index:99999;
-  background:#110F0F;
+  background:#0D0B0B;
   pointer-events:none;
   overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
 }
 #splash-screen.splash-out{
-  animation:splash-fade-out .6s cubic-bezier(0.4,0,1,1) forwards;
+  animation:splash-fade-out .65s cubic-bezier(0.4,0,1,1) forwards;
 }
-@keyframes splash-fade-out{
-  0%{opacity:1;}100%{opacity:0;}
+@keyframes splash-fade-out{0%{opacity:1;}100%{opacity:0;}}
+/* ambient glow */
+#sp-glow{
+  position:absolute;
+  width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,158,11,.16) 0%,transparent 68%);
+  animation:spGlowIn 1s ease .05s both;
 }
-/* Phase 1 — wordmark */
-#sp-p1{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  transition:opacity .4s ease;
+@keyframes spGlowIn{0%{opacity:0;transform:scale(.4);}60%{opacity:1;transform:scale(1);}100%{opacity:1;transform:scale(1);}}
+/* icon badge */
+#sp-icon{
+  position:relative;z-index:2;
+  width:58px;height:58px;border-radius:18px;
+  background:rgba(245,158,11,.1);
+  border:1.5px solid rgba(245,158,11,.28);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+  box-shadow:0 0 28px rgba(245,158,11,.18),0 0 0 6px rgba(245,158,11,.06);
+  animation:spIconIn .65s cubic-bezier(.16,1,.3,1) .08s both;
 }
-#sp-p1.sp-hidden{opacity:0;}
-#splash-wordmark{
-  font-size:46px;font-weight:800;letter-spacing:-2px;color:#F59E0B;
-  animation:splash-word-in .65s cubic-bezier(0.16,1,0.3,1) both;
+@keyframes spIconIn{0%{opacity:0;transform:scale(.45) rotate(-20deg);}100%{opacity:1;transform:scale(1) rotate(0deg);}}
+/* wordmark letter-by-letter */
+#sp-wordmark{
+  position:relative;z-index:2;
+  font-size:46px;font-weight:800;letter-spacing:-2.5px;color:#F59E0B;
+  margin-bottom:10px;line-height:1;
 }
-@keyframes splash-word-in{
-  0%{opacity:0;transform:scale(0.88);}100%{opacity:1;transform:scale(1);}
+#sp-wordmark span{
+  display:inline-block;
+  animation:spLetterIn .55s cubic-bezier(.16,1,.3,1) both;
 }
+@keyframes spLetterIn{0%{opacity:0;transform:translateY(16px);}100%{opacity:1;transform:translateY(0);}}
+/* tagline */
+#sp-tagline{
+  position:relative;z-index:2;
+  font-size:13px;font-weight:400;color:rgba(255,255,255,.38);letter-spacing:.03em;
+  animation:spTagIn .5s ease .88s both;
+}
+@keyframes spTagIn{0%{opacity:0;transform:translateY(7px);}100%{opacity:1;transform:translateY(0);}}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -876,9 +900,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
 <!-- ── Splash screen ── -->
 <div id="splash-screen">
-  <div id="sp-p1">
-    <span id="splash-wordmark">Moxcoin</span>
+  <div id="sp-glow"></div>
+  <div id="sp-icon">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
   </div>
+  <div id="sp-wordmark"><span style="animation-delay:.30s">M</span><span style="animation-delay:.36s">o</span><span style="animation-delay:.42s">x</span><span style="animation-delay:.48s">c</span><span style="animation-delay:.54s">o</span><span style="animation-delay:.60s">i</span><span style="animation-delay:.66s">n</span></div>
+  <div id="sp-tagline">Your money, levelled up.</div>
 </div>
 
 
@@ -8785,8 +8812,8 @@ initSwipe();
   if(!sp) return;
   setTimeout(function(){
     sp.classList.add('splash-out');
-    setTimeout(function(){ sp.style.display = 'none'; }, 620);
-  }, 1500);
+    setTimeout(function(){ sp.style.display = 'none'; }, 650);
+  }, 2000);
 })();
 setTimeout(function(){ fetchCryptoPrices(); fetchMovers(); fetchGoldPrice(); fetchStockPrices(); setTimeout(takeSnapshot,3000); setTimeout(checkBudgetAlerts,1500); autoLogRecurring(); checkAutoBriefing(); updateAlertsDot(); }, 200);
 
