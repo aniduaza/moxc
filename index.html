@@ -9028,4 +9028,172 @@ function buildOnboarding(){
   // ── Slide 6: Done ─────────────────────────────────────────────────────────
   var s6 = '<div class="ob-step next" id="ob-s6">'
     +'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 28px 0;text-align:center;">'
-      +'<div style="width:80px;height:80px;border-radius:50%;background:rgba(245,158,11,.15);border:1.5px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-cont
+      +'<div style="width:80px;height:80px;border-radius:50%;background:rgba(245,158,11,.15);border:1.5px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 60px rgba(245,158,11,.2);animation:obIconBounce .6s cubic-bezier(0.16,1,0.3,1) both;">'
+        +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>'
+      +'</div>'
+      +'<div class="ob-form-headline" id="ob-done-title" style="text-align:center;margin-bottom:8px;">You are all set!</div>'
+      +'<div class="ob-form-sub" id="ob-done-sub" style="text-align:center;margin-bottom:24px;">Here is what we have set up for you.</div>'
+      +'<div id="ob-summary" style="width:100%;text-align:left;"></div>'
+    +'</div>'
+    +'<div class="ob-actions">'
+      +'<button class="ob-btn-primary" onclick="obFinish()">Enter Moxcoin &rarr;</button>'
+    +'</div>'
+  +'</div>';
+
+  // Skip button overlay (slides 1-2)
+  var skipBtn = '<div id="ob-skip-btn" onclick="obGoTo(3)" style="display:none;position:absolute;top:56px;right:20px;z-index:10;font-size:13px;font-weight:500;color:rgba(255,255,255,.4);cursor:pointer;padding:10px;-webkit-tap-highlight-color:transparent;">Skip</div>';
+  // Progress bar
+  var progressBar = '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.08);z-index:10;"><div id="ob-bar-fill" style="height:3px;background:#F59E0B;border-radius:0 2px 2px 0;width:0%;transition:width .42s cubic-bezier(0.16,1,0.3,1);"></div></div>';
+
+  el.innerHTML = progressBar + skipBtn
+    +'<div class="ob-steps" id="ob-steps">'
+    +s0+s1+s2+s3+s4+s5+s6
+    +'</div>';
+
+  var container = document.getElementById('app') || document.body;
+  container.appendChild(el);
+  var swipeEl = document.getElementById('swipe-container');
+  var navEl = document.querySelector('.bottom-nav');
+  if(swipeEl) swipeEl.style.visibility = 'hidden';
+  if(navEl) navEl.style.visibility = 'hidden';
+}
+
+function obSetCurrency(cur){
+  obData.currency = cur;
+  ['AED','USD','PHP'].forEach(function(c){
+    var b = document.getElementById('ob-cur-'+c);
+    if(b) b.className = 'ob-pill' + (c===cur?' selected':'');
+  });
+  var l1 = document.getElementById('ob-inc-cur');
+  var l2 = document.getElementById('ob-bill-cur');
+  if(l1) l1.textContent = cur;
+  if(l2) l2.textContent = cur;
+}
+
+function obSetFreq(freq){
+  obData.incomeFreq = freq;
+  ['monthly','weekly','yearly'].forEach(function(f){
+    var b = document.getElementById('ob-freq-'+f);
+    if(b) b.className = 'ob-pill' + (f===freq?' selected':'');
+  });
+}
+
+function obSetCat(cat){
+  obData.billCat = cat;
+  ['essential','sub'].forEach(function(c){
+    var b = document.getElementById('ob-cat-'+c);
+    if(b) b.className = 'ob-pill' + (c===cat?' selected':'');
+  });
+}
+
+function obGoTo(idx){
+  var steps = document.querySelectorAll('.ob-step');
+  steps.forEach(function(s, i){
+    s.className = 'ob-step ' + (i < idx ? 'prev' : i === idx ? 'active' : 'next');
+  });
+  var fill = document.getElementById('ob-bar-fill');
+  if(fill) fill.style.width = (idx === 0 ? 0 : Math.round(idx / 6 * 100)) + '%';
+  var skip = document.getElementById('ob-skip-btn');
+  if(skip) skip.style.display = (idx === 1 || idx === 2) ? 'block' : 'none';
+  obStep = idx;
+  if(idx === 6) setTimeout(obBuildSummary, 80);
+}
+
+function obNext(){
+  obGoTo(obStep + 1);
+}
+
+function obAddIncome(){
+  var name = (document.getElementById('ob-inc-name')||{}).value||'';
+  var amt  = parseFloat((document.getElementById('ob-inc-amt')||{}).value||'0');
+  name = name.trim();
+  if(!name || !(amt > 0)){
+    obNext();
+    return;
+  }
+  // Normalise to monthly AED
+  var monthlyAmt = amt;
+  if(obData.incomeFreq === 'weekly')  monthlyAmt = amt * 52 / 12;
+  if(obData.incomeFreq === 'yearly')  monthlyAmt = amt / 12;
+  // Convert to AED if needed
+  if(obData.currency === 'USD') monthlyAmt = monthlyAmt / AED_TO_USD;
+  if(obData.currency === 'PHP') monthlyAmt = monthlyAmt / AED_TO_PHP;
+  data.incomeSources.push({ name: name, amt: Math.round(monthlyAmt), freq: 'monthly' });
+  obNext();
+}
+
+function obAddBill(){
+  var name = (document.getElementById('ob-bill-name')||{}).value||'';
+  var amt  = parseFloat((document.getElementById('ob-bill-amt')||{}).value||'0');
+  name = name.trim();
+  if(!name || !(amt > 0)){
+    obNext();
+    return;
+  }
+  var aedAmt = amt;
+  if(obData.currency === 'USD') aedAmt = aedAmt / AED_TO_USD;
+  if(obData.currency === 'PHP') aedAmt = aedAmt / AED_TO_PHP;
+  data.expenses.push({ name: name, amt: Math.round(aedAmt), cat: obData.billCat });
+  obNext();
+}
+
+function obBuildSummary(){
+  var nameEl = document.getElementById('ob-done-title');
+  var subEl  = document.getElementById('ob-done-sub');
+  var sumEl  = document.getElementById('ob-summary');
+  if(!sumEl) return;
+
+  var name = obData.name.trim() || '';
+  if(nameEl) nameEl.textContent = name ? 'You are all set, ' + name + '!' : 'You are all set!';
+  if(subEl)  subEl.textContent  = 'Here is what we have set up for you.';
+
+  var rows = '';
+  if(data.incomeSources.length){
+    var inc = data.incomeSources[data.incomeSources.length - 1];
+    rows += '<div class="ob-summary-row">'
+      + '<div class="ob-summary-icon" style="background:rgba(245,158,11,.12);color:var(--green);">'+obSvg('income')+'</div>'
+      + '<div><div class="ob-summary-val">'+inc.name+'</div><div class="ob-summary-label">'+fmt(inc.amt)+' '+obData.currency+' / month</div></div>'
+      + '</div>';
+  }
+  if(data.expenses.length){
+    var exp = data.expenses[data.expenses.length - 1];
+    rows += '<div class="ob-summary-row">'
+      + '<div class="ob-summary-icon" style="background:rgba(224,85,85,.1);color:#EF4444;">'+obSvg('bill')+'</div>'
+      + '<div><div class="ob-summary-val">'+exp.name+'</div><div class="ob-summary-label">'+fmt(exp.amt)+' '+obData.currency+' / month</div></div>'
+      + '</div>';
+  }
+  if(!data.incomeSources.length && !data.expenses.length){
+    rows = '<div style="font-size:13px;color:var(--text3);text-align:center;padding:16px 0;">You can add income and bills any time from the More tab.</div>';
+  }
+  sumEl.innerHTML = rows;
+}
+
+function obFinish(){
+  if(obData.name.trim()) data.userName = obData.name.trim();
+  data.currency = obData.currency;
+  try{ localStorage.setItem('moxcoin_onboarded','1'); }catch(e){}
+  save();
+  renderAll();
+  renderMore();
+  // Restore app content
+  var swipeEl = document.getElementById('swipe-container');
+  var navEl   = document.querySelector('.bottom-nav');
+  if(swipeEl) swipeEl.style.visibility = '';
+  if(navEl)   navEl.style.visibility   = '';
+  var el = document.getElementById('ob-overlay');
+  if(el){
+    el.classList.add('ob-exit');
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 420);
+  }
+}
+
+// Show onboarding after a brief delay to let the app render first
+setTimeout(function(){
+  if(shouldShowOnboarding()) buildOnboarding();
+}, 400);
+
+
+</script>
+
+</body>
+</html>
