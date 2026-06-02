@@ -779,6 +779,11 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 @keyframes obShapeB{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(-6deg) scale(1.03)}}
 @keyframes obShapeC{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(14deg) scale(1.1)}}
 @keyframes obShapeD{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-10px) rotate(18deg)}}
+@keyframes obEnterTR{0%{opacity:0;transform:translate(48px,-34px) scale(.78)}100%{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes obEnterBL{0%{opacity:0;transform:translate(-48px,34px) scale(.78)}100%{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes obEnterTL{0%{opacity:0;transform:translate(-38px,-30px) scale(.78)}100%{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes obEnterBR{0%{opacity:0;transform:translate(38px,30px) scale(.78)}100%{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes obEnterScale{0%{transform:scale(.25)}100%{transform:scale(1)}}
 .ob-coin-wrap{display:flex;align-items:center;justify-content:center;animation:obFloat 3.5s ease-in-out infinite;}
 .ob-mock-card{background:rgba(255,255,255,.07);border-radius:20px;border:1px solid rgba(255,255,255,.1);width:240px;animation:obFloat 4.5s ease-in-out infinite;box-shadow:0 28px 64px rgba(0,0,0,.6);}
 .ob-xp-badge{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;}
@@ -8819,13 +8824,13 @@ function buildOnboarding(){
   var s0 = '<div class="ob-step active" id="ob-s0" style="background:#09060A;">'
     +'<div class="ob-graphic" style="background:#09060A;overflow:hidden;">'
       // top-right large amber shape
-      +'<div style="position:absolute;top:-18%;right:-18%;width:75%;height:70%;background:linear-gradient(135deg,#F59E0B,#D97706 55%,#92400E);clip-path:polygon(35% 0,100% 0,100% 65%,55% 100%,0 55%);animation:obShapeA 16s ease-in-out infinite;transform-origin:75% 25%;"></div>'
+      +'<div style="position:absolute;top:-18%;right:-18%;width:75%;height:70%;background:linear-gradient(135deg,#F59E0B,#D97706 55%,#92400E);clip-path:polygon(35% 0,100% 0,100% 65%,55% 100%,0 55%);animation:obEnterTR .8s cubic-bezier(.16,1,.3,1) both,obShapeA 16s ease-in-out .8s infinite;transform-origin:75% 25%;"></div>'
       // bottom-left large amber shape
-      +'<div style="position:absolute;bottom:-18%;left:-18%;width:70%;height:65%;background:linear-gradient(315deg,#FCD34D,#F59E0B 45%,#D97706);clip-path:polygon(0 35%,65% 0,100% 25%,80% 100%,0 100%);animation:obShapeB 20s ease-in-out infinite;transform-origin:25% 75%;"></div>'
+      +'<div style="position:absolute;bottom:-18%;left:-18%;width:70%;height:65%;background:linear-gradient(315deg,#FCD34D,#F59E0B 45%,#D97706);clip-path:polygon(0 35%,65% 0,100% 25%,80% 100%,0 100%);animation:obEnterBL .8s cubic-bezier(.16,1,.3,1) .15s both,obShapeB 20s ease-in-out .95s infinite;transform-origin:25% 75%;"></div>'
       // small top-left diamond
-      +'<div style="position:absolute;top:10%;left:6%;width:22%;height:22%;background:linear-gradient(135deg,#FCD34D,#F59E0B);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeC 9s ease-in-out infinite;opacity:.75;"></div>'
+      +'<div style="position:absolute;top:10%;left:6%;width:22%;height:22%;background:linear-gradient(135deg,#FCD34D,#F59E0B);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .27s both,obShapeC 9s ease-in-out 1.07s infinite;opacity:.75;"></div>'
       // small bottom-right diamond
-      +'<div style="position:absolute;bottom:18%;right:8%;width:14%;height:14%;background:#F59E0B;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeD 6s ease-in-out -2s infinite;opacity:.6;"></div>'
+      +'<div style="position:absolute;bottom:18%;right:8%;width:14%;height:14%;background:#F59E0B;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .38s both,obShapeD 6s ease-in-out 1.18s infinite;opacity:.6;"></div>'
       // center dark vignette so text has breathing room
       +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 58%,rgba(9,6,10,.82) 0%,transparent 70%);pointer-events:none;"></div>'
       // ── Slide 0 mockup: Total assets card ──
@@ -8863,13 +8868,13 @@ function buildOnboarding(){
   var s1 = '<div class="ob-step next" id="ob-s1" style="background:#040C0A;">'
     +'<div class="ob-graphic" style="background:#040C0A;overflow:hidden;">'
       // top-right large emerald shape
-      +'<div style="position:absolute;top:-18%;right:-18%;width:72%;height:68%;background:linear-gradient(135deg,#10B981,#34D399 45%,#059669);clip-path:polygon(28% 0,100% 0,100% 72%,62% 100%,0 52%);animation:obShapeA 18s ease-in-out infinite;transform-origin:80% 20%;"></div>'
+      +'<div style="position:absolute;top:-18%;right:-18%;width:72%;height:68%;background:linear-gradient(135deg,#10B981,#34D399 45%,#059669);clip-path:polygon(28% 0,100% 0,100% 72%,62% 100%,0 52%);animation:obEnterTR .8s cubic-bezier(.16,1,.3,1) both,obShapeA 18s ease-in-out .8s infinite;transform-origin:80% 20%;"></div>'
       // bottom-left blue-teal shape
-      +'<div style="position:absolute;bottom:-18%;left:-18%;width:68%;height:63%;background:linear-gradient(315deg,#3B82F6,#06B6D4 50%,#0EA5E9);clip-path:polygon(0 28%,68% 0,100% 38%,78% 100%,0 100%);animation:obShapeB 22s ease-in-out infinite;transform-origin:22% 78%;"></div>'
+      +'<div style="position:absolute;bottom:-18%;left:-18%;width:68%;height:63%;background:linear-gradient(315deg,#3B82F6,#06B6D4 50%,#0EA5E9);clip-path:polygon(0 28%,68% 0,100% 38%,78% 100%,0 100%);animation:obEnterBL .8s cubic-bezier(.16,1,.3,1) .15s both,obShapeB 22s ease-in-out .95s infinite;transform-origin:22% 78%;"></div>'
       // small bottom-right emerald diamond
-      +'<div style="position:absolute;bottom:20%;right:8%;width:20%;height:20%;background:linear-gradient(135deg,#10B981,#34D399);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeC 10s ease-in-out -2s infinite;opacity:.7;"></div>'
+      +'<div style="position:absolute;bottom:20%;right:8%;width:20%;height:20%;background:linear-gradient(135deg,#10B981,#34D399);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .27s both,obShapeC 10s ease-in-out 1.07s infinite;opacity:.7;"></div>'
       // small top-left blue diamond
-      +'<div style="position:absolute;top:12%;left:7%;width:13%;height:13%;background:#3B82F6;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeD 7s ease-in-out -1s infinite;opacity:.65;"></div>'
+      +'<div style="position:absolute;top:12%;left:7%;width:13%;height:13%;background:#3B82F6;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .38s both,obShapeD 7s ease-in-out 1.18s infinite;opacity:.65;"></div>'
       +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 58%,rgba(4,12,10,.82) 0%,transparent 70%);pointer-events:none;"></div>'
       // ── Slide 1 mockup: Stats grid card ──
       +'<div style="position:relative;z-index:2;animation:obFloat 4s ease-in-out infinite;transform:rotate(-3deg);width:220px;">'
@@ -8914,15 +8919,15 @@ function buildOnboarding(){
   var s2 = '<div class="ob-step next" id="ob-s2" style="background:#080510;">'
     +'<div class="ob-graphic" style="background:#080510;overflow:hidden;">'
       // top-left large purple shape
-      +'<div style="position:absolute;top:-18%;left:-18%;width:73%;height:68%;background:linear-gradient(135deg,#7C3AED,#A855F7 50%,#6D28D9);clip-path:polygon(0 0,82% 0,100% 32%,58% 100%,0 78%);animation:obShapeA 17s ease-in-out infinite;transform-origin:28% 22%;"></div>'
+      +'<div style="position:absolute;top:-18%;left:-18%;width:73%;height:68%;background:linear-gradient(135deg,#7C3AED,#A855F7 50%,#6D28D9);clip-path:polygon(0 0,82% 0,100% 32%,58% 100%,0 78%);animation:obEnterTL .8s cubic-bezier(.16,1,.3,1) both,obShapeA 17s ease-in-out .8s infinite;transform-origin:28% 22%;"></div>'
       // bottom-right purple-pink shape
-      +'<div style="position:absolute;bottom:-18%;right:-18%;width:68%;height:64%;background:linear-gradient(315deg,#A855F7,#EC4899 55%,#8B5CF6);clip-path:polygon(42% 0,100% 22%,100% 100%,0 100%,18% 52%);animation:obShapeB 21s ease-in-out infinite;transform-origin:72% 78%;"></div>'
+      +'<div style="position:absolute;bottom:-18%;right:-18%;width:68%;height:64%;background:linear-gradient(315deg,#A855F7,#EC4899 55%,#8B5CF6);clip-path:polygon(42% 0,100% 22%,100% 100%,0 100%,18% 52%);animation:obEnterBR .8s cubic-bezier(.16,1,.3,1) .15s both,obShapeB 21s ease-in-out .95s infinite;transform-origin:72% 78%;"></div>'
       // amber diamond top-right
-      +'<div style="position:absolute;top:9%;right:8%;width:21%;height:21%;background:linear-gradient(135deg,#F59E0B,#FCD34D);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeD 5.5s ease-in-out infinite;opacity:.85;"></div>'
+      +'<div style="position:absolute;top:9%;right:8%;width:21%;height:21%;background:linear-gradient(135deg,#F59E0B,#FCD34D);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .27s both,obShapeD 5.5s ease-in-out 1.07s infinite;opacity:.85;"></div>'
       // small amber diamond bottom-left
-      +'<div style="position:absolute;bottom:20%;left:8%;width:13%;height:13%;background:#F59E0B;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeD 7.5s ease-in-out -1.5s infinite;opacity:.65;"></div>'
+      +'<div style="position:absolute;bottom:20%;left:8%;width:13%;height:13%;background:#F59E0B;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .38s both,obShapeD 7.5s ease-in-out 1.18s infinite;opacity:.65;"></div>'
       // small purple accent mid-right
-      +'<div style="position:absolute;top:42%;right:5%;width:10%;height:10%;background:#A855F7;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeC 8s ease-in-out -3s infinite;opacity:.5;"></div>'
+      +'<div style="position:absolute;top:42%;right:5%;width:10%;height:10%;background:#A855F7;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .46s both,obShapeC 8s ease-in-out 1.26s infinite;opacity:.5;"></div>'
       +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 58%,rgba(8,5,16,.84) 0%,transparent 70%);pointer-events:none;"></div>'
       // ── Slide 2 mockup: Level 2 → 3 animation ──
       +'<div id="ob-s2-mockup" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;">'
@@ -9169,15 +9174,18 @@ function obGoTo(idx){
   if(skip) skip.style.display = (idx === 1 || idx === 2) ? 'block' : 'none';
   obStep = idx;
   if(idx === 6){ setTimeout(obBuildSummary, 80); setTimeout(function(){ launchConfetti('gold'); }, 600); }
-  // Restart slide 2 animations by clone-replacing the mockup container
-  if(idx === 2){
+  // Restart shape enter animations by clone-replacing the graphic container for showcase slides
+  if(idx <= 2){
     setTimeout(function(){
-      var mockup = document.getElementById('ob-s2-mockup');
-      if(mockup && mockup.parentNode){
-        var clone = mockup.cloneNode(true);
-        mockup.parentNode.replaceChild(clone, mockup);
+      var slide = document.getElementById('ob-s'+idx);
+      if(slide){
+        var graphic = slide.querySelector('.ob-graphic');
+        if(graphic && graphic.parentNode){
+          var gclone = graphic.cloneNode(true);
+          graphic.parentNode.replaceChild(gclone, graphic);
+        }
       }
-    }, 80);
+    }, 50);
   }
 }
 
