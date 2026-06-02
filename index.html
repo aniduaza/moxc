@@ -745,54 +745,48 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 @keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
 
 /* ── Onboarding overlay ──────────────────────────────────────────────────── */
-#ob-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;background:#0D0D0D;display:flex;flex-direction:column;overflow:hidden;}
+#ob-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:9999;background:#0A0A0A;display:flex;flex-direction:column;overflow:hidden;color:#fff;}
 #ob-overlay.ob-exit{animation:obExit .4s cubic-bezier(0.4,0,0.2,1) forwards;}
 @keyframes obExit{to{opacity:0;transform:scale(.97)}}
-.ob-progress{display:flex;gap:6px;padding:20px 24px 0;justify-content:center;}
-.ob-dot{height:4px;border-radius:2px;background:rgba(255,255,255,.15);transition:all .35s cubic-bezier(0.16,1,0.3,1);}
-.ob-dot.active{background:var(--green);}
-.ob-steps{flex:1;display:flex;overflow:hidden;position:relative;}
-.ob-step{position:absolute;top:0;left:0;right:0;bottom:0;padding:20px 28px 24px;display:flex;flex-direction:column;overflow-y:auto;transition:transform .38s cubic-bezier(0.32,0.72,0,1),opacity .28s ease;will-change:transform;}
+.ob-steps{flex:1;position:relative;overflow:hidden;}
+.ob-step{position:absolute;inset:0;display:flex;flex-direction:column;transition:transform .42s cubic-bezier(0.32,0.72,0,1),opacity .3s ease;will-change:transform;}
 .ob-step.prev{transform:translateX(-100%);opacity:0;pointer-events:none;}
 .ob-step.active{transform:translateX(0);opacity:1;pointer-events:auto;}
 .ob-step.next{transform:translateX(100%);opacity:0;pointer-events:none;}
-.ob-icon-wrap{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 32px rgba(245,158,11,.18);}
-.ob-icon-wrap.brand{background:rgba(245,158,11,.12);color:var(--green);}
-.ob-icon-wrap.income{background:rgba(245,158,11,.1);color:var(--green);}
-.ob-icon-wrap.bill{background:rgba(224,85,85,.1);color:#EF4444;}
-.ob-icon-wrap.done{background:rgba(245,158,11,.15);color:var(--green);}
-.ob-title{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1.2;margin-bottom:8px;}
-.ob-sub{font-size:14px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:32px;}
+.ob-graphic{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0;}
+.ob-content{padding:22px 28px 6px;flex-shrink:0;}
+.ob-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:10px;}
+.ob-headline{font-size:36px;font-weight:800;color:#fff;letter-spacing:-.8px;line-height:1.1;margin-bottom:10px;}
+.ob-sub{font-size:15px;color:rgba(255,255,255,.6);line-height:1.6;}
+.ob-form-area{flex:1;overflow-y:auto;padding:64px 28px 0;-webkit-overflow-scrolling:touch;}
+.ob-form-headline{font-size:30px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.2;margin-bottom:8px;}
+.ob-form-sub{font-size:14px;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:28px;}
 .ob-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.4);margin-bottom:8px;}
-/* Onboarding always dark — override light mode */
-#ob-overlay{color:#fff!important;}
-#ob-overlay .ob-input{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;color:#fff!important;}
-#ob-overlay .ob-input::placeholder{color:rgba(255,255,255,.3)!important;}
-#ob-overlay .ob-input:focus{border-color:rgba(245,158,11,.5)!important;}
-#ob-overlay .ob-pill{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;color:rgba(255,255,255,.7)!important;}
-#ob-overlay .ob-pill.selected{background:var(--green)!important;color:#0D0D0D!important;border-color:var(--green)!important;}
-#ob-overlay .ob-summary-row{background:rgba(255,255,255,.06)!important;}
-#ob-overlay .ob-summary-label{color:rgba(255,255,255,.5)!important;}
-#ob-overlay .ob-summary-val{color:#fff!important;}
-#ob-overlay .ob-currency-label{color:rgba(255,255,255,.5)!important;}
-#ob-overlay .ob-btn-skip{color:rgba(255,255,255,.35)!important;}
-.ob-input{width:100%;background:var(--surface);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:14px 16px;font-size:16px;color:var(--text);font-family:"DM Sans",sans-serif;outline:none;box-sizing:border-box;transition:border-color .18s;}
+.ob-orb{position:absolute;border-radius:50%;pointer-events:none;}
+@keyframes obOrbDrift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(14px,-18px) scale(1.06)}66%{transform:translate(-10px,12px) scale(.94)}}
+@keyframes obFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes obRingFill{from{stroke-dashoffset:364}to{stroke-dashoffset:100}}
+@keyframes obBarGrow{from{width:0}to{width:80%}}
+.ob-coin-wrap{display:flex;align-items:center;justify-content:center;animation:obFloat 3.5s ease-in-out infinite;}
+.ob-mock-card{background:rgba(255,255,255,.07);border-radius:20px;border:1px solid rgba(255,255,255,.1);width:240px;animation:obFloat 4.5s ease-in-out infinite;box-shadow:0 28px 64px rgba(0,0,0,.6);}
+.ob-xp-badge{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.ob-input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:15px 16px;font-size:16px;color:#fff;font-family:"DM Sans",sans-serif;outline:none;box-sizing:border-box;transition:border-color .18s;margin-bottom:16px;}
+.ob-input::placeholder{color:rgba(255,255,255,.3);}
 .ob-input:focus{border-color:rgba(245,158,11,.5);}
-.ob-pills{display:flex;gap:8px;flex-wrap:wrap;}
-.ob-pill{padding:8px 18px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:var(--surface);color:var(--text2);transition:all .18s;font-family:"DM Sans",sans-serif;}
-.ob-pill.selected{background:var(--green);color:#0D0D0D;border-color:var(--green);}
+.ob-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.ob-pill{padding:10px 18px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);transition:all .18s;font-family:"DM Sans",sans-serif;touch-action:manipulation;}
+.ob-pill.selected{background:#F59E0B;color:#0D0D0D;border-color:#F59E0B;}
 .ob-amount-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.ob-currency-label{font-size:14px;font-weight:600;color:var(--text3);flex-shrink:0;}
-.ob-actions{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:24px;}
-.ob-btn-primary{width:100%;padding:16px;background:var(--green);color:#0D0D0D;border:none;border-radius:var(--r-md);font-size:16px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;touch-action:manipulation;transition:transform .14s,opacity .14s;}
+.ob-currency-label{font-size:15px;font-weight:600;color:rgba(255,255,255,.45);flex-shrink:0;}
+.ob-actions{padding:12px 28px 40px;display:flex;flex-direction:column;gap:10px;flex-shrink:0;}
+.ob-btn-primary{width:100%;padding:17px;background:#F59E0B;color:#0D0D0D;border:none;border-radius:var(--r-xl);font-size:16px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;touch-action:manipulation;transition:transform .14s,opacity .14s;}
 .ob-btn-primary:active{transform:scale(.97);}
-.ob-btn-skip{width:100%;padding:12px;background:transparent;color:var(--text3);border:none;border-radius:var(--r-md);font-size:14px;cursor:pointer;font-family:"DM Sans",sans-serif;touch-action:manipulation;}
-.ob-summary-row{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r-md);padding:14px;margin-bottom:8px;}
+.ob-btn-skip{width:100%;padding:12px;background:transparent;color:rgba(255,255,255,.35);border:none;border-radius:var(--r-md);font-size:14px;cursor:pointer;font-family:"DM Sans",sans-serif;touch-action:manipulation;}
+.ob-summary-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border-radius:var(--r-md);padding:14px;margin-bottom:8px;}
+.ob-summary-label{font-size:13px;color:rgba(255,255,255,.5);}
+.ob-summary-val{font-size:14px;font-weight:600;color:#fff;}
 .ob-summary-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ob-summary-label{font-size:13px;color:var(--text2);}
-.ob-summary-val{font-size:14px;font-weight:600;color:var(--text);}
 @keyframes obIconBounce{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
-.ob-step.active .ob-icon-wrap{animation:obIconBounce .5s cubic-bezier(0.16,1,0.3,1) .1s both;}
 
 /* ── Staggered list entrance ─────────────────────────────────────────────── */
 @keyframes itemIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
@@ -8809,111 +8803,209 @@ function buildOnboarding(){
   var el = document.createElement('div');
   el.id = 'ob-overlay';
 
-  var numSteps = 4;
-  var dotsHtml = '';
-  for(var i = 0; i < numSteps; i++){
-    dotsHtml += '<div class="ob-dot" id="ob-dot-'+i+'" style="width:'+(i===0?'24px':'8px')+';"></div>';
-  }
+  // ── Slide 0: Brand splash ─────────────────────────────────────────────────
+  var s0 = '<div class="ob-step active" id="ob-s0">'
+    +'<div class="ob-graphic" style="background:radial-gradient(ellipse 120% 100% at 50% 60%,#1A1000,#0A0A0A);">'
+      +'<div class="ob-orb" style="width:300px;height:300px;top:-80px;left:-80px;background:radial-gradient(circle,rgba(245,158,11,.18) 0%,transparent 70%);animation:obOrbDrift 9s ease-in-out infinite;"></div>'
+      +'<div class="ob-orb" style="width:220px;height:220px;bottom:-40px;right:-60px;background:radial-gradient(circle,rgba(245,158,11,.12) 0%,transparent 70%);animation:obOrbDrift 11s ease-in-out -4s infinite;"></div>'
+      +'<div class="ob-coin-wrap">'
+        +'<div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(245,158,11,.05));border:1.5px solid rgba(245,158,11,.35);display:flex;align-items:center;justify-content:center;box-shadow:0 0 80px rgba(245,158,11,.25),0 0 160px rgba(245,158,11,.08);">'
+          +'<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>'
+        +'</div>'
+      +'</div>'
+      +'<div style="position:absolute;top:28%;left:18%;width:7px;height:7px;border-radius:50%;background:#F59E0B;opacity:.5;animation:obFloat 2.2s ease-in-out infinite;"></div>'
+      +'<div style="position:absolute;top:55%;right:22%;width:5px;height:5px;border-radius:50%;background:#F59E0B;opacity:.4;animation:obFloat 3.1s ease-in-out -1.2s infinite;"></div>'
+      +'<div style="position:absolute;bottom:22%;left:30%;width:4px;height:4px;border-radius:50%;background:#F59E0B;opacity:.35;animation:obFloat 2.7s ease-in-out -2s infinite;"></div>'
+      +'<div style="position:absolute;top:18%;right:30%;width:6px;height:6px;border-radius:50%;background:#F59E0B;opacity:.3;animation:obFloat 3.5s ease-in-out -.8s infinite;"></div>'
+      +'<div style="position:absolute;bottom:0;left:0;right:0;height:100px;background:linear-gradient(to bottom,transparent,#0A0A0A);pointer-events:none;"></div>'
+    +'</div>'
+    +'<div class="ob-content">'
+      +'<div class="ob-headline">Your money,<br>levelled up.</div>'
+      +'<div class="ob-sub">Income, crypto, gold, goals and XP — all in one place.</div>'
+    +'</div>'
+    +'<div class="ob-actions">'
+      +'<button class="ob-btn-primary" onclick="obGoTo(1)">Get started &rarr;</button>'
+    +'</div>'
+  +'</div>';
 
-  el.innerHTML =
-    '<div class="ob-progress" id="ob-progress">'+dotsHtml+'</div>'+
-    '<div class="ob-steps" id="ob-steps">'+
+  // ── Slide 1: App mockup ───────────────────────────────────────────────────
+  var s1 = '<div class="ob-step next" id="ob-s1">'
+    +'<div class="ob-graphic" style="background:radial-gradient(ellipse 100% 100% at 60% 40%,#060C14,#050808);">'
+      +'<div class="ob-orb" style="width:260px;height:260px;top:-60px;right:-70px;background:radial-gradient(circle,rgba(59,130,246,.15) 0%,transparent 70%);animation:obOrbDrift 10s ease-in-out infinite;"></div>'
+      +'<div class="ob-orb" style="width:180px;height:180px;bottom:20px;left:-40px;background:radial-gradient(circle,rgba(16,185,129,.1) 0%,transparent 70%);animation:obOrbDrift 8s ease-in-out -5s infinite;"></div>'
+      +'<div class="ob-mock-card" style="transform:rotate(-4deg);">'
+        +'<div style="padding:16px 16px 14px;">'
+          +'<div style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Total assets</div>'
+          +'<div style="font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:10px;">24,500 <span style="font-size:11px;color:rgba(255,255,255,.35);font-weight:400;">AED</span></div>'
+          +'<div style="height:6px;border-radius:3px;overflow:hidden;display:flex;margin-bottom:12px;">'
+            +'<div style="width:45%;background:#10B981;"></div>'
+            +'<div style="width:28%;background:#F7A400;"></div>'
+            +'<div style="width:15%;background:#F59E0B;"></div>'
+            +'<div style="width:12%;background:rgba(239,68,68,.5);"></div>'
+          +'</div>'
+          +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;">'
+            +'<div style="background:rgba(255,255,255,.05);border-radius:7px;padding:7px 4px;text-align:center;"><div style="font-size:7px;color:rgba(255,255,255,.4);margin-bottom:2px;">INCOME</div><div style="font-size:10px;font-weight:700;color:#fff;">12,500</div></div>'
+            +'<div style="background:rgba(255,255,255,.05);border-radius:7px;padding:7px 4px;text-align:center;"><div style="font-size:7px;color:rgba(255,255,255,.4);margin-bottom:2px;">SPENT</div><div style="font-size:10px;font-weight:700;color:#fff;">6,200</div></div>'
+            +'<div style="background:rgba(255,255,255,.05);border-radius:7px;padding:7px 4px;text-align:center;"><div style="font-size:7px;color:rgba(255,255,255,.4);margin-bottom:2px;">SAVED</div><div style="font-size:10px;font-weight:700;color:#10B981;">50%</div></div>'
+            +'<div style="background:rgba(255,255,255,.05);border-radius:7px;padding:7px 4px;text-align:center;"><div style="font-size:7px;color:rgba(255,255,255,.4);margin-bottom:2px;">STREAK</div><div style="font-size:10px;font-weight:700;color:#F59E0B;">7d</div></div>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="position:absolute;bottom:18%;left:50%;transform:translateX(-50%) rotate(3deg) translateY(18px);width:220px;height:50px;background:rgba(255,255,255,.04);border-radius:14px;border:1px solid rgba(255,255,255,.06);"></div>'
+      +'<div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,#050808);pointer-events:none;"></div>'
+    +'</div>'
+    +'<div class="ob-content">'
+      +'<div class="ob-eyebrow">Finance overview</div>'
+      +'<div class="ob-headline">Every AED.<br>Accounted for.</div>'
+      +'<div class="ob-sub">Income, crypto, gold and cards — tracked in real time.</div>'
+    +'</div>'
+    +'<div class="ob-actions">'
+      +'<button class="ob-btn-primary" onclick="obGoTo(2)">Next &rarr;</button>'
+    +'</div>'
+  +'</div>';
 
-    // Step 0: Welcome
-    '<div class="ob-step active" id="ob-s0">'+
-      '<div style="flex:1;display:flex;flex-direction:column;padding-top:24px;">'+
-        '<div class="ob-icon-wrap brand">'+obSvg('advisor')+'</div>'+
-        '<div class="ob-title">Welcome to<br>Moxcoin</div>'+
-        '<div class="ob-sub">Your personal finance command centre — income, crypto, cards, goals and more in one place.</div>'+
-        '<div class="ob-label">What should we call you?</div>'+
-        '<input class="ob-input" id="ob-name" placeholder="Your name" maxlength="32" oninput="obData.name=this.value">'+
-        '<div style="height:24px;"></div>'+
-        '<div class="ob-label">Currency</div>'+
-        '<div class="ob-pills">'+
-          '<button class="ob-pill selected" id="ob-cur-AED" onclick="obSetCurrency(\'AED\')">AED</button>'+
-          '<button class="ob-pill" id="ob-cur-USD" onclick="obSetCurrency(\'USD\')">USD</button>'+
-          '<button class="ob-pill" id="ob-cur-PHP" onclick="obSetCurrency(\'PHP\')">PHP</button>'+
-        '</div>'+
-      '</div>'+
-      '<div class="ob-actions">'+
-        '<button class="ob-btn-primary" onclick="obNext()">Get started &rarr;</button>'+
-      '</div>'+
-    '</div>'+
+  // ── Slide 2: XP / gamification ────────────────────────────────────────────
+  var s2 = '<div class="ob-step next" id="ob-s2">'
+    +'<div class="ob-graphic" style="background:radial-gradient(ellipse 100% 100% at 50% 50%,#100C00,#080600);">'
+      +'<div class="ob-orb" style="width:280px;height:280px;top:-50px;left:-60px;background:radial-gradient(circle,rgba(245,158,11,.14) 0%,transparent 70%);animation:obOrbDrift 8s ease-in-out infinite;"></div>'
+      +'<div style="position:relative;display:flex;align-items:center;justify-content:center;animation:obFloat 4s ease-in-out infinite;">'
+        +'<svg width="148" height="148" viewBox="0 0 148 148">'
+          +'<circle cx="74" cy="74" r="58" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/>'
+          +'<circle cx="74" cy="74" r="58" fill="none" stroke="#F59E0B" stroke-width="9" stroke-linecap="round" stroke-dasharray="364" stroke-dashoffset="364" style="transform:rotate(-90deg);transform-origin:74px 74px;animation:obRingFill 1.8s cubic-bezier(0.16,1,0.3,1) .4s both;"/>'
+          +'<text x="74" y="69" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="10" font-family="DM Sans,sans-serif" font-weight="600" letter-spacing="3">LEVEL</text>'
+          +'<text x="74" y="92" text-anchor="middle" fill="#F59E0B" font-size="28" font-family="DM Sans,sans-serif" font-weight="800">3</text>'
+        +'</svg>'
+        +'<div class="ob-xp-badge" style="width:46px;height:46px;background:rgba(168,85,247,.18);border:1.5px solid rgba(168,85,247,.35);top:-18px;right:-65px;animation:obFloat 3s ease-in-out -.5s infinite;">'
+          +'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 8.9H23l-7.5 5.4 2.9 8.9L12 20l-6.4 5.2 2.9-8.9L2 10.9h8.1L12 2z"/></svg>'
+        +'</div>'
+        +'<div class="ob-xp-badge" style="width:38px;height:38px;background:rgba(16,185,129,.18);border:1.5px solid rgba(16,185,129,.3);bottom:-24px;left:-60px;animation:obFloat 3.5s ease-in-out -1.8s infinite;">'
+          +'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>'
+        +'</div>'
+        +'<div class="ob-xp-badge" style="width:40px;height:40px;background:rgba(245,158,11,.18);border:1.5px solid rgba(245,158,11,.3);top:10px;left:-72px;animation:obFloat 2.8s ease-in-out -3s infinite;">'
+          +'<svg width="18" height="18" viewBox="0 0 24 24" fill="#F59E0B" stroke="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>'
+        +'</div>'
+        +'<div style="position:absolute;bottom:-54px;left:50%;transform:translateX(-50%);width:140px;text-align:center;">'
+          +'<div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;">240 / 300 XP</div>'
+          +'<div style="height:4px;border-radius:2px;background:rgba(255,255,255,.08);">'
+            +'<div style="height:4px;border-radius:2px;background:linear-gradient(90deg,#D97706,#F59E0B);animation:obBarGrow 1.5s cubic-bezier(0.16,1,0.3,1) .6s both;width:0;"></div>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,#080600);pointer-events:none;"></div>'
+    +'</div>'
+    +'<div class="ob-content">'
+      +'<div class="ob-eyebrow">Gamified finance</div>'
+      +'<div class="ob-headline">Track. Streak.<br>Level up.</div>'
+      +'<div class="ob-sub">Earn XP for every financial habit. Unlock badges. Stay motivated.</div>'
+    +'</div>'
+    +'<div class="ob-actions">'
+      +'<button class="ob-btn-primary" onclick="obGoTo(3)">Next &rarr;</button>'
+    +'</div>'
+  +'</div>';
 
-    // Step 1: Income
-    '<div class="ob-step next" id="ob-s1">'+
-      '<div style="flex:1;display:flex;flex-direction:column;">'+
-        '<div class="ob-icon-wrap income">'+obSvg('income')+'</div>'+
-        '<div class="ob-title">Add your main income</div>'+
-        '<div class="ob-sub">We will use this to calculate your savings rate and monthly budget automatically.</div>'+
-        '<div class="ob-label">Income name</div>'+
-        '<input class="ob-input" id="ob-inc-name" placeholder="e.g. Salary, Freelance" maxlength="40" style="margin-bottom:14px;" oninput="obData.incomeName=this.value">'+
-        '<div class="ob-label">Amount per period</div>'+
-        '<div class="ob-amount-row">'+
-          '<span class="ob-currency-label" id="ob-inc-cur">AED</span>'+
-          '<input class="ob-input" id="ob-inc-amt" placeholder="0" type="number" min="0" oninput="obData.incomeAmt=this.value">'+
-        '</div>'+
-        '<div class="ob-label">Frequency</div>'+
-        '<div class="ob-pills">'+
-          '<button class="ob-pill selected" id="ob-freq-monthly" onclick="obSetFreq(\'monthly\')">Monthly</button>'+
-          '<button class="ob-pill" id="ob-freq-weekly" onclick="obSetFreq(\'weekly\')">Weekly</button>'+
-          '<button class="ob-pill" id="ob-freq-yearly" onclick="obSetFreq(\'yearly\')">Yearly</button>'+
-        '</div>'+
-      '</div>'+
-      '<div class="ob-actions">'+
-        '<button class="ob-btn-primary" onclick="obAddIncome()">Add income &rarr;</button>'+
-        '<button class="ob-btn-skip" onclick="obNext()">Skip for now</button>'+
-      '</div>'+
-    '</div>'+
+  // ── Slide 3: Name + currency ──────────────────────────────────────────────
+  var backArrow = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+  var s3 = '<div class="ob-step next" id="ob-s3">'
+    +'<div class="ob-form-area">'
+      +'<div onclick="obGoTo(2)" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);cursor:pointer;margin-bottom:32px;-webkit-tap-highlight-color:transparent;min-height:44px;">'+backArrow+'<span style="font-size:13px;font-weight:500;">Back</span></div>'
+      +'<div class="ob-form-headline">What should<br>we call you?</div>'
+      +'<div class="ob-form-sub">We will personalise your experience.</div>'
+      +'<div class="ob-label">Your name</div>'
+      +'<input class="ob-input" id="ob-name" placeholder="Your name" maxlength="32" oninput="obData.name=this.value">'
+      +'<div class="ob-label" style="margin-top:4px;">Currency</div>'
+      +'<div class="ob-pills">'
+        +'<button class="ob-pill selected" id="ob-cur-AED" onclick="obSetCurrency(\'AED\')">AED</button>'
+        +'<button class="ob-pill" id="ob-cur-USD" onclick="obSetCurrency(\'USD\')">USD</button>'
+        +'<button class="ob-pill" id="ob-cur-PHP" onclick="obSetCurrency(\'PHP\')">PHP</button>'
+      +'</div>'
+    +'</div>'
+    +'<div class="ob-actions">'
+      +'<button class="ob-btn-primary" onclick="obGoTo(4)">Continue &rarr;</button>'
+    +'</div>'
+  +'</div>';
 
-    // Step 2: Bills
-    '<div class="ob-step next" id="ob-s2">'+
-      '<div style="flex:1;display:flex;flex-direction:column;">'+
-        '<div class="ob-icon-wrap bill">'+obSvg('bill')+'</div>'+
-        '<div class="ob-title">Any regular bills?</div>'+
-        '<div class="ob-sub">Rent, subscriptions, utilities — we will track them as monthly expenses.</div>'+
-        '<div class="ob-label">Bill name</div>'+
-        '<input class="ob-input" id="ob-bill-name" placeholder="e.g. Rent, Netflix" maxlength="40" style="margin-bottom:14px;" oninput="obData.billName=this.value">'+
-        '<div class="ob-label">Monthly amount</div>'+
-        '<div class="ob-amount-row">'+
-          '<span class="ob-currency-label" id="ob-bill-cur">AED</span>'+
-          '<input class="ob-input" id="ob-bill-amt" placeholder="0" type="number" min="0" oninput="obData.billAmt=this.value">'+
-        '</div>'+
-        '<div class="ob-label">Category</div>'+
-        '<div class="ob-pills">'+
-          '<button class="ob-pill selected" id="ob-cat-essential" onclick="obSetCat(\'essential\')">Essential</button>'+
-          '<button class="ob-pill" id="ob-cat-sub" onclick="obSetCat(\'sub\')">Subscription</button>'+
-        '</div>'+
-      '</div>'+
-      '<div class="ob-actions">'+
-        '<button class="ob-btn-primary" onclick="obAddBill()">Add bill &rarr;</button>'+
-        '<button class="ob-btn-skip" onclick="obNext()">Skip for now</button>'+
-      '</div>'+
-    '</div>'+
+  // ── Slide 4: Income ───────────────────────────────────────────────────────
+  var s4 = '<div class="ob-step next" id="ob-s4">'
+    +'<div class="ob-form-area">'
+      +'<div onclick="obGoTo(3)" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);cursor:pointer;margin-bottom:32px;-webkit-tap-highlight-color:transparent;min-height:44px;">'+backArrow+'<span style="font-size:13px;font-weight:500;">Back</span></div>'
+      +'<div class="ob-form-headline">Add your main<br>income</div>'
+      +'<div class="ob-form-sub">Used to calculate your savings rate and budget.</div>'
+      +'<div class="ob-label">Income name</div>'
+      +'<input class="ob-input" id="ob-inc-name" placeholder="Salary, Freelance..." maxlength="40" oninput="obData.incomeName=this.value">'
+      +'<div class="ob-label">Amount per period</div>'
+      +'<div class="ob-amount-row">'
+        +'<span class="ob-currency-label" id="ob-inc-cur">AED</span>'
+        +'<input class="ob-input" id="ob-inc-amt" placeholder="0" type="number" min="0" style="margin-bottom:0;" oninput="obData.incomeAmt=this.value">'
+      +'</div>'
+      +'<div class="ob-label">Frequency</div>'
+      +'<div class="ob-pills">'
+        +'<button class="ob-pill selected" id="ob-freq-monthly" onclick="obSetFreq(\'monthly\')">Monthly</button>'
+        +'<button class="ob-pill" id="ob-freq-weekly" onclick="obSetFreq(\'weekly\')">Weekly</button>'
+        +'<button class="ob-pill" id="ob-freq-yearly" onclick="obSetFreq(\'yearly\')">Yearly</button>'
+      +'</div>'
+    +'</div>'
+    +'<div class="ob-actions">'
+      +'<button class="ob-btn-primary" onclick="obAddIncome()">Add income &rarr;</button>'
+      +'<button class="ob-btn-skip" onclick="obGoTo(5)">Skip for now</button>'
+    +'</div>'
+  +'</div>';
 
-    // Step 3: Done
-    '<div class="ob-step next" id="ob-s3">'+
-      '<div style="flex:1;display:flex;flex-direction:column;padding-top:24px;">'+
-        '<div class="ob-icon-wrap done">'+obSvg('goal')+'</div>'+
-        '<div class="ob-title" id="ob-done-title">You are all set!</div>'+
-        '<div class="ob-sub" id="ob-done-sub">Here is what we have set up for you.</div>'+
-        '<div id="ob-summary" style="margin-bottom:8px;"></div>'+
-      '</div>'+
-      '<div class="ob-actions">'+
-        '<button class="ob-btn-primary" onclick="obFinish()">Enter Moxcoin &rarr;</button>'+
-      '</div>'+
-    '</div>'+
+  // ── Slide 5: Bills ────────────────────────────────────────────────────────
+  var s5 = '<div class="ob-step next" id="ob-s5">'
+    +'<div class="ob-form-area">'
+      +'<div onclick="obGoTo(4)" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);cursor:pointer;margin-bottom:32px;-webkit-tap-highlight-color:transparent;min-height:44px;">'+backArrow+'<span style="font-size:13px;font-weight:500;">Back</span></div>'
+      +'<div class="ob-form-headline">Any regular<br>bills?</div>'
+      +'<div class="ob-form-sub">Rent, subscriptions, utilities — tracked as monthly expenses.</div>'
+      +'<div class="ob-label">Bill name</div>'
+      +'<input class="ob-input" id="ob-bill-name" placeholder="Rent, Netflix..." maxlength="40" oninput="obData.billName=this.value">'
+      +'<div class="ob-label">Monthly amount</div>'
+      +'<div class="ob-amount-row">'
+        +'<span class="ob-currency-label" id="ob-bill-cur">AED</span>'
+        +'<input class="ob-input" id="ob-bill-amt" placeholder="0" type="number" min="0" style="margin-bottom:0;" oninput="obData.billAmt=this.value">'
+      +'</div>'
+      +'<div class="ob-label">Category</div>'
+      +'<div class="ob-pills">'
+        +'<button class="ob-pill selected" id="ob-cat-essential" onclick="obSetCat(\'essential\')">Essential</button>'
+        +'<button class="ob-pill" id="ob-cat-sub" onclick="obSetCat(\'sub\')">Subscription</button>'
+      +'</div>'
+    +'</div>'
+    +'<div class="ob-actions">'
+      +'<button class="ob-btn-primary" onclick="obAddBill()">Add bill &rarr;</button>'
+      +'<button class="ob-btn-skip" onclick="obGoTo(6)">Skip for now</button>'
+    +'</div>'
+  +'</div>';
 
-    '</div>';
+  // ── Slide 6: Done ─────────────────────────────────────────────────────────
+  var s6 = '<div class="ob-step next" id="ob-s6">'
+    +'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 28px 0;text-align:center;">'
+      +'<div style="width:80px;height:80px;border-radius:50%;background:rgba(245,158,11,.15);border:1.5px solid rgba(245,158,11,.3);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 60px rgba(245,158,11,.2);animation:obIconBounce .6s cubic-bezier(0.16,1,0.3,1) both;">'
+        +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>'
+      +'</div>'
+      +'<div class="ob-form-headline" id="ob-done-title" style="text-align:center;margin-bottom:8px;">You are all set!</div>'
+      +'<div class="ob-form-sub" id="ob-done-sub" style="text-align:center;margin-bottom:24px;">Here is what we have set up for you.</div>'
+      +'<div id="ob-summary" style="width:100%;text-align:left;"></div>'
+    +'</div>'
+    +'<div class="ob-actions">'
+      +'<button class="ob-btn-primary" onclick="obFinish()">Enter Moxcoin &rarr;</button>'
+    +'</div>'
+  +'</div>';
+
+  // Skip button overlay (slides 1-2)
+  var skipBtn = '<div id="ob-skip-btn" onclick="obGoTo(3)" style="display:none;position:absolute;top:56px;right:20px;z-index:10;font-size:13px;font-weight:500;color:rgba(255,255,255,.4);cursor:pointer;padding:10px;-webkit-tap-highlight-color:transparent;">Skip</div>';
+  // Progress bar
+  var progressBar = '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.08);z-index:10;"><div id="ob-bar-fill" style="height:3px;background:#F59E0B;border-radius:0 2px 2px 0;width:0%;transition:width .42s cubic-bezier(0.16,1,0.3,1);"></div></div>';
+
+  el.innerHTML = progressBar + skipBtn
+    +'<div class="ob-steps" id="ob-steps">'
+    +s0+s1+s2+s3+s4+s5+s6
+    +'</div>';
 
   var container = document.getElementById('app') || document.body;
   container.appendChild(el);
-  // Hide main app content so overlay is clean
   var swipeEl = document.getElementById('swipe-container');
-  var navEl   = document.querySelector('.bottom-nav');
+  var navEl = document.querySelector('.bottom-nav');
   if(swipeEl) swipeEl.style.visibility = 'hidden';
-  if(navEl)   navEl.style.visibility   = 'hidden';
-  setTimeout(function(){ var f=document.getElementById('ob-name'); if(f)f.focus(); },300);
+  if(navEl) navEl.style.visibility = 'hidden';
 }
 
 function obSetCurrency(cur){
@@ -8949,17 +9041,16 @@ function obGoTo(idx){
   steps.forEach(function(s, i){
     s.className = 'ob-step ' + (i < idx ? 'prev' : i === idx ? 'active' : 'next');
   });
-  var dots = document.querySelectorAll('.ob-dot');
-  dots.forEach(function(d, i){
-    d.className = 'ob-dot' + (i <= idx ? ' active' : '');
-    d.style.width = (i === idx ? '24px' : '8px');
-  });
+  var fill = document.getElementById('ob-bar-fill');
+  if(fill) fill.style.width = (idx === 0 ? 0 : Math.round(idx / 6 * 100)) + '%';
+  var skip = document.getElementById('ob-skip-btn');
+  if(skip) skip.style.display = (idx === 1 || idx === 2) ? 'block' : 'none';
   obStep = idx;
+  if(idx === 6) setTimeout(obBuildSummary, 80);
 }
 
 function obNext(){
-  if(obStep < 3) obGoTo(obStep + 1);
-  if(obStep === 3) obBuildSummary();
+  obGoTo(obStep + 1);
 }
 
 function obAddIncome(){
