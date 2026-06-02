@@ -9103,6 +9103,14 @@ function buildOnboarding(){
 
   var container = document.getElementById('app') || document.body;
   container.appendChild(el);
+  // Restart slide 0 enter animations after splash screen clears (~2120ms)
+  setTimeout(function(){
+    var s0el = document.getElementById('ob-s0');
+    if(s0el){
+      var g = s0el.querySelector('.ob-graphic');
+      if(g && g.parentNode){ var gc = g.cloneNode(true); g.parentNode.replaceChild(gc, g); }
+    }
+  }, 2200);
   var swipeEl = document.getElementById('swipe-container');
   var navEl = document.querySelector('.bottom-nav');
   if(swipeEl) swipeEl.style.visibility = 'hidden';
