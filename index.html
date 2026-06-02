@@ -847,9 +847,10 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 }
 #splash-screen.splash-out{animation:splash-fade-out .65s cubic-bezier(0.4,0,1,1) forwards;}
 @keyframes splash-fade-out{0%{opacity:1;}100%{opacity:0;}}
-/* shape cascade animations */
-@keyframes spShapeTR{0%{opacity:0;transform:translate(95px,-70px) scale(.72);}100%{opacity:1;transform:translate(0,0) scale(1);}}
-@keyframes spShapeBL{0%{opacity:0;transform:translate(-95px,70px) scale(.72);}100%{opacity:1;transform:translate(0,0) scale(1);}}
+/* shape enter animations */
+@keyframes spShapeA{0%{opacity:0;transform:translate(40px,-30px) scale(.8);}100%{opacity:1;transform:translate(0,0) scale(1);}}
+@keyframes spShapeB{0%{opacity:0;transform:translate(-40px,30px) scale(.8);}100%{opacity:1;transform:translate(0,0) scale(1);}}
+@keyframes spShapeSmall{0%{opacity:0;transform:scale(.3);}100%{opacity:1;transform:scale(1);}}
 /* ambient glow */
 #sp-glow{
   position:absolute;z-index:1;
@@ -861,11 +862,11 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 /* wordmark letter-by-letter */
 #sp-wordmark{
   position:relative;z-index:2;
-  font-size:52px;font-weight:800;letter-spacing:-3px;color:#F59E0B;
-  line-height:1;margin-top:8px;
+  font-size:58px;font-weight:800;letter-spacing:-3px;color:#fff;
+  line-height:1;
 }
-#sp-wordmark span{display:inline-block;animation:spLetterIn .55s cubic-bezier(.16,1,.3,1) both;}
-@keyframes spLetterIn{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
+#sp-wordmark span{display:inline-block;animation:spLetterIn .52s cubic-bezier(.16,1,.3,1) both;}
+@keyframes spLetterIn{0%{opacity:0;transform:translateY(18px);}100%{opacity:1;transform:translateY(0);}}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -879,19 +880,14 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
 <!-- ── Splash screen ── -->
 <div id="splash-screen">
-  <!-- Top-right: 5 layers — steeper ~28% slope, high contrast dark→bright -->
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom left,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(148deg,#1A0700,#3A1000);clip-path:polygon(0 0,100% 0,100% 56%,0 28%);animation:spShapeTR .9s cubic-bezier(.16,1,.3,1) 0s both;"></div>
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom left,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(148deg,#3A1000,#6B2200);clip-path:polygon(7% 0,100% 0,100% 48%,0 20%);animation:spShapeTR .9s cubic-bezier(.16,1,.3,1) .14s both;"></div>
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom left,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(148deg,#6B2200,#A34000);clip-path:polygon(14% 0,100% 0,100% 40%,0 12%);animation:spShapeTR .9s cubic-bezier(.16,1,.3,1) .28s both;"></div>
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom left,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(148deg,#A34000,#D96500);clip-path:polygon(21% 0,100% 0,100% 32%,0 4%);animation:spShapeTR .9s cubic-bezier(.16,1,.3,1) .42s both;"></div>
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to bottom left,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(148deg,#D96500,#F59E0B);clip-path:polygon(28% 0,100% 0,100% 24%,4% 0%);animation:spShapeTR .9s cubic-bezier(.16,1,.3,1) .56s both;"></div>
-  <!-- Bottom-left: 4 layers — mirror slope -->
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to top right,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(328deg,#0D0300,#1A0700);clip-path:polygon(0 44%,100% 72%,100% 100%,0 100%);animation:spShapeBL .9s cubic-bezier(.16,1,.3,1) .07s both;"></div>
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to top right,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(328deg,#1A0700,#3A1000);clip-path:polygon(0 52%,100% 80%,100% 100%,0 100%);animation:spShapeBL .9s cubic-bezier(.16,1,.3,1) .21s both;"></div>
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to top right,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(328deg,#3A1000,#6B2200);clip-path:polygon(0 60%,100% 88%,100% 100%,0 100%);animation:spShapeBL .9s cubic-bezier(.16,1,.3,1) .35s both;"></div>
-  <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(to top right,rgba(0,0,0,.5) 0%,transparent 32%),linear-gradient(328deg,#6B2200,#A34000);clip-path:polygon(0 68%,100% 96%,100% 100%,0 100%);animation:spShapeBL .9s cubic-bezier(.16,1,.3,1) .49s both;"></div>
-  <!-- Center: glow + wordmark only, letters start after last shape settles (~1.55s) -->
-  <div id="sp-glow"></div>
+  <!-- Same amber polygon shapes as onboarding slide 0 — enter then float -->
+  <div style="position:absolute;top:-18%;right:-18%;width:75%;height:70%;background:linear-gradient(135deg,#F59E0B,#D97706 55%,#92400E);clip-path:polygon(35% 0,100% 0,100% 65%,55% 100%,0 55%);animation:spShapeA .85s cubic-bezier(.16,1,.3,1) both,obShapeA 16s ease-in-out .85s infinite;transform-origin:75% 25%;"></div>
+  <div style="position:absolute;bottom:-18%;left:-18%;width:70%;height:65%;background:linear-gradient(315deg,#FCD34D,#F59E0B 45%,#D97706);clip-path:polygon(0 35%,65% 0,100% 25%,80% 100%,0 100%);animation:spShapeB .85s cubic-bezier(.16,1,.3,1) .14s both,obShapeB 20s ease-in-out .99s infinite;transform-origin:25% 75%;"></div>
+  <div style="position:absolute;top:10%;left:6%;width:22%;height:22%;background:linear-gradient(135deg,#FCD34D,#F59E0B);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:spShapeSmall .85s cubic-bezier(.16,1,.3,1) .24s both,obShapeC 9s ease-in-out 1.09s infinite;opacity:.75;"></div>
+  <div style="position:absolute;bottom:18%;right:8%;width:14%;height:14%;background:#F59E0B;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:spShapeSmall .85s cubic-bezier(.16,1,.3,1) .34s both,obShapeD 6s ease-in-out 1.19s infinite;opacity:.6;"></div>
+  <!-- Dark vignette to make wordmark crisp against shapes -->
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 62% 50% at 50% 58%,rgba(9,6,10,.9) 0%,transparent 68%);pointer-events:none;"></div>
+  <!-- Wordmark — letters reveal after shapes settle -->
   <div id="sp-wordmark"><span style="animation-delay:1.55s">M</span><span style="animation-delay:1.62s">o</span><span style="animation-delay:1.69s">x</span><span style="animation-delay:1.76s">c</span><span style="animation-delay:1.83s">o</span><span style="animation-delay:1.90s">i</span><span style="animation-delay:1.97s">n</span></div>
 </div>
 
@@ -8896,23 +8892,23 @@ function buildOnboarding(){
           +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
               +'<div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">INCOME</div>'
-              +'<div style="font-size:16px;font-weight:800;color:#fff;">12,500</div>'
-              +'<div style="font-size:9px;color:#10B981;margin-top:2px;">&#8593; +5%</div>'
+              +'<div style="font-size:19px;font-weight:800;color:#fff;">12,500</div>'
+              +'<div style="font-size:10px;color:#10B981;margin-top:2px;">&#8593; +5%</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
               +'<div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">SPENT</div>'
-              +'<div style="font-size:16px;font-weight:800;color:#fff;">6,200</div>'
+              +'<div style="font-size:19px;font-weight:800;color:#fff;">6,200</div>'
               +'<div style="font-size:9px;color:#EF4444;margin-top:2px;">&#8593; +12%</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
               +'<div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">SAVED</div>'
-              +'<div style="font-size:16px;font-weight:800;color:#10B981;">50%</div>'
-              +'<div style="font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;">Great rate</div>'
+              +'<div style="font-size:19px;font-weight:800;color:#10B981;">50%</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">Great rate</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
               +'<div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">STREAK</div>'
-              +'<div style="font-size:16px;font-weight:800;color:#F59E0B;">7d</div>'
-              +'<div style="font-size:9px;color:#F59E0B;margin-top:2px;">Keep going</div>'
+              +'<div style="font-size:19px;font-weight:800;color:#F59E0B;">7d</div>'
+              +'<div style="font-size:10px;color:#F59E0B;margin-top:2px;">Keep going</div>'
             +'</div>'
           +'</div>'
         +'</div>'
@@ -8964,14 +8960,6 @@ function buildOnboarding(){
           +'<div style="position:absolute;inset:0;border-radius:50%;border:2.5px solid rgba(255,255,255,.85);pointer-events:none;animation:obBurstCircle 3.2s ease .5s both;opacity:0;"></div>'
           // "LEVEL UP!" text
           +'<div style="position:absolute;top:50%;left:50%;white-space:nowrap;font-size:10px;font-weight:800;color:#fff;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;animation:obLvlUpTxt 3.2s ease .5s both;opacity:0;">LEVEL UP!</div>'
-          // floating badge: gold star
-          +'<div style="position:absolute;top:-6px;right:-38px;width:34px;height:34px;background:rgba(245,158,11,.2);border:1.5px solid rgba(245,158,11,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:obFloat 3s ease-in-out -.5s infinite;">'
-            +'<svg width="15" height="15" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>'
-          +'</div>'
-          // floating badge: green check
-          +'<div style="position:absolute;bottom:-6px;left:-38px;width:30px;height:30px;background:rgba(16,185,129,.2);border:1.5px solid rgba(16,185,129,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:obFloat 3.5s ease-in-out -2s infinite;">'
-            +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>'
-          +'</div>'
         +'</div>'
         // XP progress bar (sequences through level-up)
         +'<div style="background:rgba(8,5,16,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(168,85,247,.22);border-radius:12px;padding:9px 16px;width:150px;">'
@@ -8998,7 +8986,10 @@ function buildOnboarding(){
 
   // ── Slide 3: Name + currency ──────────────────────────────────────────────
   var backArrow = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+  var obSubtleShapes = '<div style="position:absolute;top:-10%;right:-10%;width:38%;height:34%;background:linear-gradient(135deg,#F59E0B,#D97706);clip-path:polygon(35% 0,100% 0,100% 65%,55% 100%,0 55%);opacity:.06;pointer-events:none;"></div>'
+    +'<div style="position:absolute;bottom:-8%;left:-8%;width:30%;height:27%;background:linear-gradient(315deg,#FCD34D,#F59E0B);clip-path:polygon(0 35%,65% 0,100% 25%,80% 100%,0 100%);opacity:.05;pointer-events:none;"></div>';
   var s3 = '<div class="ob-step next" id="ob-s3">'
+    +obSubtleShapes
     +'<div class="ob-form-area">'
       +'<div onclick="obGoTo(2)" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);cursor:pointer;margin-bottom:32px;-webkit-tap-highlight-color:transparent;min-height:44px;">'+backArrow+'<span style="font-size:13px;font-weight:500;">Back</span></div>'
       +'<div class="ob-form-headline">What should<br>we call you?</div>'
@@ -9025,6 +9016,7 @@ function buildOnboarding(){
 
   // ── Slide 4: Income ───────────────────────────────────────────────────────
   var s4 = '<div class="ob-step next" id="ob-s4">'
+    +obSubtleShapes
     +'<div class="ob-form-area">'
       +'<div onclick="obGoTo(3)" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);cursor:pointer;margin-bottom:32px;-webkit-tap-highlight-color:transparent;min-height:44px;">'+backArrow+'<span style="font-size:13px;font-weight:500;">Back</span></div>'
       +'<div class="ob-form-headline">Add your main<br>income</div>'
@@ -9034,7 +9026,7 @@ function buildOnboarding(){
       +'<div class="ob-label">Amount per period</div>'
       +'<div class="ob-amount-row">'
         +'<span class="ob-currency-label" id="ob-inc-cur">AED</span>'
-        +'<input class="ob-input" id="ob-inc-amt" placeholder="0" type="number" min="0" inputmode="decimal" style="margin-bottom:0;" oninput="obData.incomeAmt=this.value">'
+        +'<input class="ob-input" id="ob-inc-amt" placeholder="" type="number" min="0" inputmode="decimal" style="margin-bottom:0;" oninput="obData.incomeAmt=this.value">'
       +'</div>'
       +'<div class="ob-label">Frequency</div>'
       +'<div class="ob-pills">'
@@ -9057,6 +9049,7 @@ function buildOnboarding(){
 
   // ── Slide 5: Bills ────────────────────────────────────────────────────────
   var s5 = '<div class="ob-step next" id="ob-s5">'
+    +obSubtleShapes
     +'<div class="ob-form-area">'
       +'<div onclick="obGoTo(4)" style="display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);cursor:pointer;margin-bottom:32px;-webkit-tap-highlight-color:transparent;min-height:44px;">'+backArrow+'<span style="font-size:13px;font-weight:500;">Back</span></div>'
       +'<div class="ob-form-headline">Any regular<br>bills?</div>'
@@ -9066,7 +9059,7 @@ function buildOnboarding(){
       +'<div class="ob-label">Monthly amount</div>'
       +'<div class="ob-amount-row">'
         +'<span class="ob-currency-label" id="ob-bill-cur">AED</span>'
-        +'<input class="ob-input" id="ob-bill-amt" placeholder="0" type="number" min="0" inputmode="decimal" style="margin-bottom:0;" oninput="obData.billAmt=this.value">'
+        +'<input class="ob-input" id="ob-bill-amt" placeholder="" type="number" min="0" inputmode="decimal" style="margin-bottom:0;" oninput="obData.billAmt=this.value">'
       +'</div>'
       +'<div class="ob-label">Category</div>'
       +'<div class="ob-pills">'
@@ -9088,12 +9081,14 @@ function buildOnboarding(){
 
   // ── Slide 6: Done ─────────────────────────────────────────────────────────
   var s6 = '<div class="ob-step next" id="ob-s6">'
+    +obSubtleShapes
     +'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 28px 0;text-align:center;">'
-      +'<div style="position:relative;margin-bottom:24px;">'
-        +'<div style="width:90px;height:90px;border-radius:50%;background:rgba(245,158,11,.15);border:1.5px solid rgba(245,158,11,.35);display:flex;align-items:center;justify-content:center;box-shadow:0 0 80px rgba(245,158,11,.3),0 0 160px rgba(245,158,11,.1);animation:obIconBounce .6s cubic-bezier(0.16,1,0.3,1) both;">'
-          +'<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>'
+      +'<div style="position:relative;margin-bottom:28px;">'
+        +'<div style="width:112px;height:112px;border-radius:50%;background:rgba(245,158,11,.12);border:2px solid rgba(245,158,11,.4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px rgba(245,158,11,.35),0 0 120px rgba(245,158,11,.15);animation:obIconBounce .6s cubic-bezier(0.16,1,0.3,1) both;">'
+          +'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>'
         +'</div>'
-        +'<div style="position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(245,158,11,.15);animation:obBurstCircle .8s cubic-bezier(0.16,1,0.3,1) .3s both;opacity:0;"></div>'
+        +'<div style="position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(245,158,11,.18);animation:obBurstCircle .9s cubic-bezier(0.16,1,0.3,1) .3s both;opacity:0;"></div>'
+        +'<div style="position:absolute;inset:-28px;border-radius:50%;border:1px solid rgba(245,158,11,.08);animation:obBurstCircle .9s cubic-bezier(0.16,1,0.3,1) .5s both;opacity:0;"></div>'
       +'</div>'
       +'<div style="font-size:11px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:10px;">Welcome to Moxcoin</div>'
       +'<div class="ob-form-headline" id="ob-done-title" style="text-align:center;margin-bottom:8px;">You are all set!</div>'
@@ -9106,7 +9101,7 @@ function buildOnboarding(){
   +'</div>';
 
   // Skip button overlay (slides 1-2)
-  var skipBtn = '<div id="ob-skip-btn" onclick="obGoTo(3)" style="display:none;position:absolute;top:46px;right:12px;z-index:10;font-size:13px;font-weight:500;color:rgba(255,255,255,.45);cursor:pointer;padding:14px 16px;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;">Skip</div>';
+  var skipBtn = '<div id="ob-skip-btn" onclick="obGoTo(3)" style="position:absolute;top:46px;right:12px;z-index:10;font-size:13px;font-weight:500;color:rgba(255,255,255,.45);cursor:pointer;padding:14px 16px;min-height:44px;min-width:44px;display:none;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;">Skip</div>';
   // Progress bar
   var progressBar = '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.08);z-index:10;"><div id="ob-bar-fill" style="height:3px;background:#F59E0B;border-radius:0 2px 2px 0;width:0%;transition:width .42s cubic-bezier(0.16,1,0.3,1);"></div></div>';
 
@@ -9185,7 +9180,7 @@ function obGoTo(idx){
   var fill = document.getElementById('ob-bar-fill');
   if(fill) fill.style.width = Math.round((idx + 1) / 7 * 100) + '%';
   var skip = document.getElementById('ob-skip-btn');
-  if(skip) skip.style.display = (idx === 1 || idx === 2) ? 'block' : 'none';
+  if(skip){ skip.style.display = (idx === 1 || idx === 2) ? 'flex' : 'none'; }
   obStep = idx;
   if(idx === 6){ setTimeout(obBuildSummary, 80); setTimeout(function(){ launchConfetti('gold'); }, 600); }
   // Restart shape enter animations by clone-replacing the graphic container for showcase slides
