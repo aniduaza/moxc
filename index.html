@@ -8924,7 +8924,7 @@ function buildOnboarding(){
       +'<div style="position:absolute;top:42%;right:5%;width:10%;height:10%;background:#A855F7;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obShapeC 8s ease-in-out -3s infinite;opacity:.5;"></div>'
       +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 58%,rgba(8,5,16,.84) 0%,transparent 70%);pointer-events:none;"></div>'
       // ── Slide 2 mockup: Level 2 → 3 animation ──
-      +'<div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;">'
+      +'<div id="ob-s2-mockup" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;">'
         +'<div style="position:relative;">'
           +'<svg width="128" height="128" viewBox="0 0 128 128">'
             // track
@@ -9120,6 +9120,16 @@ function obGoTo(idx){
   if(skip) skip.style.display = (idx === 1 || idx === 2) ? 'block' : 'none';
   obStep = idx;
   if(idx === 6) setTimeout(obBuildSummary, 80);
+  // Restart slide 2 animations by clone-replacing the mockup container
+  if(idx === 2){
+    setTimeout(function(){
+      var mockup = document.getElementById('ob-s2-mockup');
+      if(mockup && mockup.parentNode){
+        var clone = mockup.cloneNode(true);
+        mockup.parentNode.replaceChild(clone, mockup);
+      }
+    }, 80);
+  }
 }
 
 function obNext(){
