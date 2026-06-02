@@ -738,7 +738,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 @keyframes wrapPulse{0%,100%{opacity:1}50%{opacity:.6}}
 @keyframes wrapGlowPulse{0%,100%{opacity:.6}50%{opacity:1}}
 @keyframes wrapTapHint{0%{opacity:0;transform:translateX(0)}40%{opacity:.7;transform:translateX(6px)}100%{opacity:0;transform:translateX(0)}}
-@media(prefers-reduced-motion:reduce){#wrapped-overlay *,#ob-overlay *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
+@media(prefers-reduced-motion:reduce){#splash-screen *,#wrapped-overlay *,#ob-overlay *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
 .empty-state{animation:emptyIn .36s cubic-bezier(0.16,1,0.3,1) both;}
 @keyframes iconPop{0%{transform:scale(0.6);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 .empty-state-icon-wrap{animation:iconPop .44s cubic-bezier(0.16,1,0.3,1) .1s both;}
@@ -840,53 +840,51 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 /* ── Splash screen ──────────────────────────────────────────────────────── */
 #splash-screen{
   position:absolute;inset:0;z-index:99999;
-  background:#0D0B0B;
+  background:#080502;
   pointer-events:none;
   overflow:hidden;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
-#splash-screen.splash-out{
-  animation:splash-fade-out .65s cubic-bezier(0.4,0,1,1) forwards;
-}
+#splash-screen.splash-out{animation:splash-fade-out .65s cubic-bezier(0.4,0,1,1) forwards;}
 @keyframes splash-fade-out{0%{opacity:1;}100%{opacity:0;}}
+/* shape cascade animations */
+@keyframes spShapeTR{0%{opacity:0;transform:translate(70px,-52px) scale(.78);}100%{opacity:1;transform:translate(0,0) scale(1);}}
+@keyframes spShapeBL{0%{opacity:0;transform:translate(-70px,52px) scale(.78);}100%{opacity:1;transform:translate(0,0) scale(1);}}
 /* ambient glow */
 #sp-glow{
-  position:absolute;
-  width:320px;height:320px;border-radius:50%;
-  background:radial-gradient(circle,rgba(245,158,11,.16) 0%,transparent 68%);
-  animation:spGlowIn 1s ease .05s both;
+  position:absolute;z-index:1;
+  width:310px;height:310px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,158,11,.15) 0%,transparent 65%);
+  animation:spGlowIn 1s ease .18s both;pointer-events:none;
 }
-@keyframes spGlowIn{0%{opacity:0;transform:scale(.4);}60%{opacity:1;transform:scale(1);}100%{opacity:1;transform:scale(1);}}
+@keyframes spGlowIn{0%{opacity:0;transform:scale(.3);}65%{opacity:1;transform:scale(1);}100%{opacity:1;transform:scale(1);}}
 /* icon badge */
 #sp-icon{
   position:relative;z-index:2;
-  width:58px;height:58px;border-radius:18px;
+  width:56px;height:56px;border-radius:17px;
   background:rgba(245,158,11,.1);
-  border:1.5px solid rgba(245,158,11,.28);
+  border:1.5px solid rgba(245,158,11,.3);
   display:flex;align-items:center;justify-content:center;
-  margin-bottom:18px;
-  box-shadow:0 0 28px rgba(245,158,11,.18),0 0 0 6px rgba(245,158,11,.06);
-  animation:spIconIn .65s cubic-bezier(.16,1,.3,1) .08s both;
+  margin-bottom:16px;
+  box-shadow:0 0 26px rgba(245,158,11,.22),0 0 0 5px rgba(245,158,11,.06);
+  animation:spIconIn .6s cubic-bezier(.16,1,.3,1) .6s both;
 }
-@keyframes spIconIn{0%{opacity:0;transform:scale(.45) rotate(-20deg);}100%{opacity:1;transform:scale(1) rotate(0deg);}}
+@keyframes spIconIn{0%{opacity:0;transform:scale(.38) rotate(-18deg);}100%{opacity:1;transform:scale(1) rotate(0deg);}}
 /* wordmark letter-by-letter */
 #sp-wordmark{
   position:relative;z-index:2;
   font-size:46px;font-weight:800;letter-spacing:-2.5px;color:#F59E0B;
   margin-bottom:10px;line-height:1;
 }
-#sp-wordmark span{
-  display:inline-block;
-  animation:spLetterIn .55s cubic-bezier(.16,1,.3,1) both;
-}
-@keyframes spLetterIn{0%{opacity:0;transform:translateY(16px);}100%{opacity:1;transform:translateY(0);}}
+#sp-wordmark span{display:inline-block;animation:spLetterIn .52s cubic-bezier(.16,1,.3,1) both;}
+@keyframes spLetterIn{0%{opacity:0;transform:translateY(18px);}100%{opacity:1;transform:translateY(0);}}
 /* tagline */
 #sp-tagline{
   position:relative;z-index:2;
-  font-size:13px;font-weight:400;color:rgba(255,255,255,.38);letter-spacing:.03em;
-  animation:spTagIn .5s ease .88s both;
+  font-size:13px;color:rgba(255,255,255,.35);letter-spacing:.03em;
+  animation:spTagIn .45s ease 1.18s both;
 }
-@keyframes spTagIn{0%{opacity:0;transform:translateY(7px);}100%{opacity:1;transform:translateY(0);}}
+@keyframes spTagIn{0%{opacity:0;transform:translateY(6px);}100%{opacity:1;transform:translateY(0);}}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -900,11 +898,21 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
 <!-- ── Splash screen ── -->
 <div id="splash-screen">
+  <!-- Top-right: 5 layers cascading dark→bright amber, outermost first -->
+  <div style="position:absolute;z-index:1;top:-24%;right:-22%;width:96%;height:86%;background:linear-gradient(148deg,#3B0E00,#6B2200);clip-path:polygon(30% 0,100% 0,100% 75%,65% 100%,0 55%);animation:spShapeTR .62s cubic-bezier(.16,1,.3,1) 0s both;"></div>
+  <div style="position:absolute;z-index:1;top:-19%;right:-17%;width:82%;height:74%;background:linear-gradient(148deg,#6B2200,#92400E);clip-path:polygon(34% 0,100% 0,100% 68%,58% 100%,0 48%);animation:spShapeTR .62s cubic-bezier(.16,1,.3,1) .08s both;"></div>
+  <div style="position:absolute;z-index:1;top:-14%;right:-12%;width:69%;height:62%;background:linear-gradient(148deg,#92400E,#B45309);clip-path:polygon(38% 0,100% 0,100% 62%,52% 100%,0 42%);animation:spShapeTR .62s cubic-bezier(.16,1,.3,1) .15s both;"></div>
+  <div style="position:absolute;z-index:1;top:-9%;right:-8%;width:57%;height:51%;background:linear-gradient(148deg,#B45309,#D97706);clip-path:polygon(42% 0,100% 0,100% 56%,46% 100%,0 36%);animation:spShapeTR .62s cubic-bezier(.16,1,.3,1) .22s both;"></div>
+  <div style="position:absolute;z-index:1;top:-5%;right:-4%;width:45%;height:41%;background:linear-gradient(148deg,#D97706,#F59E0B);clip-path:polygon(46% 0,100% 0,100% 50%,40% 100%,0 30%);animation:spShapeTR .62s cubic-bezier(.16,1,.3,1) .29s both;"></div>
+  <!-- Bottom-left: 4 layers dark→warm amber -->
+  <div style="position:absolute;z-index:1;bottom:-22%;left:-20%;width:90%;height:80%;background:linear-gradient(328deg,#1E0800,#3B0E00);clip-path:polygon(0 26%,64% 0,100% 24%,83% 100%,0 100%);animation:spShapeBL .62s cubic-bezier(.16,1,.3,1) .04s both;"></div>
+  <div style="position:absolute;z-index:1;bottom:-17%;left:-15%;width:77%;height:69%;background:linear-gradient(328deg,#3B0E00,#6B2200);clip-path:polygon(0 30%,58% 0,100% 20%,78% 100%,0 100%);animation:spShapeBL .62s cubic-bezier(.16,1,.3,1) .12s both;"></div>
+  <div style="position:absolute;z-index:1;bottom:-12%;left:-11%;width:64%;height:58%;background:linear-gradient(328deg,#6B2200,#92400E);clip-path:polygon(0 34%,52% 0,100% 16%,74% 100%,0 100%);animation:spShapeBL .62s cubic-bezier(.16,1,.3,1) .19s both;"></div>
+  <div style="position:absolute;z-index:1;bottom:-8%;left:-7%;width:52%;height:47%;background:linear-gradient(328deg,#92400E,#B45309);clip-path:polygon(0 38%,46% 0,100% 12%,70% 100%,0 100%);animation:spShapeBL .62s cubic-bezier(.16,1,.3,1) .26s both;"></div>
+  <!-- Center content -->
   <div id="sp-glow"></div>
-  <div id="sp-icon">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg>
-  </div>
-  <div id="sp-wordmark"><span style="animation-delay:.30s">M</span><span style="animation-delay:.36s">o</span><span style="animation-delay:.42s">x</span><span style="animation-delay:.48s">c</span><span style="animation-delay:.54s">o</span><span style="animation-delay:.60s">i</span><span style="animation-delay:.66s">n</span></div>
+  <div id="sp-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></div>
+  <div id="sp-wordmark"><span style="animation-delay:.74s">M</span><span style="animation-delay:.80s">o</span><span style="animation-delay:.86s">x</span><span style="animation-delay:.92s">c</span><span style="animation-delay:.98s">o</span><span style="animation-delay:1.04s">i</span><span style="animation-delay:1.10s">n</span></div>
   <div id="sp-tagline">Your money, levelled up.</div>
 </div>
 
