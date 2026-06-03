@@ -882,7 +882,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 #sp-rule{position:relative;z-index:2;width:36px;height:2px;background:#F59E0B;border-radius:1px;margin-top:16px;transform-origin:center;animation:spRuleIn .4s ease 2.08s both;}
 @keyframes spRuleIn{0%{opacity:0;transform:scaleX(0);}100%{opacity:1;transform:scaleX(1);}}
 /* meta text */
-#sp-meta{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:500;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;white-space:nowrap;z-index:3;animation:spTagIn .5s ease 2.2s both;}
+#sp-meta{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:500;color:rgba(255,255,255,.28);letter-spacing:.2em;text-transform:uppercase;white-space:nowrap;z-index:3;animation:spTagIn .5s ease 2.2s both;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -899,15 +899,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
   <!-- Registration corner marks -->
   <div id="sp-reg-tl" class="sp-reg"></div>
   <div id="sp-reg-tr" class="sp-reg"></div>
-  <div id="sp-reg-bl" class="sp-reg"></div>
-  <div id="sp-reg-br" class="sp-reg"></div>
   <!-- Amber polygon shapes — enter then float -->
   <div style="position:absolute;top:-18%;right:-18%;width:62%;height:58%;background:linear-gradient(135deg,#F59E0B,#D97706 55%,#92400E);clip-path:polygon(42% 0,100% 0,100% 65%,62% 100%,0 58%);animation:spShapeA .85s cubic-bezier(.16,1,.3,1) both,obShapeA 16s ease-in-out .85s infinite;transform-origin:75% 25%;"></div>
   <div style="position:absolute;bottom:-18%;left:-18%;width:58%;height:54%;background:linear-gradient(315deg,#FCD34D,#F59E0B 45%,#D97706);clip-path:polygon(0 38%,62% 0,100% 28%,80% 100%,0 100%);animation:spShapeB .85s cubic-bezier(.16,1,.3,1) .14s both,obShapeB 20s ease-in-out .99s infinite;transform-origin:25% 75%;"></div>
-  <div style="position:absolute;top:6%;left:4%;width:16%;height:16%;background:linear-gradient(135deg,#FCD34D,#F59E0B);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:spShapeSmall .85s cubic-bezier(.16,1,.3,1) .24s both,obShapeC 9s ease-in-out 1.09s infinite;opacity:.65;"></div>
   <div style="position:absolute;bottom:14%;right:6%;width:11%;height:11%;background:#F59E0B;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:spShapeSmall .85s cubic-bezier(.16,1,.3,1) .34s both,obShapeD 6s ease-in-out 1.19s infinite;opacity:.5;"></div>
   <!-- Hexagonal M coin icon -->
-  <svg id="sp-coin" width="72" height="72" viewBox="0 0 220 220">
+  <svg id="sp-coin" width="88" height="88" viewBox="0 0 220 220">
     <polygon points="110,6 208,60 208,160 110,214 12,160 12,60" fill="#2A2826" stroke="#F59E0B" stroke-width="2.5"/>
     <polygon points="110,30 188,74 188,146 110,190 32,146 32,74" fill="#1A1816"/>
     <line x1="78" y1="58" x2="142" y2="58" stroke="#F59E0B" stroke-width="2" opacity="0.4"/>
@@ -8974,7 +8971,7 @@ function buildOnboarding(){
       +'<div style="position:absolute;top:12%;left:7%;width:13%;height:13%;background:#3B82F6;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .38s both,obShapeD 7s ease-in-out 1.18s infinite;opacity:.65;"></div>'
       +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 58%,rgba(4,12,10,.82) 0%,transparent 70%);pointer-events:none;"></div>'
       // ── Slide 1 mockup: Stats grid card ──
-      +'<div style="position:relative;z-index:2;animation:obFloat 4s ease-in-out infinite;transform:rotate(-3deg);width:220px;">'
+      +'<div style="position:relative;z-index:2;animation:obFloat 4s ease-in-out infinite;transform:rotate(-3deg);width:252px;">'
         +'<div style="background:rgba(4,12,10,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(16,185,129,.18);border-radius:18px;padding:14px;">'
           +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
@@ -9027,7 +9024,8 @@ function buildOnboarding(){
       +'<div style="position:absolute;top:42%;right:5%;width:10%;height:10%;background:#A855F7;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:obEnterScale .8s cubic-bezier(.16,1,.3,1) .46s both,obShapeC 8s ease-in-out 1.26s infinite;opacity:.5;"></div>'
       +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 58%,rgba(8,5,16,.84) 0%,transparent 70%);pointer-events:none;"></div>'
       // ── Slide 2 mockup: Level 2 → 3 animation ──
-      +'<div id="ob-s2-mockup" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;">'
+      +'<div id="ob-s2-mockup" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;">'
+        +'<div style="font-family:\'DM Mono\',monospace;font-size:10px;font-weight:500;letter-spacing:.18em;color:rgba(168,85,247,.75);text-transform:uppercase;margin-bottom:2px;">Finance Strategist</div>'
         +'<div style="position:relative;">'
           +'<svg width="128" height="128" viewBox="0 0 128 128">'
             // track
@@ -9039,9 +9037,9 @@ function buildOnboarding(){
             // LEVEL label (flashes white at level-up)
             +'<text x="64" y="59" text-anchor="middle" fill="rgba(255,255,255,.35)" font-size="9" font-family="DM Sans,sans-serif" font-weight="600" letter-spacing="2" style="animation:obLevelLbl 3.2s ease .5s both;">LEVEL</text>'
             // "2" — scales up and fades out
-            +'<text x="64" y="79" text-anchor="middle" fill="#A855F7" font-size="26" font-family="DM Sans,sans-serif" font-weight="800" style="animation:obLvl2Num 3.2s ease .5s both;">2</text>'
+            +'<text x="64" y="79" text-anchor="middle" fill="#fff" font-size="26" font-family="DM Sans,sans-serif" font-weight="800" style="animation:obLvl2Num 3.2s ease .5s both;">2</text>'
             // "3" — scales in from large
-            +'<text x="64" y="79" text-anchor="middle" fill="#A855F7" font-size="26" font-family="DM Sans,sans-serif" font-weight="800" style="animation:obLvl3Num 3.2s ease .5s both;opacity:0;">3</text>'
+            +'<text x="64" y="79" text-anchor="middle" fill="#fff" font-size="26" font-family="DM Sans,sans-serif" font-weight="800" style="animation:obLvl3Num 3.2s ease .5s both;opacity:0;">3</text>'
           +'</svg>'
           // Burst circle (expands and fades at level-up moment)
           +'<div style="position:absolute;inset:0;border-radius:50%;border:2.5px solid rgba(255,255,255,.85);pointer-events:none;animation:obBurstCircle 3.2s ease .5s both;opacity:0;"></div>'
@@ -9049,10 +9047,10 @@ function buildOnboarding(){
           +'<div style="position:absolute;top:50%;left:50%;white-space:nowrap;font-size:10px;font-weight:800;color:#fff;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;animation:obLvlUpTxt 3.2s ease .5s both;opacity:0;">LEVEL UP!</div>'
         +'</div>'
         // XP progress bar (sequences through level-up)
-        +'<div style="background:rgba(8,5,16,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(168,85,247,.22);border-radius:12px;padding:9px 16px;width:150px;">'
-          +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">'
-            +'<span style="font-size:9px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;">XP Progress</span>'
-            +'<span style="font-size:9px;font-weight:700;color:#A855F7;">240 / 300</span>'
+        +'<div style="background:rgba(8,5,16,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(168,85,247,.22);border-radius:12px;padding:10px 18px;width:168px;">'
+          +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+            +'<span style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;">XP Progress</span>'
+            +'<span style="font-size:11px;font-weight:700;color:#A855F7;">240 / 300</span>'
           +'</div>'
           +'<div style="height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;">'
             +'<div style="height:4px;border-radius:2px;animation:obXpLvlSeq 3.2s ease .5s both;width:60%;"></div>'
