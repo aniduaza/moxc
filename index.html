@@ -1222,7 +1222,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div style="display:flex;gap:6px;margin-bottom:12px;">
             <div class="act-stat-pill">
               <div class="act-stat-lbl">Income</div>
-              <div class="act-stat-val" style="color:#10B981;" id="act-income">—</div>
+              <div class="act-stat-val act-spent-val" id="act-income">—</div>
             </div>
             <div class="act-stat-pill">
               <div class="act-stat-lbl">Spent</div>
@@ -1320,28 +1320,28 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <div class="more-item-icon" style="background:rgba(16,185,129,.12);color:#10B981;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 13V7M7.5 9.5L10 7L12.5 9.5"/></svg>
             </div>
-            <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No income sources yet</div></div>
+            <div class="more-item-info"><div class="more-item-title">Income sources</div><div class="more-item-sub" id="more-income-count">No sources added yet</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
           <div class="more-item item-in" onclick="switchTab('expenses')">
-            <div class="more-item-icon" style="background:rgba(224,85,85,.1);color:#E24B4A;">
+            <div class="more-item-icon" style="background:rgba(249,115,22,.1);color:#F97316;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3.5h11v11l-1.75 1.75-1.75-1.75-1.75 1.75-1.75-1.75-1.75 1.75-1.75-1.75V3.5Z"/><path d="M7 8h6M7 11h4"/></svg>
             </div>
-            <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills yet</div></div>
+            <div class="more-item-info"><div class="more-item-title">Monthly bills</div><div class="more-item-sub" id="more-bills-count">No bills added yet</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
           <div class="more-item item-in" onclick="switchTab('credit')">
             <div class="more-item-icon" style="background:rgba(99,102,241,.12);color:#6366F1;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="16" height="11" rx="1.5"/><path d="M2 8.5h16"/><path d="M5 12.5h3.5M13 12.5h1.5"/></svg>
             </div>
-            <div class="more-item-info"><div class="more-item-title">Credit cards</div><div class="more-item-sub" id="more-credit-sub">No cards yet</div></div>
+            <div class="more-item-info"><div class="more-item-title">Credit cards</div><div class="more-item-sub" id="more-credit-sub">No cards added yet</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
           <div class="more-item item-in" onclick="switchTab('savings')">
             <div class="more-item-icon" style="background:rgba(59,130,246,.12);color:#3B82F6;">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17.5h16M4.5 17.5V11M8.5 17.5V11M11.5 17.5V11M15.5 17.5V11M2 11h16M10 3.5L2 8.5h16L10 3.5Z"/></svg>
             </div>
-            <div class="more-item-info"><div class="more-item-title">Savings accounts</div><div class="more-item-sub" id="more-savings-count">No accounts yet</div></div>
+            <div class="more-item-info"><div class="more-item-title">Savings accounts</div><div class="more-item-sub" id="more-savings-count">No accounts added yet</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
           <div class="more-item item-in" onclick="switchTab('budget')">
@@ -4430,7 +4430,7 @@ function openFAB(){
   moneyLabel.style.marginTop = '16px';
   sheet.appendChild(moneyLabel);
   var row1 = fabGrid(2, 8);
-  row1.appendChild(makeFABItem('add-income',  'income', 'Income', '#10B981', false, false, 'Add a salary or income'));
+  row1.appendChild(makeFABItem('add-income',  'income', 'Income', '#10B981', false, false, 'Log a one-time payment'));
   row1.appendChild(makeFABItem('add-expense', 'bill',   'Bill',   '#EF4444', false, false, 'Log a recurring expense'));
   sheet.appendChild(row1);
 
@@ -5559,19 +5559,19 @@ function renderMore(){
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   set('more-income-count', data.incomeSources.length
     ? data.incomeSources.length+' source'+(data.incomeSources.length>1?'s':'')+' · '+fmt(totalIncome())+' '+curSym()+'/mo'
-    : 'No income sources yet');
+    : 'No sources added yet');
   set('more-bills-count', data.expenses.length
     ? data.expenses.length+' bill'+(data.expenses.length>1?'s':'')+' · '+fmt(totalExpenses())+' '+curSym()+'/mo'
-    : 'No bills yet');
+    : 'No bills added yet');
   set('more-savings-count', data.savingsAccounts.length
     ? data.savingsAccounts.length+' account'+(data.savingsAccounts.length>1?'s':'')+' · '+fmt(totalSavings())+' '+curSym()
-    : 'No savings accounts yet');
+    : 'No accounts added yet');
   // Credit cards subtitle
   (function(){
     var cards=data.creditCards||[];
     var el=document.getElementById('more-credit-sub');
     if(!el)return;
-    if(!cards.length){el.textContent='No cards yet';return;}
+    if(!cards.length){el.textContent='No cards added yet';return;}
     var debt=totalCreditDebt();
     var lim=totalCreditLimit();
     var u=lim>0?Math.round(debt/lim*100):0;
@@ -6152,7 +6152,14 @@ function renderHome(){
     var h = new Date().getHours();
     greet.textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   }
-  if(greetName) greetName.textContent = data.userName || 'Moxcoin';
+  if(greetName){
+    if(data.userName && data.userName.trim()){
+      greetName.textContent = data.userName.trim();
+      greetName.style.cssText = '';
+    } else {
+      greetName.innerHTML = '<span onclick="editUserName()" style="color:var(--text3);font-weight:500;cursor:pointer;font-size:14px;">Set your name &rsaquo;</span>';
+    }
+  }
 
   // Avatar — initials from username
   var avatarEl = document.getElementById('home-avatar');
@@ -6714,7 +6721,7 @@ function renderPortfolio(){
     if(dateStartEl && older) dateStartEl.textContent=new Date(older.date).toLocaleDateString('en',{day:'numeric',month:'short',year:'numeric'});
     if(dateEndEl) dateEndEl.textContent='Today';
   } else {
-    if(plLineEl) plLineEl.innerHTML='<span style="color:var(--text3);font-size:11px;">Snapshot added automatically each day you open the app</span>';
+    if(plLineEl) plLineEl.innerHTML='<span style="color:var(--text3);font-size:11px;">Auto-saved daily &middot; check back tomorrow</span>';
     if(dateStartEl) dateStartEl.textContent='';
     if(dateEndEl) dateEndEl.textContent='';
     // Hide time range toggles when no chart data
@@ -6907,7 +6914,7 @@ function renderGoldList(elId){
   var wrap = document.getElementById('gold-all-section');
   if(wrap) wrap.style.display = '';
   if(!holdings.length){
-    el.innerHTML = emptyState('gold','No gold tracked','Add physical gold, coins or ETFs to track their value.','+ Add gold','openFABSheet(\'add-gold\')');
+    el.innerHTML = '<p style="font-size:13px;color:var(--text3);text-align:center;padding:10px 0;">No gold yet. Tap + to add.</p>';
     return;
   }
   var priceOk = goldCache.pricePerGram > 0;
@@ -6942,7 +6949,7 @@ function renderStocksList(elId){
   var wrap = document.getElementById('stocks-all-section');
   if(wrap) wrap.style.display = '';
   if(!holdings.length){
-    el.innerHTML = emptyState('stock','No stocks tracked','Add stocks or ETFs by ticker symbol (AAPL, TSLA, VUSA…).','+ Add stock','openFABSheet(\'add-stock\')');
+    el.innerHTML = '<p style="font-size:13px;color:var(--text3);text-align:center;padding:10px 0;">No stocks yet. Tap + to add.</p>';
     return;
   }
   el.innerHTML = holdings.map(function(s,i){
