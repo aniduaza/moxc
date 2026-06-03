@@ -755,7 +755,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .ob-step.next{transform:translateX(100%);opacity:0;pointer-events:none;}
 .ob-graphic{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0;}
 .ob-content{padding:22px 28px 6px;flex-shrink:0;}
-.ob-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.65);text-transform:uppercase;margin-bottom:10px;}
+.ob-eyebrow{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.18em;color:#F59E0B;text-transform:uppercase;margin-bottom:10px;}
 .ob-headline{font-size:36px;font-weight:800;color:#fff;letter-spacing:-.8px;line-height:1.1;margin-bottom:10px;}
 .ob-sub{font-size:15px;color:rgba(255,255,255,.6);line-height:1.6;}
 .ob-form-area{flex:1;overflow-y:auto;padding:64px 28px 0;-webkit-overflow-scrolling:touch;}
@@ -774,7 +774,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 @keyframes obLevelLbl{0%,48%{fill:rgba(255,255,255,.35)}56%{fill:#fff}68%,100%{fill:rgba(255,255,255,.4)}}
 @keyframes obLvlUpTxt{0%,52%{opacity:0;transform:translate(-50%,-50%) scale(0.3)}57%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}66%{opacity:1;transform:translate(-50%,-50%) scale(1)}75%{opacity:0;transform:translate(-50%,-50%) scale(0.8)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.8)}}
 @keyframes obBurstCircle{0%,52%{opacity:0;transform:scale(0.7)}57%{opacity:.9;transform:scale(1)}72%{opacity:0;transform:scale(1.8)}100%{opacity:0}}
-@keyframes obXpLvlSeq{0%{width:60%;background:linear-gradient(90deg,#7C3AED,#A855F7)}50%{width:98%;background:linear-gradient(90deg,#7C3AED,#A855F7)}57%{width:100%;background:#fff}63%{width:0%;background:linear-gradient(90deg,#7C3AED,#A855F7)}100%{width:80%;background:linear-gradient(90deg,#7C3AED,#A855F7)}}
+@keyframes obXpLvlSeq{0%{width:60%;background:linear-gradient(90deg,#D97706,#F59E0B,#FCD34D)}50%{width:98%;background:linear-gradient(90deg,#D97706,#F59E0B,#FCD34D)}57%{width:100%;background:#fff}63%{width:0%;background:linear-gradient(90deg,#D97706,#F59E0B,#FCD34D)}100%{width:80%;background:linear-gradient(90deg,#D97706,#F59E0B,#FCD34D)}}
 @keyframes obShapeA{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(7deg) scale(1.05)}}
 @keyframes obShapeB{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(-6deg) scale(1.03)}}
 @keyframes obShapeC{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(14deg) scale(1.1)}}
@@ -859,15 +859,30 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
   animation:spGlowIn 1s ease .18s both;pointer-events:none;
 }
 @keyframes spGlowIn{0%{opacity:0;transform:scale(.3);}65%{opacity:1;transform:scale(1);}100%{opacity:1;transform:scale(1);}}
-/* wordmark letter-by-letter */
+/* registration corner marks */
+.sp-reg{position:absolute;width:22px;height:22px;z-index:3;opacity:.3;animation:spRegIn .45s ease .08s both;}
+#sp-reg-tl{top:48px;left:48px;border-top:1.5px solid #F59E0B;border-left:1.5px solid #F59E0B;}
+#sp-reg-tr{top:48px;right:48px;border-top:1.5px solid #F59E0B;border-right:1.5px solid #F59E0B;}
+#sp-reg-bl{bottom:48px;left:48px;border-bottom:1.5px solid #F59E0B;border-left:1.5px solid #F59E0B;}
+#sp-reg-br{bottom:48px;right:48px;border-bottom:1.5px solid #F59E0B;border-right:1.5px solid #F59E0B;}
+@keyframes spRegIn{0%{opacity:0;}100%{opacity:.3;}}
+/* hexagonal coin icon */
+#sp-coin{position:relative;z-index:2;animation:spCoinIn .75s cubic-bezier(.16,1,.3,1) .65s both;margin-bottom:16px;}
+@keyframes spCoinIn{0%{opacity:0;transform:translateY(24px) scale(.72);}100%{opacity:1;transform:translateY(0) scale(1);}}
+/* wordmark — all-caps, tracked */
 #sp-wordmark{
   position:relative;z-index:2;
-  font-size:62px;font-weight:800;letter-spacing:-3.5px;color:#fff;
+  font-size:56px;font-weight:800;letter-spacing:.06em;color:#fff;
   line-height:1;
   text-shadow:0 0 60px rgba(245,158,11,.35),0 0 120px rgba(245,158,11,.15);
 }
 #sp-wordmark span{display:inline-block;animation:spLetterIn .52s cubic-bezier(.16,1,.3,1) both;}
 @keyframes spLetterIn{0%{opacity:0;transform:translateY(18px);}100%{opacity:1;transform:translateY(0);}}
+/* bottom rule */
+#sp-rule{position:relative;z-index:2;width:36px;height:2px;background:#F59E0B;border-radius:1px;margin-top:16px;transform-origin:center;animation:spRuleIn .4s ease 2.08s both;}
+@keyframes spRuleIn{0%{opacity:0;transform:scaleX(0);}100%{opacity:1;transform:scaleX(1);}}
+/* meta text */
+#sp-meta{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:500;color:rgba(255,255,255,.2);letter-spacing:.2em;text-transform:uppercase;white-space:nowrap;z-index:3;animation:spTagIn .5s ease 2.2s both;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/keyrune@latest/css/keyrune.min.css">
 </head>
@@ -881,14 +896,34 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
 <!-- ── Splash screen ── -->
 <div id="splash-screen">
-  <!-- Large shapes pulled back into corners so inner diagonals clear the center -->
+  <!-- Registration corner marks -->
+  <div id="sp-reg-tl" class="sp-reg"></div>
+  <div id="sp-reg-tr" class="sp-reg"></div>
+  <div id="sp-reg-bl" class="sp-reg"></div>
+  <div id="sp-reg-br" class="sp-reg"></div>
+  <!-- Amber polygon shapes — enter then float -->
   <div style="position:absolute;top:-18%;right:-18%;width:62%;height:58%;background:linear-gradient(135deg,#F59E0B,#D97706 55%,#92400E);clip-path:polygon(42% 0,100% 0,100% 65%,62% 100%,0 58%);animation:spShapeA .85s cubic-bezier(.16,1,.3,1) both,obShapeA 16s ease-in-out .85s infinite;transform-origin:75% 25%;"></div>
   <div style="position:absolute;bottom:-18%;left:-18%;width:58%;height:54%;background:linear-gradient(315deg,#FCD34D,#F59E0B 45%,#D97706);clip-path:polygon(0 38%,62% 0,100% 28%,80% 100%,0 100%);animation:spShapeB .85s cubic-bezier(.16,1,.3,1) .14s both,obShapeB 20s ease-in-out .99s infinite;transform-origin:25% 75%;"></div>
-  <!-- Small accent diamonds anchored to corners -->
   <div style="position:absolute;top:6%;left:4%;width:16%;height:16%;background:linear-gradient(135deg,#FCD34D,#F59E0B);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:spShapeSmall .85s cubic-bezier(.16,1,.3,1) .24s both,obShapeC 9s ease-in-out 1.09s infinite;opacity:.65;"></div>
   <div style="position:absolute;bottom:14%;right:6%;width:11%;height:11%;background:#F59E0B;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:spShapeSmall .85s cubic-bezier(.16,1,.3,1) .34s both,obShapeD 6s ease-in-out 1.19s infinite;opacity:.5;"></div>
-  <!-- Wordmark — amber text-shadow gives warmth without a dark-hole vignette -->
-  <div id="sp-wordmark"><span style="animation-delay:1.55s">M</span><span style="animation-delay:1.62s">o</span><span style="animation-delay:1.69s">x</span><span style="animation-delay:1.76s">c</span><span style="animation-delay:1.83s">o</span><span style="animation-delay:1.90s">i</span><span style="animation-delay:1.97s">n</span></div>
+  <!-- Hexagonal M coin icon -->
+  <svg id="sp-coin" width="72" height="72" viewBox="0 0 220 220">
+    <polygon points="110,6 208,60 208,160 110,214 12,160 12,60" fill="#2A2826" stroke="#F59E0B" stroke-width="2.5"/>
+    <polygon points="110,30 188,74 188,146 110,190 32,146 32,74" fill="#1A1816"/>
+    <line x1="78" y1="58" x2="142" y2="58" stroke="#F59E0B" stroke-width="2" opacity="0.4"/>
+    <line x1="78" y1="162" x2="142" y2="162" stroke="#F59E0B" stroke-width="2" opacity="0.4"/>
+    <text x="110" y="138" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="82" font-weight="700" fill="#F59E0B" letter-spacing="-4">M</text>
+    <circle cx="72" cy="90" r="4" fill="#F59E0B" opacity="0.3"/>
+    <circle cx="148" cy="90" r="4" fill="#F59E0B" opacity="0.3"/>
+    <circle cx="72" cy="130" r="4" fill="#F59E0B" opacity="0.3"/>
+    <circle cx="148" cy="130" r="4" fill="#F59E0B" opacity="0.3"/>
+  </svg>
+  <!-- Wordmark — all-caps, letter-by-letter -->
+  <div id="sp-wordmark"><span style="animation-delay:1.55s">M</span><span style="animation-delay:1.62s">O</span><span style="animation-delay:1.69s">X</span><span style="animation-delay:1.76s">C</span><span style="animation-delay:1.83s">O</span><span style="animation-delay:1.90s">I</span><span style="animation-delay:1.97s">N</span></div>
+  <!-- Amber rule -->
+  <div id="sp-rule"></div>
+  <!-- Meta -->
+  <div id="sp-meta">Personal Finance &middot; RPG Mode</div>
 </div>
 
 
@@ -8917,7 +8952,7 @@ function buildOnboarding(){
       +'<div style="position:absolute;bottom:0;left:0;right:0;height:110px;background:linear-gradient(to bottom,transparent,#09060A);pointer-events:none;"></div>'
     +'</div>'
     +'<div class="ob-content" style="background:#09060A;">'
-      +'<div style="font-size:11px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:10px;">Moxcoin</div>'
+      +'<div class="ob-eyebrow">Moxcoin</div>'
       +'<div class="ob-headline">Your money,<br>levelled up.</div>'
       +'<div class="ob-sub">Income, crypto, gold, goals and XP — all in one place.</div>'
     +'</div>'
@@ -8968,7 +9003,7 @@ function buildOnboarding(){
       +'<div style="position:absolute;bottom:0;left:0;right:0;height:110px;background:linear-gradient(to bottom,transparent,#040C0A);pointer-events:none;"></div>'
     +'</div>'
     +'<div class="ob-content" style="background:#040C0A;">'
-      +'<div class="ob-eyebrow">Finance overview</div>'
+      +'<div class="ob-eyebrow">01 — Overview</div>'
       +'<div class="ob-headline">Every AED.<br>Accounted for.</div>'
       +'<div class="ob-sub">Income, crypto, gold and cards — tracked in real time.</div>'
     +'</div>'
@@ -9027,7 +9062,7 @@ function buildOnboarding(){
       +'<div style="position:absolute;bottom:0;left:0;right:0;height:110px;background:linear-gradient(to bottom,transparent,#080510);pointer-events:none;"></div>'
     +'</div>'
     +'<div class="ob-content" style="background:#080510;">'
-      +'<div class="ob-eyebrow">Gamified finance</div>'
+      +'<div class="ob-eyebrow">02 — Gamify</div>'
       +'<div class="ob-headline">Track. Streak.<br>Level up.</div>'
       +'<div class="ob-sub">Earn XP for every financial habit. Unlock badges. Stay motivated.</div>'
     +'</div>'
