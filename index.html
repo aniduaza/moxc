@@ -758,7 +758,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .ob-eyebrow{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.18em;color:#F59E0B;text-transform:uppercase;margin-bottom:10px;}
 .ob-headline{font-size:36px;font-weight:800;color:#fff;letter-spacing:-.8px;line-height:1.1;margin-bottom:10px;}
 .ob-sub{font-size:15px;color:rgba(255,255,255,.6);line-height:1.6;}
-.ob-form-area{flex:1;overflow-y:auto;padding:calc(64px + env(safe-area-inset-top,0px)) 28px 0;-webkit-overflow-scrolling:touch;}
+.ob-form-area{flex:1;overflow-y:auto;padding:calc(64px + env(safe-area-inset-top,0px)) 28px 28px;-webkit-overflow-scrolling:touch;}
 .ob-form-headline{font-size:30px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.2;margin-bottom:8px;}
 .ob-form-sub{font-size:14px;color:rgba(255,255,255,.64);line-height:1.5;margin-bottom:28px;}
 .ob-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.62);margin-bottom:8px;}
@@ -804,6 +804,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .ob-summary-val{font-size:14px;font-weight:600;color:#fff;}
 .ob-summary-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 @keyframes obIconBounce{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes obDrawCheck{to{stroke-dashoffset:0}}
+@keyframes obGlowPulse{0%{box-shadow:0 0 60px rgba(245,158,11,.35),0 0 120px rgba(245,158,11,.15)}45%{box-shadow:0 0 95px rgba(245,158,11,.8),0 0 175px rgba(245,158,11,.45)}100%{box-shadow:0 0 60px rgba(245,158,11,.35),0 0 120px rgba(245,158,11,.15)}}
+@keyframes obSparkle{0%{opacity:0;transform:scale(0) rotate(0deg)}40%{opacity:1;transform:scale(1.25) rotate(40deg)}100%{opacity:0;transform:scale(.3) rotate(85deg)}}
 
 /* ── Staggered list entrance ─────────────────────────────────────────────── */
 @keyframes itemIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
@@ -9196,12 +9199,17 @@ function buildOnboarding(){
   var s6 = '<div class="ob-step next" id="ob-s6">'
     +obSubtleShapes
     +'<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 28px 0;text-align:center;">'
-      +'<div style="position:relative;margin-bottom:28px;">'
-        +'<div style="width:112px;height:112px;border-radius:50%;background:rgba(245,158,11,.12);border:2px solid rgba(245,158,11,.4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px rgba(245,158,11,.35),0 0 120px rgba(245,158,11,.15);animation:obIconBounce .6s cubic-bezier(0.16,1,0.3,1) both;">'
-          +'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>'
+      +'<div id="ob-done-icon" style="position:relative;margin-bottom:28px;">'
+        +'<div style="width:112px;height:112px;border-radius:50%;background:rgba(245,158,11,.12);border:2px solid rgba(245,158,11,.4);display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px rgba(245,158,11,.35),0 0 120px rgba(245,158,11,.15);animation:obIconBounce .6s cubic-bezier(0.16,1,0.3,1) both,obGlowPulse 1.1s ease-out .9s both;">'
+          +'<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1;animation:obDrawCheck .5s cubic-bezier(0.65,0,0.35,1) .55s forwards;"/></svg>'
         +'</div>'
         +'<div style="position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(245,158,11,.18);animation:obBurstCircle .9s cubic-bezier(0.16,1,0.3,1) .3s both;opacity:0;"></div>'
         +'<div style="position:absolute;inset:-28px;border-radius:50%;border:1px solid rgba(245,158,11,.08);animation:obBurstCircle .9s cubic-bezier(0.16,1,0.3,1) .5s both;opacity:0;"></div>'
+        +'<div style="position:absolute;top:-12px;left:12px;width:11px;height:11px;background:#FCD34D;clip-path:polygon(50% 0%,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0% 50%,39% 39%);opacity:0;animation:obSparkle 1s ease-out .95s both;"></div>'
+        +'<div style="position:absolute;top:6px;left:102px;width:8px;height:8px;background:#F59E0B;clip-path:polygon(50% 0%,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0% 50%,39% 39%);opacity:0;animation:obSparkle 1s ease-out 1.05s both;"></div>'
+        +'<div style="position:absolute;top:62px;left:-14px;width:10px;height:10px;background:#FCD34D;clip-path:polygon(50% 0%,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0% 50%,39% 39%);opacity:0;animation:obSparkle 1s ease-out 1.12s both;"></div>'
+        +'<div style="position:absolute;top:98px;left:84px;width:7px;height:7px;background:#F59E0B;clip-path:polygon(50% 0%,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0% 50%,39% 39%);opacity:0;animation:obSparkle 1s ease-out 1.2s both;"></div>'
+        +'<div style="position:absolute;top:-4px;left:70px;width:6px;height:6px;background:#FCD34D;clip-path:polygon(50% 0%,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0% 50%,39% 39%);opacity:0;animation:obSparkle 1s ease-out 1.28s both;"></div>'
       +'</div>'
       +'<div style="font-size:11px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:10px;">Welcome to tvrn</div>'
       +'<div class="ob-form-headline" id="ob-done-title" style="text-align:center;margin-bottom:8px;">You are all set!</div>'
@@ -9303,7 +9311,7 @@ function obGoTo(idx){
   var obBack = document.getElementById('ob-back-btn');
   if(obBack){ obBack.style.display = (idx === 1 || idx === 2) ? 'flex' : 'none'; }
   obStep = idx;
-  if(idx === 6){ setTimeout(obBuildSummary, 80); setTimeout(function(){ launchConfetti('gold'); }, 600); }
+  if(idx === 6){ setTimeout(obBuildSummary, 80); setTimeout(function(){ launchConfetti('gold'); }, 600); setTimeout(function(){ var ic=document.getElementById('ob-done-icon'); if(ic&&ic.parentNode){ var c=ic.cloneNode(true); ic.parentNode.replaceChild(c,ic); } }, 40); }
   // Restart shape enter animations by clone-replacing the graphic container for showcase slides
   if(idx <= 2){
     setTimeout(function(){
