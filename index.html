@@ -2506,7 +2506,7 @@ function showStreakMilestone(m) {
     + '</div>'
     + '<div style="font-size:28px;font-weight:800;color:#F59E0B;letter-spacing:-.5px;margin-bottom:6px;">' + m.label + '</div>'
     + '<div style="font-size:15px;color:var(--text2);margin-bottom:8px;">+' + m.xp + ' bonus XP earned</div>'
-    + '<div style="font-size:13px;color:var(--text3);margin-bottom:32px;">Keep the momentum going!</div>'
+    + '<div style="font-size:13px;color:var(--text3);margin-bottom:32px;">Same time tomorrow.</div>'
     + '<div style="font-size:12px;color:var(--text3);opacity:.6;">Tap anywhere to continue</div>';
   el.style.display = 'flex';
   el.style.opacity = '0';
@@ -2690,7 +2690,7 @@ function showBadgeUnlock(b) {
   var el = document.getElementById('badge-fs-overlay');
   if (!el) return;
   el.innerHTML =
-    '<div style="font-size:11px;font-weight:700;color:'+b.color+';letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;opacity:.9;">Badge Unlocked!</div>'
+    '<div style="font-size:11px;font-weight:700;color:'+b.color+';letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;opacity:.9;">One for the wall</div>'
     + '<div style="width:96px;height:96px;border-radius:24px;background:'+b.color+'18;border:2px solid '+b.color+';display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:20px;box-shadow:0 0 40px '+b.color+'44;">'+b.icon+'</div>'
     + '<div style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:8px;">'+b.name+'</div>'
     + '<div style="font-size:14px;color:var(--text2);max-width:240px;line-height:1.5;margin-bottom:32px;">'+b.desc+'</div>'
@@ -5202,7 +5202,7 @@ function renderDailyMissions(){
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">'
       +'<div style="font-size:13px;font-weight:700;color:var(--text);">Daily missions</div>'
       +'<div style="font-size:11px;font-weight:700;color:'+(allDone?'#10B981':'#F59E0B')+';">'
-        +(allDone?'All done! 🎉':earnedXP+' / '+totalXP+' XP')
+        +(allDone?'All squared 🎉':earnedXP+' / '+totalXP+' XP')
       +'</div>'
     +'</div>'
     +'<div style="font-size:11px;color:var(--text2);margin-top:3px;margin-bottom:10px;">Resets at midnight</div>'
@@ -8978,7 +8978,7 @@ function buildOnboarding(){
     +'</div>'
     +'<div class="ob-content" style="background:#09060A;">'
       +'<div class="ob-eyebrow" style="text-transform:none;">tvrn</div>'
-      +'<div class="ob-headline">Your money,<br>levelled up.</div>'
+      +'<div class="ob-headline">Your money&rsquo;s<br>home base.</div>'
       +'<div class="ob-sub">Income, crypto, gold, goals and XP — all in one place.</div>'
     +'</div>'
     +'<div class="ob-actions" style="background:#09060A;">'
@@ -9003,22 +9003,22 @@ function buildOnboarding(){
         +'<div style="background:rgba(4,12,10,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(16,185,129,.18);border-radius:18px;padding:14px;">'
           +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
-              +'<div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">INCOME</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">INCOME</div>'
               +'<div style="font-size:19px;font-weight:800;color:#fff;">12,500</div>'
               +'<div style="font-size:10px;color:#10B981;margin-top:2px;">&#8593; +5%</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
-              +'<div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">SPENT</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">SPENT</div>'
               +'<div style="font-size:19px;font-weight:800;color:#fff;">6,200</div>'
               +'<div style="font-size:9px;color:#EF4444;margin-top:2px;">&#8593; +12%</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
-              +'<div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">SAVED</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">SAVED</div>'
               +'<div style="font-size:19px;font-weight:800;color:#10B981;">50%</div>'
               +'<div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">Great rate</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
-              +'<div style="font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">STREAK</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">STREAK</div>'
               +'<div style="font-size:19px;font-weight:800;color:#F59E0B;">7d</div>'
               +'<div style="font-size:10px;color:#F59E0B;margin-top:2px;">Keep going</div>'
             +'</div>'
