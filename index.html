@@ -2094,7 +2094,7 @@ function showXPLevelUp(lvl) {
   el.innerHTML = '<div style="width:48px;height:48px;border-radius:14px;background:rgba(245,158,11,.12);border:1.5px solid #F59E0B;display:flex;align-items:center;justify-content:center;color:#F59E0B;">' + getIcon(lvl.icon, 24) + '</div>'
     + '<div style="font-weight:700;font-size:17px;color:#F59E0B;margin-top:8px;">Level ' + lvl.level + ' reached!</div>'
     + '<div style="font-size:13px;color:var(--text2);margin-top:2px;">' + lvl.title + '</div>'
-    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">Keep building your streak</div>';
+    + '<div style="font-size:11px;color:var(--text3);margin-top:6px;">The regulars are noticing.</div>';
   el.style.display = 'flex';
   el.style.opacity = '0';
   el.style.transform = 'translateY(16px) scale(0.9)';
@@ -4758,7 +4758,7 @@ function renderActivity(){
   if(!txns.length){
     el.innerHTML = data.transactions.length
       ? emptyState('no-result','No results','Try a different filter or search term.','','')
-      : emptyState('receipt','No transactions yet','Tap the + button to log your first income or expense.','+ Add transaction','openFABSheet(\'add-transaction\')');
+      : emptyState('receipt','Quiet in here','Log your first income or expense and we will get the night started.','+ Add transaction','openFABSheet(\'add-transaction\')');
     return;
   }
 
@@ -5046,7 +5046,7 @@ function renderAdvisor(){
   // Set up chat if messages container is empty
   var msgs = document.getElementById('chat-messages');
   if(msgs && msgs.children.length === 0){
-    appendMessage('assistant', 'Hi! I am your tvrn advisor. I can see your full financial picture including income, expenses, crypto, MTG and Pokemon cards, and savings. What would you like to know?');
+    appendMessage('assistant', 'Welcome back. I am the host here at tvrn — I can see your whole picture: income, expenses, crypto, gold, stocks, and your MTG and Pokemon cards. What can I help you with?');
   }
 }
 
@@ -5438,7 +5438,7 @@ function renderCreditPortfolio(elId){
   if(!el) return;
   var cards = data.creditCards||[];
   if(!cards.length){
-    el.innerHTML = emptyState('credit-card','No credit cards','Add a card to track utilisation and due dates.','+ Add card','openFABSheet(\'add-credit\')');
+    el.innerHTML = emptyState('credit-card','No credit cards','Add a card and we will keep an eye on the tab.','+ Add card','openFABSheet(\'add-credit\')');
     return;
   }
   var totalDebt  = totalCreditDebt();
@@ -6150,7 +6150,7 @@ function renderHome(){
   var greetName = document.getElementById('home-greeting');
   if(greet){
     var h = new Date().getHours();
-    greet.textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    greet.textContent = h < 12 ? 'Morning. The tab is open.' : h < 17 ? 'Afternoon. Welcome back.' : 'Evening. Pull up a chair.';
   }
   if(greetName){
     if(data.userName && data.userName.trim()){
@@ -6499,7 +6499,7 @@ function renderCryptoListTo(elId){
   var el = document.getElementById(elId);
   if(!el) return;
   if(!data.cryptoHoldings.length){
-    el.innerHTML = emptyState('crypto','No crypto yet','Add Bitcoin, Ethereum or any coin to start tracking.','+ Add crypto','openFABSheet(\'add-crypto\')'); return;
+    el.innerHTML = emptyState('crypto','No crypto yet','Add Bitcoin, Ethereum or any coin and we will keep the tab.','+ Add crypto','openFABSheet(\'add-crypto\')'); return;
   }
   el.innerHTML = data.cryptoHoldings.map(function(h,i){
     var price = cryptoCache[h.id]||0;
@@ -6526,7 +6526,7 @@ function renderCollectionListTo(elId){
   var el = document.getElementById(elId);
   if(!el) return;
   if(!data.mtgCards.length && !data.pokemonCards.length){
-    el.innerHTML = emptyState('card','No cards yet','Add MTG or Pokemon cards to track your collection value.','+ Add card','openFABSheet(\'add-collection\')'); return;
+    el.innerHTML = emptyState('card','No cards yet','Add your MTG or Pokemon cards — the collection counts as gold too.','+ Add card','openFABSheet(\'add-collection\')'); return;
     return;
   }
   // Swap element IDs temporarily
@@ -6542,7 +6542,7 @@ function renderSavingsListTo(elId){
   var el = document.getElementById(elId);
   if(!el) return;
   if(!data.savingsAccounts.length){
-    el.innerHTML = emptyState('savings','No savings yet','Add a bank account or cash savings to your portfolio.','+ Add account','openFABSheet(\'add-savings\')'); return;
+    el.innerHTML = emptyState('savings','No savings yet','Add a bank account or cash — every coin in the vault counts.','+ Add account','openFABSheet(\'add-savings\')'); return;
     return;
   }
   var html = '';
@@ -8312,10 +8312,12 @@ function buildFinancialContext(){
 }
 
 function buildSystemPrompt(){
-  return 'You are a sharp, friendly personal financial advisor built into tvrn — a finance app that also tracks MTG and Pokemon card collections alongside crypto, savings, and expenses. '
+  return 'You are the host of tvrn — the user\'s home base for their money, a finance app that also tracks their crypto, savings, expenses, gold, stocks, and MTG and Pokemon card collections. '
+    + 'Your personality: warm and welcoming like a host who knows the regulars, but dry and understated — never gushing, never hyped. You are always in the user\'s corner. '
     + 'You have access to the user\'s complete financial data shown below. '
     + 'Give concise, actionable advice. Be direct and specific — use their actual numbers. '
-    + 'Keep responses under 200 words unless asked for detail. Use plain text, no markdown headers. '
+    + 'Never scold or guilt-trip about money; nudge with a knowing half-smile instead. '
+    + 'Keep responses under 200 words unless asked for detail. Use plain text, no markdown headers, no emoji. '
     + 'Occasionally reference their collectibles (MTG/Pokemon) when relevant to net worth or risk. '
     + 'Be encouraging but honest about problems.\n\n'
     + buildFinancialContext();
