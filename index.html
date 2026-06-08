@@ -276,12 +276,20 @@ body.light{
   --stone2:#E0DDD5;
   --text:#1A1814;
   --text2:rgba(26,24,20,.65);
-  --text3:rgba(26,24,20,.38);
+  --text3:rgba(26,24,20,.45);
   --red:#DC2626;
   --blue:#2563EB;
+  /* Light-mode accent: darker amber so it passes contrast as TEXT on light
+     surfaces; on-accent text flips to white since fills are now darker. */
+  --green:#B45309;
+  --green-mid:#B45309;
+  --green-dark:#FFFFFF;
+  --c-income:#047857;
 }
 body.light #app{background:#F3F2ED;}
-body.light .greeting-card{background:linear-gradient(135deg,#D97706,#F59E0B);animation:none;box-shadow:0 4px 24px rgba(245,158,11,.3);border-color:transparent;}
+body.light .greeting-card{background:linear-gradient(135deg,#B45309,#D97706);animation:none;box-shadow:0 6px 20px rgba(120,53,15,.22);border-color:transparent;}
+/* Focus mode — hide Home gamification blocks for a numbers-only view */
+body.focus-mode #home-checkin,body.focus-mode #home-missions,body.focus-mode #home-challenges,body.focus-mode #xp-widget{display:none !important;}
 /* Sub-screen hero cards in light mode — vivid category pops */
 body.light #income-hero{background:linear-gradient(135deg,#059669,#10B981) !important;}
 body.light #income-hero *{color:rgba(255,255,255,.85) !important;}
@@ -304,6 +312,10 @@ body.light .greeting-name{color:#fff;}
 body.light .greeting-sub{color:rgba(255,255,255,.65);}
 body.light .card-yellow{background:linear-gradient(135deg,#FEF3C7,#FDE68A);}
 body.light #bud-portfolio-card{background:linear-gradient(135deg,#EDE9FF,#DDD6FE) !important;}
+/* Gauge card text is hardcoded white; recolor for the pale-yellow light card. */
+body.light .card-yellow #gauge-pct{color:#1A1814;}
+body.light .card-yellow #gauge-lbl{color:rgba(26,24,20,.55);}
+body.light .card-yellow [style*="rgba(200,154,0"]{color:#92600A !important;}
 body.light .bottom-nav{background:#1A1814;border-top:0.5px solid rgba(255,255,255,.08);}
 body.light .nav-icon{color:rgba(255,255,255,.35);}
 body.light .nav-label{color:rgba(255,255,255,.35);}
@@ -952,8 +964,8 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <div id="home-avatar" onclick="editUserName()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer;letter-spacing:-.5px;"></div>
             <div>
               <div id="home-timegreeting" style="font-size:11px;color:var(--text3);"></div>
-              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-                <div id="home-greeting" style="font-size:16px;font-weight:600;color:var(--text);line-height:1.2;"></div>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;min-width:0;">
+                <div id="home-greeting" style="font-size:16px;font-weight:600;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
                 <div id="home-level-pill" style="display:inline-flex;align-items:center;gap:3px;background:rgba(245,158,11,.12);border-radius:20px;padding:2px 8px;cursor:default;"></div>
               </div>
             </div>
@@ -1390,6 +1402,13 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 12.5A7.5 7.5 0 0 1 7.5 3 8 8 0 1 0 17 12.5Z"/></svg>
             </div>
             <div class="more-item-info"><div class="more-item-title">Theme</div><div class="more-item-sub" id="more-theme">Dark mode</div></div>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
+          </div>
+          <div class="more-item item-in" onclick="toggleFocus()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);color:var(--text2);">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2"/></svg>
+            </div>
+            <div class="more-item-info"><div class="more-item-title">Focus mode</div><div class="more-item-sub" id="more-focus">Off</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
           <div class="more-item item-in" onclick="document.getElementById('currency-toggle').click()">
@@ -2880,6 +2899,23 @@ function initTheme(){
     else isDark = true;
   }catch(e){ isDark = true; }
   applyTheme();
+}
+
+// ── Focus mode (hide Home gamification) ──────────────────────────────────────
+var focusOn = false;
+function applyFocus(){
+  document.body.classList.toggle('focus-mode', focusOn);
+  var sub = document.getElementById('more-focus');
+  if(sub) sub.textContent = focusOn ? 'On — gamification hidden' : 'Off';
+}
+function toggleFocus(){
+  focusOn = !focusOn;
+  applyFocus();
+  try{ localStorage.setItem('moxcoin_focus', focusOn?'1':'0'); }catch(e){}
+}
+function initFocus(){
+  try{ focusOn = localStorage.getItem('moxcoin_focus') === '1'; }catch(e){ focusOn = false; }
+  applyFocus();
 }
 
 // ── Persistence ────────────────────────────────────────────────────────────
@@ -4691,9 +4727,10 @@ function renderActivity(){
     // Compute spend per category this month (shared helper)
     var catSpend = spendByCat();
 
-    // Top 5 spending categories with enough data
+    // Top 5 spending categories with enough data. A single ring looks lonely/
+    // unfinished, so the ring viz only appears once 2+ categories have spend.
     var cats = Object.keys(catSpend).sort(function(a,b){return catSpend[b]-catSpend[a];}).slice(0,5);
-    if(!cats.length){ ringsEl.style.display='none'; return; }
+    if(cats.length < 2){ ringsEl.style.display='none'; return; }
 
     var CAT_META = {
       food:         {label:'Food',         color:'#F97316'},
@@ -6581,7 +6618,7 @@ function renderMovers(){
 
   if(!assets.length){
     el.innerHTML='<div onclick="switchTab(\'portfolio\')" style="display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;">'
-      +'<div style="font-size:13px;color:var(--text2);">No assets tracked yet</div>'
+      +'<div style="font-size:13px;color:var(--text2);">Quiet on the markets — nothing to track yet</div>'
       +'<div style="font-size:12px;font-weight:600;color:var(--green);">Add in Portfolio &rsaquo;</div>'
       +'</div>';
     return;
@@ -6714,7 +6751,7 @@ function renderBudget(){
   var net=b.inc-b.actual;
   setT('bud-pl',(net>=0?'+':'')+fmt(Math.abs(net))+' '+curSym());
   var plEl=document.getElementById('bud-pl');
-  if(plEl) plEl.style.color=net>=0?'var(--green)':'#EF4444';
+  if(plEl) plEl.style.color=net>=0?'var(--c-income)':'var(--red)';
   var limit=Math.max(b.inc,b.actual*1.2,1000);
   var pct=Math.min(100,Math.round(b.actual/limit*100));
   setT('gauge-pct',pct+'%');
@@ -9181,6 +9218,7 @@ function addBackButton(el){
 
 load();
 initTheme();
+initFocus();
 initSwipe();
 
 // ── Splash dismiss ──────────────────────────────────────────────────────────
