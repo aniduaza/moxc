@@ -1028,6 +1028,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <!-- Monthly review card (1st of month) -->
         <div id="home-monthly-review"></div>
 
+        <!-- weekly briefing -->
+        <div id="home-weekly" class="slide-up d2"></div>
+
         <!-- 4 key stats -->
         <div class="stat-row slide-up d2">
           <div class="stat-pill">
@@ -3074,7 +3077,11 @@ function calcBudget(){
   (data.transactions||[]).forEach(function(t){
     if(t.type==='expense' && t.date && t.date.slice(0,7)===ym) txnSpend+=t.amt;
   });
-  var actual=tot+txnSpend;
+  // "Spent" = logged transactions only (single source of truth: the ledger).
+  // data.expenses (tot/ess/subs) stays a planning/allocation figure, returned
+  // below for the Allocation card — NOT added here, or recurring bills that are
+  // also logged as transactions would be double-counted.
+  var actual=txnSpend;
   var rate=inc>0?Math.max(0,Math.round((inc-actual)/inc*100)):0;
   return{inc:inc,subs:subs,ess:ess,tot:tot,txnSpend:txnSpend,actual:actual,rate:rate,sav:netSavings()};
 }
@@ -6542,6 +6549,7 @@ function renderHome(){
   renderXPWidget();
   renderCheckIn();
   renderMonthlyReview();
+  renderWeekly();
   renderDailyMissions();
   renderSpendingChallenges();
   renderForecast();
@@ -8856,6 +8864,142 @@ function generateBriefing(){
     var body = document.getElementById('briefing-body');
     if(body) body.textContent = 'Could not generate briefing.';
   });
+}
+
+// ── Weekly briefing ─────────────────────────────────────────────────────────
+// Returns the local Monday (YYYY-MM-DD) of the week containing d (default today).
+function weekKey(d){
+  d = d ? new Date(d) : new Date();
+  d.setHours(0,0,0,0);
+  var day = d.getDay();              // 0 Sun .. 6 Sat
+  var diff = (day === 0) ? 6 : day - 1;  // days since Monday
+  d.setDate(d.getDate() - diff);
+  return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+}
+
+// Totals for the PREVIOUS Mon–Sun, plus the week before that for comparison.
+function weekStats(){
+  var now = new Date(); now.setHours(0,0,0,0);
+  var day = now.getDay(); var diff = (day === 0) ? 6 : day - 1;
+  var thisMon = new Date(now); thisMon.setDate(now.getDate() - diff);   // Monday this week
+  var prevMon = new Date(thisMon); prevMon.setDate(thisMon.getDate() - 7);     // start of recapped week
+  var prevPrevMon = new Date(prevMon); prevPrevMon.setDate(prevMon.getDate() - 7);
+
+  var out = {spent:0, lastSpent:0, income:0, net:0, topCat:'', topCatAmt:0, streak:(data.streak||0)};
+  var byCat = {};
+  var txns = data.transactions || [];
+  for(var i = 0; i < txns.length; i++){
+    var t = txns[i];
+    var dt = new Date(t.date); dt.setHours(0,0,0,0);
+    if(dt >= prevMon && dt < thisMon){
+      if(t.type === 'expense'){
+        out.spent += (t.amt || 0);
+        var c = t.cat || 'other';
+        byCat[c] = (byCat[c] || 0) + (t.amt || 0);
+      } else if(t.type === 'income'){
+        out.income += (t.amt || 0);
+      }
+    } else if(dt >= prevPrevMon && dt < prevMon){
+      if(t.type === 'expense'){ out.lastSpent += (t.amt || 0); }
+    }
+  }
+  out.net = out.income - out.spent;
+  for(var k in byCat){
+    if(byCat.hasOwnProperty(k) && byCat[k] > out.topCatAmt){ out.topCatAmt = byCat[k]; out.topCat = k; }
+  }
+  return out;
+}
+
+var WEEKLY_KEY = 'moxcoin_weekly';
+function getWeeklyState(){ try{ return JSON.parse(localStorage.getItem(WEEKLY_KEY) || '{}'); }catch(e){ return {}; } }
+function saveWeeklyState(s){ try{ localStorage.setItem(WEEKLY_KEY, JSON.stringify(s)); }catch(e){} }
+
+function buildWeeklyPrompt(s){
+  var catLbl = s.topCat ? ((TXN_CATS[s.topCat] || TXN_CATS.other).label) : 'nothing in particular';
+  var sym = curSym();
+  return 'You are The Host of a personal finance app, with a warm tavern-keeper voice. '
+    + 'Write a weekly money recap in about 90 words, as 5 short parts with no markdown headers: '
+    + '1) a one-line verdict headline; '
+    + '2) spent this week ' + s.spent + ' ' + sym + ' versus ' + s.lastSpent + ' ' + sym + ' the week before; '
+    + '3) the biggest category was ' + catLbl + ' at ' + s.topCatAmt + ' ' + sym + '; '
+    + '4) a genuine win (streak is ' + s.streak + ' days; income was ' + s.income + ' ' + sym + ', net ' + s.net + ' ' + sym + '); '
+    + '5) one specific nudge for next week. '
+    + 'Be direct, warm, and concrete. Do not use markdown or bullet characters.';
+}
+
+function generateWeekly(){
+  var s = getWeeklyState();
+  var wk = weekKey();
+  if(s.weekKey === wk && s.text){ return Promise.resolve(s.text); }
+  return callClaude(buildWeeklyPrompt(weekStats())).then(function(reply){
+    saveWeeklyState({weekKey:wk, text:reply, seen:false});
+    return reply;
+  });
+}
+
+function renderWeekly(){
+  var el = document.getElementById('home-weekly');
+  if(!el) return;
+  var st = weekStats();
+  var hasData = (st.spent > 0 || st.income > 0);
+  var apiKey = getApiKey();
+  var cached = getWeeklyState();
+  var wk = weekKey();
+
+  function shell(bodyHtml){
+    return '<div class="briefing-card" style="cursor:pointer;" onclick="toggleWeekly()">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+      +   '<div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;">This week at the tavern</div>'
+      +   '<svg id="weekly-arrow" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" style="transition:transform .3s;flex-shrink:0;"><path d="M5 8l5 5 5-5"/></svg>'
+      + '</div>'
+      + '<div id="weekly-body" style="font-size:13px;color:var(--text2);line-height:1.6;margin-top:8px;max-height:40px;overflow:hidden;transition:max-height .3s;">' + bodyHtml + '</div>'
+      + '</div>';
+  }
+
+  if(!hasData){
+    el.innerHTML = shell('<span style="color:var(--text3);">A quiet week at the tavern — no coin in or out. New week, fresh slate.</span>');
+    el.setAttribute('data-open','0');
+    return;
+  }
+  if(cached.weekKey === wk && cached.text){
+    el.innerHTML = shell('<span style="color:var(--text);">' + cached.text.replace(/\n/g,'<br>') + '</span>');
+    el.setAttribute('data-open','0');
+    return;
+  }
+  if(!apiKey){
+    el.innerHTML = shell('<span style="color:var(--text3);font-style:italic;">Add an API key in AI Advisor settings to hear your weekly review.</span>');
+    el.setAttribute('data-open','0');
+    return;
+  }
+  // lazy generate
+  el.innerHTML = shell('<span style="font-style:italic;color:var(--text3);">Pouring this weeks review...</span>');
+  el.setAttribute('data-open','0');
+  generateWeekly().then(function(reply){
+    var b = document.getElementById('weekly-body');
+    if(b) b.innerHTML = '<span style="color:var(--text);">' + reply.replace(/\n/g,'<br>') + '</span>';
+  }).catch(function(){
+    var b = document.getElementById('weekly-body');
+    if(b) b.innerHTML = '<span style="color:var(--text3);font-style:italic;">Could not pour this weeks review. Tap to retry.</span>';
+  });
+}
+
+function toggleWeekly(){
+  var el = document.getElementById('home-weekly');
+  var body = document.getElementById('weekly-body');
+  var arrow = document.getElementById('weekly-arrow');
+  if(!el || !body) return;
+  var open = el.getAttribute('data-open') === '1';
+  if(open){
+    body.style.maxHeight = '40px';
+    el.setAttribute('data-open','0');
+    if(arrow) arrow.style.transform = 'rotate(0deg)';
+  } else {
+    body.style.maxHeight = '400px';
+    el.setAttribute('data-open','1');
+    if(arrow) arrow.style.transform = 'rotate(180deg)';
+    var st = getWeeklyState();
+    if(st.text){ st.seen = true; saveWeeklyState(st); }
+  }
 }
 
 // ── Home daily briefing ────────────────────────────────────────────────────
