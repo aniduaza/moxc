@@ -1036,6 +1036,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           </div>
         </div>
 
+        <!-- Cash-flow forecast -->
+        <div id="home-forecast" class="slide-up d2" style="display:none;"></div>
+
         <!-- Daily check-in card -->
         <div id="home-checkin" class="slide-up d3" style="display:none;"></div>
 
@@ -6135,6 +6138,170 @@ function renderHomeGoal(){
   }, 80);
 }
 
+// ── Cash-flow forecast (net flow to month-end) ───────────────────────────────
+function fcMoney(n){ return curSym() + ' ' + fmt(n); }
+
+function freqToMonthly(amt, freq){
+  amt = amt || 0;
+  if(freq === 'weekly') return amt * 52 / 12;
+  if(freq === 'annual' || freq === 'yearly') return amt / 12;
+  return amt; // monthly (default)
+}
+
+function buildForecast(){
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var dayOfMonth = now.getDate();
+  var daysLeft = daysInMonth - dayOfMonth;
+
+  var monthlyIncome = 0;
+  var inc = data.incomeSources || [];
+  for(var i = 0; i < inc.length; i++){
+    monthlyIncome += freqToMonthly(inc[i].amt || 0, inc[i].freq || 'monthly');
+  }
+
+  var monthlyBills = 0;
+  var billNames = {};
+  var exp = data.expenses || [];
+  for(var j = 0; j < exp.length; j++){
+    monthlyBills += (exp[j].amt || 0);
+    if(exp[j].name) billNames[('' + exp[j].name).trim().toLowerCase()] = true;
+  }
+
+  // Variable burn = expense transactions EXCLUDING bill payments. Adding a bill
+  // also auto-logs a matching transaction (see logTransaction in submitSheet), so
+  // counting those here would double-count the bill and extrapolate it across the month.
+  var spendMTD = 0;
+  var incomeMTD = 0;
+  var txns = data.transactions || [];
+  for(var k = 0; k < txns.length; k++){
+    var d = new Date(txns[k].date);
+    if(d.getFullYear() === year && d.getMonth() === month){
+      if(txns[k].type === 'expense'){
+        var nm = txns[k].name ? ('' + txns[k].name).trim().toLowerCase() : '';
+        if(billNames[nm]) continue; // bill payment — already counted in monthlyBills
+        spendMTD += (txns[k].amt || 0);
+      } else if(txns[k].type === 'income'){
+        incomeMTD += (txns[k].amt || 0);
+      }
+    }
+  }
+
+  var dailyBurn = spendMTD / dayOfMonth;
+  var projectedSpend = dailyBurn * daysInMonth;
+  var projectedNet = monthlyIncome - monthlyBills - projectedSpend;
+
+  var safePerDay = 0;
+  if(daysLeft > 0){
+    safePerDay = (monthlyIncome - monthlyBills - spendMTD) / daysLeft;
+    if(safePerDay < 0) safePerDay = 0;
+  }
+
+  var status;
+  if(monthlyIncome === 0 && monthlyBills === 0 && spendMTD === 0){
+    status = 'empty';
+  } else if(projectedNet < 0){
+    status = 'short';
+  } else if(monthlyIncome > 0 && projectedNet < monthlyIncome * 0.10){
+    status = 'tight';
+  } else {
+    status = 'surplus';
+  }
+
+  return {
+    daysInMonth: daysInMonth,
+    dayOfMonth: dayOfMonth,
+    daysLeft: daysLeft,
+    monthlyIncome: monthlyIncome,
+    monthlyBills: monthlyBills,
+    spendMTD: spendMTD,
+    incomeMTD: incomeMTD,
+    projectedSpend: projectedSpend,
+    projectedNet: projectedNet,
+    safePerDay: safePerDay,
+    status: status
+  };
+}
+
+function forecastHostLine(f){
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var monthName = months[new Date().getMonth()];
+  var amt = fcMoney(Math.abs(f.projectedNet));
+  if(f.status === 'short'){
+    return 'Heads up — on this pace you will end ' + monthName + ' about ' + amt + ' short.';
+  }
+  if(f.status === 'tight'){
+    return 'Cutting it fine — about ' + amt + ' to spare by month-end.';
+  }
+  return 'Comfortable. You will close ' + monthName + ' about ' + amt + ' ahead.';
+}
+
+function renderForecast(){
+  var el = document.getElementById('home-forecast');
+  if(!el) return;
+  var f = buildForecast();
+  if(f.status === 'empty'){
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.style.display = '';
+
+  var netColor = (f.status === 'short') ? 'var(--red)' : 'var(--green)';
+  var sign = (f.projectedNet >= 0) ? '+' : '−'; // plus or minus sign
+  var netStr = sign + fcMoney(Math.abs(f.projectedNet));
+
+  var inAmt = f.monthlyIncome;
+  var outAmt = f.monthlyBills + f.projectedSpend;
+  var scale = Math.max(inAmt, outAmt, 1);
+  var inPct = Math.round(inAmt / scale * 100);
+  var outPct = Math.round(outAmt / scale * 100);
+
+  var ends = (f.daysLeft <= 0)
+    ? 'last day'
+    : ('ends in ' + f.daysLeft + ' day' + (f.daysLeft === 1 ? '' : 's'));
+
+  var earlyNote = '';
+  if(f.dayOfMonth < 3){
+    earlyNote = '<div style="font-size:10px;color:var(--text3);margin-top:8px;">early read — based on '
+      + f.dayOfMonth + ' day' + (f.dayOfMonth === 1 ? '' : 's') + '</div>';
+  }
+
+  var safeRow = '';
+  if(f.daysLeft > 0){
+    safeRow = '<div style="font-size:12px;color:var(--text2);margin-top:10px;">'
+      + fcMoney(f.safePerDay) + ' / day safe to spend</div>';
+  }
+
+  var html = ''
+    + '<div class="card" style="padding:16px 18px;">'
+    +   '<div style="display:flex;justify-content:space-between;align-items:baseline;">'
+    +     '<div style="font-size:10px;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;">This month</div>'
+    +     '<div style="font-size:11px;color:var(--text3);">' + ends + '</div>'
+    +   '</div>'
+    +   '<div style="font-size:13px;color:var(--text2);margin-top:8px;">On track for</div>'
+    +   '<div style="font-size:26px;font-weight:700;color:' + netColor + ';line-height:1.1;">' + netStr + '</div>'
+    +   '<div style="font-size:12px;color:var(--text2);margin-top:6px;">' + forecastHostLine(f) + '</div>'
+    +   '<div style="margin-top:14px;">'
+    +     '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:4px;">'
+    +       '<span>In ' + fcMoney(inAmt) + '</span><span>Out ' + fcMoney(outAmt) + '</span>'
+    +     '</div>'
+    +     '<div style="height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;margin-bottom:5px;">'
+    +       '<div style="height:100%;width:' + inPct + '%;background:var(--green);border-radius:3px;"></div>'
+    +     '</div>'
+    +     '<div style="height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;">'
+    +       '<div style="height:100%;width:' + outPct + '%;background:var(--red);border-radius:3px;"></div>'
+    +     '</div>'
+    +   '</div>'
+    +   safeRow
+    +   earlyNote
+    + '</div>';
+
+  el.innerHTML = html;
+}
+
 function renderHome(){
   var assets     = totalAssets();
   var creditDebt = totalCreditDebt();
@@ -6332,6 +6499,7 @@ function renderHome(){
   renderMonthlyReview();
   renderDailyMissions();
   renderSpendingChallenges();
+  renderForecast();
 }
 
 
