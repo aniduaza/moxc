@@ -1406,6 +1406,14 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <div class="more-item-info"><div class="more-item-title">Export data</div><div class="more-item-sub">Download a backup JSON file</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
+          <div class="more-item item-in" onclick="importData()">
+            <div class="more-item-icon" style="background:rgba(255,255,255,.06);color:var(--text2);">
+              <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13V3M6.5 6.5L10 3l3.5 3.5"/><path d="M4 14v2.5a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5V14"/></svg>
+            </div>
+            <div class="more-item-info"><div class="more-item-title">Import data</div><div class="more-item-sub">Restore from a backup JSON file</div></div>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
+          </div>
+          <input type="file" id="import-file-input" accept="application/json,.json" style="display:none;" onchange="handleImportFile(event)">
         </div>
 
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin:20px 0 10px;" class="slide-up d5">Data &amp; Privacy</div>
@@ -1497,6 +1505,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             </div>
           </div>
         </div>
+
+        <!-- category limits -->
+        <div id="bud-cat-limits" class="slide-up d5"></div>
 
         <!-- portfolio daily -->
         <div id="bud-portfolio-card" style="background:linear-gradient(135deg,#1C1510,#1F1A12);border-radius:var(--r-lg);padding:16px;display:flex;align-items:center;justify-content:space-between;" class="slide-up d5">
@@ -2006,6 +2017,7 @@ var data={
   longestStreak:0,
   lastStreakDate:'',
   unlockedBadges:[],
+  categoryBudgets:{},
 };
 var currentTab='home';
 var currentRange='3m';
@@ -2895,20 +2907,25 @@ function save(){
 setInterval(function(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
 }, 30000);
+
+// Single source of truth for every persisted field — used by both load() and
+// handleImportFile() so the two lists can never drift. Add a new persisted
+// field HERE only.
+var BACKUP_FIELDS = [
+  'currency','hidden','incomeSources','expenses','cryptoHoldings',
+  'mtgCards','pokemonCards','savingsAccounts','transactions','goals',
+  'snapshots','creditCards','goldHoldings','stockHoldings',
+  'missionsLog','firstUseDate','userName','lastAutoLog',
+  'xp','xpLog','streak','longestStreak','lastStreakDate','unlockedBadges',
+  'spendingChallenges','categoryBudgets'
+];
 function load(){
   try{
     var raw=localStorage.getItem(STORAGE_KEY);
     if(raw){
       var d=JSON.parse(raw);
-      // Merge every field — adding a new field here is the only requirement
-      var fields = [
-        'currency','hidden','incomeSources','expenses','cryptoHoldings',
-        'mtgCards','pokemonCards','savingsAccounts','transactions','goals',
-        'snapshots','userName','lastAutoLog',
-        'xp','xpLog','streak','longestStreak','lastStreakDate','unlockedBadges',
-        'creditCards','missionsLog','firstUseDate','spendingChallenges'
-      ];
-      fields.forEach(function(k){
+      // Merge every persisted field from the single source of truth.
+      BACKUP_FIELDS.forEach(function(k){
         if(d[k] !== undefined) data[k] = d[k];
       });
     }
@@ -4671,14 +4688,8 @@ function renderActivity(){
     var ringsEl = document.getElementById('act-cat-rings');
     if(!ringsEl) return;
 
-    // Compute spend per category this month
-    var catSpend = {};
-    (data.transactions||[]).forEach(function(t){
-      var d2 = new Date(t.date);
-      if(d2.getMonth()===thisMonth && d2.getFullYear()===thisYear && t.type==='expense'){
-        catSpend[t.cat||'other'] = (catSpend[t.cat||'other']||0) + t.amt;
-      }
-    });
+    // Compute spend per category this month (shared helper)
+    var catSpend = spendByCat();
 
     // Top 5 spending categories with enough data
     var cats = Object.keys(catSpend).sort(function(a,b){return catSpend[b]-catSpend[a];}).slice(0,5);
@@ -5007,10 +5018,7 @@ function handleImportFile(e){
       if(!imp.incomeSources&&!imp.cryptoHoldings&&!imp.savingsAccounts){ showToast('Invalid backup file'); return; }
       var msg='This will replace ALL your current data with the backup from '+(parsed.exported?parsed.exported.slice(0,10):'unknown')+'. Are you sure?';
       if(!window.confirm(msg)) return;
-      ['currency','incomeSources','expenses','cryptoHoldings','mtgCards','pokemonCards',
-       'savingsAccounts','transactions','goals','snapshots','creditCards',
-       'goldHoldings','stockHoldings'].forEach(function(k){ if(imp[k]!==undefined) data[k]=imp[k]; });
-      if(imp.hidden!==undefined) data.hidden=imp.hidden;
+      BACKUP_FIELDS.forEach(function(k){ if(imp[k]!==undefined) data[k]=imp[k]; });
       save(); renderAll(); showToast('Data imported successfully');
     }catch(err){ showToast('Import failed: '+err.message); }
   };
@@ -6617,6 +6625,87 @@ function renderMovers(){
 }
 
 // ── BUDGET ─────────────────────────────────────────────────────────────────
+function spendByCat(){
+  var now = new Date();
+  var y = now.getFullYear(), m = now.getMonth();
+  var out = {};
+  var txns = data.transactions || [];
+  for(var i = 0; i < txns.length; i++){
+    var t = txns[i];
+    if(t.type !== 'expense') continue;
+    var d = new Date(t.date);
+    if(d.getFullYear() === y && d.getMonth() === m){
+      var c = t.cat || 'other';
+      out[c] = (out[c] || 0) + (t.amt || 0);
+    }
+  }
+  return out;
+}
+
+// Order in which cappable categories render (income/saving excluded).
+var CAP_CATS = ['food','transport','ess','shopping','entertainment','health','sub','other'];
+
+function renderCategoryBudgets(){
+  var el = document.getElementById('bud-cat-limits');
+  if(!el) return;
+  var caps = data.categoryBudgets || {};
+  var spend = spendByCat();
+
+  var rows = '';
+  var anyCap = false;
+  for(var i = 0; i < CAP_CATS.length; i++){
+    var cat = CAP_CATS[i];
+    var cap = caps[cat];
+    if(!(cap > 0)) continue;
+    anyCap = true;
+    var meta = TXN_CATS[cat] || TXN_CATS.other;
+    var spent = spend[cat] || 0;
+    var pct = Math.round(spent / cap * 100);
+    var barW = Math.min(100, pct);
+    var color = (pct > 100) ? 'var(--red)' : (pct >= 80 ? '#F59E0B' : 'var(--green)');
+    var over = (spent > cap)
+      ? '<div style="font-size:11px;color:var(--red);margin-top:4px;">' + fmt(spent - cap) + ' ' + curSym() + ' over</div>'
+      : '';
+    rows += ''
+      + '<div style="cursor:pointer;" onclick="openSheet(\'cat-budget\',0,{cat:\'' + cat + '\'})">'
+      +   '<div style="display:flex;justify-content:space-between;margin-bottom:5px;">'
+      +     '<span style="font-size:13px;color:var(--text2);">' + meta.label + '</span>'
+      +     '<span style="font-size:13px;font-weight:500;color:' + color + ';">' + fmt(spent) + ' / ' + fmt(cap) + ' ' + curSym() + '</span>'
+      +   '</div>'
+      +   '<div class="bar-track"><div class="bar-fill" style="width:' + barW + '%;background:' + color + ';"></div></div>'
+      +   over
+      + '</div>';
+  }
+
+  var addBtn = '<div style="font-size:13px;color:var(--green);cursor:pointer;" onclick="openSheet(\'cat-budget\')">+ Set limit</div>';
+
+  if(!anyCap){
+    el.innerHTML = ''
+      + '<div class="card">'
+      +   '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+      +     '<div class="sec-title" style="margin:0;">Category limits</div>' + addBtn
+      +   '</div>'
+      +   '<div style="font-size:13px;color:var(--text3);">Set spending limits per category to track them here.</div>'
+      + '</div>';
+    return;
+  }
+
+  el.innerHTML = ''
+    + '<div class="card">'
+    +   '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
+    +     '<div class="sec-title" style="margin:0;">Category limits</div>' + addBtn
+    +   '</div>'
+    +   '<div style="display:flex;flex-direction:column;gap:12px;">' + rows + '</div>'
+    + '</div>';
+}
+
+function removeCatBudget(cat){
+  if(data.categoryBudgets) delete data.categoryBudgets[cat];
+  save();
+  var ov = document.getElementById('sheet-overlay'); if(ov) ov.classList.remove('open');
+  renderBudget();
+}
+
 function renderBudget(){
   var b=calcBudget();
   function setT(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
@@ -6646,6 +6735,7 @@ function renderBudget(){
   setT('bud-sav-pct',savPct+'%'); setBW('bud-sav-bar',savPct);
   var mEl=document.getElementById('budget-month-lbl');
   if(mEl){var n=new Date();mEl.textContent=n.toLocaleDateString('en',{month:'long',year:'numeric'});}
+  renderCategoryBudgets();
 }
 function setBW(id,pct){
   var el=document.getElementById(id);
@@ -7390,6 +7480,29 @@ function openSheet(type,idx,prefill){
       '</select></div>' +
       '<button class="btn-primary" onclick="submitSheet()">Add bill</button>';
 
+  } else if(type === 'cat-budget'){
+    var cbCats = ['food','transport','ess','shopping','entertainment','health','sub','other'];
+    var selCat = pf.cat || cbCats[0];
+    var cbCaps = data.categoryBudgets || {};
+    var curCap = cbCaps[selCat];
+    title.textContent = 'Category limit';
+    var opts = '';
+    for(var ci = 0; ci < cbCats.length; ci++){
+      var ck = cbCats[ci];
+      var cm = TXN_CATS[ck] || TXN_CATS.other;
+      opts += '<option value="' + ck + '"' + (ck === selCat ? ' selected' : '') + '>' + cm.label + '</option>';
+    }
+    var removeBtn = (curCap > 0)
+      ? '<button class="btn-primary" style="background:transparent;border:0.5px solid var(--red);color:var(--red);margin-top:10px;" onclick="removeCatBudget(document.getElementById(\'sh-cat\').value)">Remove limit</button>'
+      : '';
+    body.innerHTML =
+      '<div class="field-group"><div class="field-label">Category</div>' +
+      '<select class="select-input" id="sh-cat">' + opts + '</select></div>' +
+      '<div class="field-group"><div class="field-label">Monthly limit (AED)</div>' +
+      '<input class="field-input" id="sh-amt" type="number" placeholder="0" value="' + (curCap > 0 ? curCap : '') + '"></div>' +
+      '<button class="btn-primary" onclick="submitSheet()">Save limit</button>' +
+      removeBtn;
+
   } else if(type === 'edit-income'){
     var s = data.incomeSources[currentSheetIdx];
     if(!s) return;
@@ -7780,6 +7893,13 @@ function submitSheet(){
     logTransaction(name, amt, 'expense', cat, '');
     earnXP('add-expense', 'Added bill: '+name);
     setTimeout(checkBudgetAlerts, 200);
+  } else if(currentSheet==='cat-budget'){
+    var cbCat=gv('sh-cat');
+    var cbAmt=gn('sh-amt');
+    if(!data.categoryBudgets) data.categoryBudgets={};
+    if(cbAmt>0){ data.categoryBudgets[cbCat]=cbAmt; }
+    else { delete data.categoryBudgets[cbCat]; }
+    renderBudget();
   } else if(currentSheet==='edit-income'){
     var name=gv('sh-name'),amt=gn('sh-amt'),freq=gv('sh-freq');
     if(!name||!amt)return;
