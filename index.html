@@ -6714,7 +6714,7 @@ function renderBudget(){
   var net=b.inc-b.actual;
   setT('bud-pl',(net>=0?'+':'')+fmt(Math.abs(net))+' '+curSym());
   var plEl=document.getElementById('bud-pl');
-  if(plEl) plEl.style.color=net>=0?'#0D0D00':'#EF4444';
+  if(plEl) plEl.style.color=net>=0?'var(--green)':'#EF4444';
   var limit=Math.max(b.inc,b.actual*1.2,1000);
   var pct=Math.min(100,Math.round(b.actual/limit*100));
   setT('gauge-pct',pct+'%');
