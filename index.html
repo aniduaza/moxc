@@ -109,6 +109,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#110F0F;color:#fff;fo
 
 /* ── Animations ── */
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes streakPulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+.streak-pulse{animation:streakPulse 1.6s ease-in-out infinite;}
+@media (prefers-reduced-motion: reduce){.streak-pulse{animation:none;}}
 @keyframes barIn{from{width:0}to{width:var(--w)}}
 @keyframes needleIn{from{transform:rotate(-120deg)}to{transform:rotate(var(--deg))}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -1094,27 +1097,14 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <!-- change badge -->
           <div id="home-pl-badge" style="margin-bottom:12px;"></div>
 
-          <!-- sparkline (collapsible) -->
-          <div id="spark-collapse" class="spark-collapse">
-            <div>
-              <canvas id="assets-spark" height="64" style="width:100%;height:64px;display:block;margin-bottom:4px;"></canvas>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-                <span id="spark-date-start" style="font-size:10px;color:var(--text3);"></span>
-                <span id="spark-date-end" style="font-size:10px;color:var(--text3);"></span>
-              </div>
-            </div>
-          </div>
-
           <!-- breakdown bar -->
           <div id="asset-bar" style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:flex;gap:1px;"></div>
           <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
 
-          <!-- sparkline toggle — only shown when real history exists -->
-          <div class="spark-toggle" id="spark-toggle" onclick="toggleSparkline()" style="display:none;">
-            <div class="spark-toggle-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5l4 4 4-4"/></svg></div>
-          </div>
-
         </div>
+
+        <!-- Smart priority banner (one actionable nudge, ladder-ranked) -->
+        <div id="home-priority" class="slide-up d2" style="display:none;"></div>
 
         <!-- Monthly review card (1st of month) -->
         <div id="home-monthly-review"></div>
@@ -1163,6 +1153,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <div id="home-challenges"></div>
             <!-- XP widget -->
             <div class="card" id="xp-widget" style="padding:16px 18px;"></div>
+          </div>
+          <!-- Collapsed summary shown when the day is fully handled -->
+          <div id="progress-collapsed" style="display:none;cursor:pointer;align-items:center;gap:9px;padding:4px 2px;" onclick="expandProgress()">
+            <span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:rgba(245,158,11,.16);color:#FBBF24;font-weight:800;flex-shrink:0;">&#10003;</span>
+            <span style="flex:1;font-size:13px;font-weight:700;color:var(--text);">All squared today</span>
+            <span style="font-size:11px;color:var(--text3);">tap to view &#8250;</span>
           </div>
         </div>
 
@@ -2387,15 +2383,20 @@ function renderXPWidget() {
   var st     = getStreakStatus();
   var streak = data.streak || 0;
 
-  // ── Streak flame chip (top-right) ──────────────────────────────────
-  var flameColor = st.status === 'active' ? '#F59E0B'
-                 : st.status === 'at-risk' ? '#F97316'
-                 : 'var(--text3)';
-  var flameBg = st.status === 'active' ? 'rgba(245,158,11,.1)'
-              : st.status === 'at-risk' ? 'rgba(249,115,22,.1)'
-              : 'var(--surface3)';
+  // ── Streak flame chip (top-right) — escalates AM→PM when at-risk ─────
+  var riskPhase = getStreakRiskPhase();
+  var flameColor, flameBg, flamePulse = '';
+  if (st.status === 'at-risk' && riskPhase === 'pm') {
+    flameColor = '#F97316'; flameBg = 'rgba(249,115,22,.14)'; flamePulse = ' streak-pulse';
+  } else if (st.status === 'at-risk') {        // AM — muted, not locked in yet
+    flameColor = 'rgba(245,158,11,.45)'; flameBg = 'var(--surface3)';
+  } else if (st.status === 'active') {          // secured today
+    flameColor = '#F59E0B'; flameBg = 'rgba(245,158,11,.1)';
+  } else {                                       // none/broken (chip hidden anyway)
+    flameColor = 'var(--text3)'; flameBg = 'var(--surface3)';
+  }
   var flameHtml = (streak > 0 || st.status === 'at-risk')
-    ? '<div style="display:flex;align-items:center;gap:3px;background:'+flameBg
+    ? '<div class="streak-chip'+flamePulse+'" style="display:flex;align-items:center;gap:3px;background:'+flameBg
         +';border-radius:20px;padding:3px 9px;flex-shrink:0;">'
         + '<span style="display:flex;align-items:center;color:'+flameColor+';">'+getIcon('streak-fire',14)+'</span>'
         + '<span style="font-size:13px;font-weight:800;color:'+flameColor+';letter-spacing:-.3px;">'+streak+'</span>'
@@ -2454,6 +2455,23 @@ function renderXPWidget() {
     + '</div>';
   }
 
+  // ── At-risk Host nudge (PM only) — suppressed when the priority banner owns it ─
+  var riskLineHtml = '';
+  if (riskPhase === 'pm' && getActivePriority() !== 'streak') {
+    var riskMsgs = [
+      streak + ' nights running. Don&rsquo;t let the candle go out.',
+      'The candle&rsquo;s burning low &mdash; log anything before midnight.',
+      streak + '-night streak, still unlit today. One entry keeps it.'
+    ];
+    var doy = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+    var riskMsg = riskMsgs[doy % 3];
+    riskLineHtml = '<div onclick="openFAB()" style="display:flex;align-items:center;gap:6px;cursor:pointer;'
+      + 'background:rgba(249,115,22,.1);border-radius:var(--r-sm);padding:7px 10px;margin-top:8px;-webkit-tap-highlight-color:transparent;">'
+      + '<span style="display:flex;align-items:center;color:#F97316;">'+getIcon('streak-fire',13)+'</span>'
+      + '<span style="font-size:11px;color:var(--text2);">'+riskMsg+'</span>'
+    + '</div>';
+  }
+
   // ── Last XP hint ────────────────────────────────────────────────────
   var lastXPHtml = '';
   if (data.xpLog && data.xpLog.length) {
@@ -2490,8 +2508,8 @@ function renderXPWidget() {
         ? '<div style="font-size:11px;font-weight:700;color:#F59E0B;">MAX LEVEL</div>'
         : '<div style="font-size:11px;font-weight:600;color:#F59E0B;">' + lvl.xpToNext.toLocaleString() + ' to next level</div>')
     + '</div>'
-    // Milestone nudge (only near milestones)
-    + milestoneHtml;
+    // At-risk PM nudge takes priority; else milestone callout
+    + (riskLineHtml || milestoneHtml);
 
   // Staggered segment animation
   setTimeout(function() {
@@ -2633,6 +2651,69 @@ function getStreakStatus() {
   if (last === today) return {streak:streak, status:'active'};       // logged today
   if (last === yesterday) return {streak:streak, status:'at-risk'};  // haven't logged yet today
   return {streak:0, status:'broken'};                                 // missed a day
+}
+
+var STREAK_RISK_HOUR = 16; // 4pm local — escalation threshold (tunable)
+
+function getStreakRiskPhase() {
+  var st = getStreakStatus();
+  if (st.status !== 'at-risk') return 'none';
+  return (new Date().getHours() >= STREAK_RISK_HOUR) ? 'pm' : 'am';
+}
+
+// ── Home priority-slot detectors ───────────────────────────────────────────
+// Returns true when every one of todays missions is complete (vacuously true
+// when there are no missions). Mirrors renderDailyMissions earnedXP===totalXP.
+function missionsAllDone(){
+  var missions = getTodayMissions() || [];
+  for (var i = 0; i < missions.length; i++){
+    var p = missions[i].prog();
+    if (!(p.c >= p.t)) return false;
+  }
+  return true;
+}
+
+// Returns the first category at or over 90% of its monthly cap, or null.
+function bannerBudgetAlert(){
+  var caps = data.categoryBudgets || {};
+  var spend = spendByCat();
+  for (var i = 0; i < CAP_CATS.length; i++){
+    var cat = CAP_CATS[i];
+    var cap = caps[cat];
+    if (!(cap > 0)) continue;
+    var spent = spend[cat] || 0;
+    if ((spent / cap * 100) >= 90){
+      var meta = TXN_CATS[cat] || TXN_CATS.other;
+      return { cat: cat, label: meta.label, spent: spent, cap: cap };
+    }
+  }
+  return null;
+}
+
+// Returns the most-funded goal between 90% and 100%, or null.
+function bannerGoalNearly(){
+  if (!data.goals || !data.goals.length) return null;
+  var best = null, bestPct = -1, bestIdx = 0;
+  for (var i = 0; i < data.goals.length; i++){
+    var prog = calcGoalProgress(data.goals[i]);
+    if (prog.pct >= 90 && prog.pct < 100 && prog.pct > bestPct){
+      bestPct = prog.pct; best = data.goals[i]; bestIdx = i;
+    }
+  }
+  if (!best) return null;
+  return { goal: best, idx: bestIdx, pct: bestPct };
+}
+
+// Single source of truth for the Home priority banner. Evaluates the ladder
+// top-down and returns the active rung id, or null when Home is calm.
+function getActivePriority(){
+  if (getStreakRiskPhase() === 'pm') return 'streak';
+  if (bannerBudgetAlert()) return 'budget';
+  if ((getTodayMissions() || []).length > 0 && !missionsAllDone()) return 'missions';
+  if (bannerGoalNearly()) return 'goal';
+  var mr = document.getElementById('home-monthly-review');
+  if (mr && mr.innerHTML.replace(/\s/g, '') !== '') return 'monthly';
+  return null;
 }
 
 function showStreakMilestone(m) {
@@ -6473,6 +6554,24 @@ function toggleForecastDetail(){
 }
 
 // Progress hub: swap which re-housed panel is visible + persist choice
+// Session-only flag: user tapped the collapsed Progress card to expand it.
+var progressExpanded = false;
+function expandProgress(){ progressExpanded = true; applyProgressCollapse(); }
+function applyProgressCollapse(){
+  var card = document.getElementById('home-progress');
+  if (!card) return;
+  var seg     = card.querySelector('.pp-seg');
+  var body    = document.getElementById('progress-body');
+  var summary = document.getElementById('progress-collapsed');
+  var fullyHandled = getStreakStatus().status === 'active'
+    && (getTodayMissions() || []).length > 0
+    && missionsAllDone();
+  var collapse = fullyHandled && !progressExpanded;
+  if (seg)     seg.style.display     = collapse ? 'none' : '';
+  if (body)    body.style.display    = collapse ? 'none' : '';
+  if (summary) summary.style.display = collapse ? 'flex' : 'none';
+}
+
 function setProgressTab(tab){
   if(tab !== 'missions' && tab !== 'challenge' && tab !== 'level'){ tab = 'missions'; }
   try { localStorage.setItem('moxcoin_progress_tab', tab); } catch(e){}
@@ -6484,6 +6583,64 @@ function setProgressTab(tab){
     var btn = document.getElementById('pp-tab-' + k);
     if(btn){ btn.className = (k === tab) ? 'pp-seg-btn active' : 'pp-seg-btn'; }
   }
+}
+
+function renderPriorityBanner(){
+  var el = document.getElementById('home-priority');
+  if (!el) return;
+  var rung = getActivePriority();
+  if (!rung){ el.style.display = 'none'; el.innerHTML = ''; return; }
+
+  var icon, msg, tint, accent, tap;
+  if (rung === 'streak'){
+    var streak = data.streak || 0;
+    icon = getIcon('streak-fire', 16);
+    msg = streak + '-night streak still unlit &mdash; log one thing to keep it.';
+    tint = 'rgba(249,115,22,.12)'; accent = '#F97316';
+    tap = 'openFAB()';
+  } else if (rung === 'budget'){
+    var ba = bannerBudgetAlert();
+    icon = '<span style="font-size:15px;">&#9888;&#65039;</span>';
+    msg = ba.label + ' is near its cap this month.';
+    tint = 'rgba(239,68,68,.12)'; accent = '#EF4444';
+    tap = 'openSheet(\'cat-budget\',0,{cat:\'' + ba.cat + '\'})';
+  } else if (rung === 'missions'){
+    icon = '<span style="font-size:15px;">&#9989;</span>';
+    msg = 'A couple of missions still open today.';
+    tint = 'rgba(99,102,241,.14)'; accent = '#6366F1';
+    tap = 'goToMissions()';
+  } else if (rung === 'goal'){
+    var gn = bannerGoalNearly();
+    icon = '<span style="font-size:15px;">&#127919;</span>';
+    msg = gn.goal.name + ' is almost funded.';
+    tint = 'rgba(16,163,74,.12)'; accent = '#16A34A';
+    tap = 'switchTab(\'goals\')';
+  } else { // monthly
+    icon = '<span style="font-size:15px;">&#128202;</span>';
+    msg = 'Last month is ready to review.';
+    tint = 'rgba(148,163,184,.14)'; accent = '#94A3B8';
+    tap = 'scrollToEl(\'home-monthly-review\')';
+  }
+
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div onclick="' + tap + '" style="display:flex;align-items:center;gap:9px;cursor:pointer;'
+      + 'background:' + tint + ';border:0.5px solid ' + accent + '40;border-radius:var(--r-lg);'
+      + 'padding:11px 14px;-webkit-tap-highlight-color:transparent;">'
+      + '<span style="display:flex;align-items:center;color:' + accent + ';flex-shrink:0;">' + icon + '</span>'
+      + '<span style="flex:1;min-width:0;font-size:12.5px;font-weight:600;color:var(--text);">' + msg + '</span>'
+      + '<span style="color:' + accent + ';font-size:16px;flex-shrink:0;">&#8250;</span>'
+    + '</div>';
+}
+
+// Tap targets for banner rungs that scroll/route within Home.
+function goToMissions(){
+  setProgressTab('missions');
+  scrollToEl('home-progress');
+}
+function scrollToEl(id){
+  var t = document.getElementById(id);
+  if (t && t.scrollIntoView) t.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function renderHome(){
@@ -6690,10 +6847,14 @@ function renderHome(){
   renderSpendingChallenges();
   renderForecast();
 
+  renderPriorityBanner();
+
   // Restore active Progress hub tab (defaults to Missions)
   var pTab = 'missions';
   try { pTab = localStorage.getItem('moxcoin_progress_tab') || 'missions'; } catch(e){}
   setProgressTab(pTab);
+
+  applyProgressCollapse();
 }
 
 
