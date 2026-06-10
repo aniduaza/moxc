@@ -235,7 +235,7 @@ body.light .pp-seg{ background:#F1EFE8; }
 .spark-collapse>*{overflow:hidden;min-height:0;}
 .spark-collapse.expanded{grid-template-rows:1fr;opacity:1;margin-bottom:10px;}
 .spark-toggle{display:flex;justify-content:center;align-items:center;min-height:44px;margin-top:-6px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.spark-toggle-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);transition:transform .35s ease,color .2s;}
+.spark-toggle-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);transition:transform .35s ease,color .2s;}
 .spark-toggle.expanded .spark-toggle-icon{transform:rotate(180deg);color:rgba(255,255,255,.5);}
 .stat-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
 .stat-pill{background:var(--surface);border-radius:var(--r-md);padding:12px 10px;}
@@ -393,8 +393,8 @@ body.light #savings-hero *{color:rgba(255,255,255,.85) !important;}
 body.light #savings-hero [id]{color:#fff !important;}
 body.light .greeting-title{color:rgba(255,255,255,.75);}
 /* Hero card date + currency labels */
-.home-date-lbl{font-size:10px;color:rgba(255,255,255,.4);}
-.home-cur-lbl{font-size:14px;color:rgba(255,255,255,.35);}
+.home-date-lbl{font-size:10px;color:rgba(255,255,255,.55);}
+.home-cur-lbl{font-size:14px;color:rgba(255,255,255,.55);}
 .balance-amount{color:#fff;}
 body.light .home-date-lbl{color:rgba(255,255,255,.55);}
 body.light .home-cur-lbl{color:rgba(255,255,255,.55);}
@@ -404,14 +404,17 @@ body.light .greeting-sub{color:rgba(255,255,255,.65);}
 body.light .card-yellow{background:linear-gradient(135deg,#FEF3C7,#FDE68A);}
 body.light #bud-portfolio-card{background:linear-gradient(135deg,#EDE9FF,#DDD6FE) !important;}
 /* Gauge card text is hardcoded white; recolor for the pale-yellow light card. */
-body.light .card-yellow #gauge-pct{color:#1A1814;}
-body.light .card-yellow #gauge-lbl{color:rgba(26,24,20,.55);}
+body.light .card-yellow #gauge-pct{color:#1A1814 !important;}
+body.light .card-yellow #gauge-lbl{color:rgba(26,24,20,.75) !important;}
+body.light .card-yellow svg text{fill:rgba(26,24,20,.7);}
 body.light .card-yellow [style*="rgba(200,154,0"]{color:#92600A !important;}
 body.light .bottom-nav{background:#1A1814;border-top:0.5px solid rgba(255,255,255,.08);}
-body.light .nav-icon{color:rgba(255,255,255,.35);}
-body.light .nav-label{color:rgba(255,255,255,.35);}
-body.light .nav-item.active .nav-icon{color:var(--green);}
-body.light .nav-item.active .nav-label{color:var(--green);}
+body.light .nav-icon{color:rgba(255,255,255,.55);}
+body.light .nav-label{color:rgba(255,255,255,.55);}
+/* Nav bar stays dark in light mode, so active items need the bright amber
+   (the light --green #B45309 is only 3.5:1 on the dark bar). */
+body.light .nav-item.active .nav-icon{color:#F59E0B;}
+body.light .nav-item.active .nav-label{color:#F59E0B;}
 body.light .field-input{background:#EFEFEB;border-color:rgba(0,0,0,.1);color:#0D0D0D;}
 body.light .select-input{background:#EFEFEB;border-color:rgba(0,0,0,.1);color:#0D0D0D;}
 body.light .sheet{background:#FFFFFF;}
@@ -443,10 +446,10 @@ body.light .advisor-header{background:linear-gradient(135deg,#D97706,#F59E0B);}
 body.light .advisor-header [style*="rgba(255,255,255"]{color:rgba(255,255,255,.7)!important;}
 body.light .advisor-header [style*="color:var(--green)"]{color:#fff!important;}
 body.light .chat-bubble.assistant{background:#F0F0EC;color:#0D0D0D;}
-body.light .chat-bubble.thinking{background:#F0F0EC;color:rgba(0,0,0,.4);}
+body.light .chat-bubble.thinking{background:#F0F0EC;color:rgba(0,0,0,.62);}
 body.light #chat-messages{background:#F5F4EF;}
 body.light .chat-bubble.assistant{background:#FFFFFF;color:#1A1814;border:0.5px solid rgba(0,0,0,.06);}
-body.light .chat-bubble.thinking{background:#F0F0EC;color:rgba(0,0,0,.4);}
+body.light .chat-bubble.thinking{background:#F0F0EC;color:rgba(0,0,0,.62);}
 body.light .chat-input{background:#FFFFFF;border-color:rgba(0,0,0,.12);color:#1A1814;}
 body.light .chat-input:focus{border-color:rgba(245,158,11,.5);}
 body.light .chat-input-row{background:#F5F4EF;border-top:0.5px solid rgba(0,0,0,.08);}
@@ -470,8 +473,8 @@ body.light #bg-canvas{opacity:.25;}
 .txn-search{width:100%;background:var(--surface);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:11px 16px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
 .txn-search:focus{border-color:rgba(245,158,11,.4);}
 .txn-month-hdr{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;padding:12px 0 6px;}
-.txn-group-hdr{font-size:10px;font-weight:600;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 5px;}
-body.light .txn-group-hdr{color:rgba(0,0,0,.35);}
+.txn-group-hdr{font-size:10px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.8px;padding:8px 0 5px;}
+body.light .txn-group-hdr{color:rgba(0,0,0,.62);}
 .txn-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--surface);border-radius:var(--r-md);margin-bottom:6px;}
 .txn-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
 .txn-detail{flex:1;min-width:0;}
@@ -570,7 +573,7 @@ body.light .more-item{background:#FFFFFF;}
   font-weight:700;
   letter-spacing:.1em;
   text-transform:uppercase;
-  color:rgba(255,255,255,.4);
+  color:rgba(255,255,255,.55);
   flex-shrink:0;
 }
 .insight-ticker-track{
@@ -687,7 +690,7 @@ body.light .pager-dot.active{background:var(--green);}
 }
 .mission-sublabel{
   font-size:10px;letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(255,255,255,.45);margin-bottom:5px;
+  color:rgba(255,255,255,.55);margin-bottom:5px;
 }
 .mission-name{
   font-size:22px;font-weight:700;color:#fff;line-height:1.15;
@@ -761,30 +764,31 @@ body.light .backup-btn{background:#FFFFFF;}
 
 /* ── Activity summary card ──────────────────────────────────────────── */
 .act-summary-card{background:#1d1810;border:1px solid #2f2718;border-radius:var(--r-card);padding:16px;box-shadow:var(--elev-1);}
-.act-month-lbl{font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;}
+.act-month-lbl{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600;}
 .act-stat-pill{flex:1;background:rgba(0,0,0,.25);border-radius:var(--r-sm);padding:10px 12px;}
-.act-stat-lbl{font-size:10px;color:rgba(255,255,255,.38);margin-bottom:3px;}
+.act-stat-lbl{font-size:10px;color:rgba(255,255,255,.55);margin-bottom:3px;}
 .act-stat-val{font-size:18px;font-weight:600;letter-spacing:-.5px;}
 .act-spent-val{color:#fff;}
 .act-bar-track{height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-bottom:7px;}
-.act-remaining-lbl{color:rgba(255,255,255,.38);}
+.act-remaining-lbl{color:rgba(255,255,255,.55);}
 .act-mini-pill{flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:7px 10px;text-align:center;}
-.act-mini-lbl{font-size:9px;color:rgba(255,255,255,.38);}
+.act-mini-lbl{font-size:9px;color:rgba(255,255,255,.55);}
 .act-mini-val{font-size:13px;font-weight:600;color:#fff;}
 
 /* ── Light mode: fix hardcoded dark colours ─────────────────────────── */
 
 /* Activity month summary card */
 body.light .act-summary-card{background:#FFFFFF;border-color:#ECEAE3;}
-body.light .act-month-lbl{color:rgba(26,24,20,.4);}
+body.light .act-month-lbl{color:rgba(26,24,20,.62);}
 body.light .act-stat-pill{background:rgba(255,255,255,.6);}
-body.light .act-stat-lbl{color:rgba(0,0,0,.4);}
+body.light .act-stat-lbl{color:rgba(0,0,0,.62);}
 body.light .act-spent-val{color:#0D0D0D;}
 body.light .act-bar-track{background:rgba(0,0,0,.1);}
-body.light .act-remaining-lbl{color:rgba(0,0,0,.38);}
+body.light .act-remaining-lbl{color:rgba(0,0,0,.62);}
 body.light .act-mini-pill{background:rgba(255,255,255,.5);}
-body.light .act-mini-lbl{color:rgba(0,0,0,.4);}
+body.light .act-mini-lbl{color:rgba(0,0,0,.62);}
 body.light .act-mini-val{color:#0D0D0D;}
+body.light #act-vs-last{color:rgba(26,24,20,.62) !important;border-top-color:rgba(0,0,0,.1) !important;}
 
 /* Home hero card — fix hardcoded #fff / rgba(255,255,255,...) */
 body.light #home-balance{color:#fff !important;}
@@ -891,7 +895,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .ob-mock-card{background:rgba(255,255,255,.07);border-radius:20px;border:1px solid rgba(255,255,255,.1);width:240px;animation:obFloat 4.5s ease-in-out infinite;box-shadow:0 28px 64px rgba(0,0,0,.6);}
 .ob-xp-badge{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .ob-input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:15px 16px;font-size:16px;color:#fff;font-family:"DM Sans",sans-serif;outline:none;box-sizing:border-box;transition:border-color .18s;margin-bottom:16px;}
-.ob-input::placeholder{color:rgba(255,255,255,.3);}
+.ob-input::placeholder{color:rgba(255,255,255,.55);}
 .ob-input:focus{border-color:rgba(245,158,11,.5);}
 .ob-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
 .ob-pill{padding:13px 18px;border-radius:22px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);transition:all .18s;font-family:"DM Sans",sans-serif;touch-action:manipulation;}
@@ -1386,7 +1390,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             </div>
           </div>
           <!-- vs last month -->
-          <div id="act-vs-last" style="display:none;font-size:11px;color:rgba(255,255,255,.4);padding-top:8px;border-top:0.5px solid rgba(255,255,255,.07);margin-bottom:10px;"></div>
+          <div id="act-vs-last" style="display:none;font-size:11px;color:rgba(255,255,255,.55);padding-top:8px;border-top:0.5px solid rgba(255,255,255,.07);margin-bottom:10px;"></div>
           <!-- free to spend + category rings -->
           <div id="act-free-spend" style="display:none;"></div>
           <div id="act-cat-rings" style="display:none;margin-top:10px;"></div>
@@ -1571,12 +1575,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
               <path id="gauge-arc" d="M16 82 A70 70 0 0 1 156 82" stroke="#C8A97E" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="220" stroke-dashoffset="220"/>
               <line id="gauge-needle" x1="86" y1="82" x2="86" y2="24" stroke="#C8A97E" stroke-width="3" stroke-linecap="round" transform="rotate(-120,86,82)"/>
               <circle cx="86" cy="82" r="5" fill="#C8A97E"/>
-              <text x="12" y="90" font-size="9" fill="rgba(255,255,255,.3)" font-family="DM Sans,sans-serif">0</text>
-              <text x="148" y="90" font-size="9" fill="rgba(255,255,255,.3)" font-family="DM Sans,sans-serif" id="gauge-max-lbl">12k</text>
+              <text x="12" y="90" font-size="9" fill="rgba(255,255,255,.55)" font-family="DM Sans,sans-serif">0</text>
+              <text x="148" y="90" font-size="9" fill="rgba(255,255,255,.55)" font-family="DM Sans,sans-serif" id="gauge-max-lbl">12k</text>
             </svg>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;">
-            <div style="font-size:12px;color:rgba(255,255,255,.38);" id="gauge-lbl">8,900 / 12,000</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.55);" id="gauge-lbl">8,900 / 12,000</div>
             <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="gauge-pct">74%</div>
           </div>
         </div>
@@ -1649,19 +1653,19 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-income')">+ Add</div>
         </div>
         <div id="income-hero" class="slide-up d2" style="background:linear-gradient(135deg,#131D00,#1E2E00);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
-          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Monthly total</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Monthly total</div>
           <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="income-total">—</div>
           <div style="margin-top:14px;display:flex;gap:16px;">
             <div>
-              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">Sources</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Sources</div>
               <div style="font-size:14px;font-weight:600;color:var(--green);" id="income-source-count">0</div>
             </div>
             <div>
-              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">After bills</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">After bills</div>
               <div style="font-size:14px;font-weight:600;color:var(--green);" id="income-after-bills">—</div>
             </div>
             <div>
-              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">Savings rate</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Savings rate</div>
               <div style="font-size:14px;font-weight:600;color:var(--green);" id="income-savings-rate">—</div>
             </div>
           </div>
@@ -1678,26 +1682,26 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-expense')">+ Add</div>
         </div>
         <div id="expenses-hero" class="slide-up d2" style="background:linear-gradient(135deg,#1D0A0A,#2A0F0F);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
-          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total monthly bills</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total monthly bills</div>
           <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="exp-total">—</div>
           <div style="margin-top:10px;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;">
             <div id="exp-bar" style="height:100%;border-radius:2px;background:var(--red);transition:width .5s;width:0%;"></div>
           </div>
           <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-size:11px;color:rgba(255,255,255,.35);" id="exp-ratio-lbl">0% of income</div>
-            <div style="font-size:11px;color:rgba(255,255,255,.35);" id="exp-remaining-lbl">— remaining</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.55);" id="exp-ratio-lbl">0% of income</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.55);" id="exp-remaining-lbl">— remaining</div>
           </div>
           <div style="margin-top:12px;display:flex;gap:12px;">
             <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Essentials</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Essentials</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="exp-ess-total">—</div>
             </div>
             <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Subscriptions</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Subscriptions</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="exp-sub-total">—</div>
             </div>
             <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Bills</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Bills</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="exp-bill-count">0</div>
             </div>
           </div>
@@ -1714,19 +1718,19 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-savings')">+ Add</div>
         </div>
         <div id="savings-hero" class="slide-up d2" style="background:linear-gradient(135deg,#001520,#00202E);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
-          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total saved</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total saved</div>
           <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="sav-total">—</div>
           <div style="margin-top:14px;display:flex;gap:16px;">
             <div>
-              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">Accounts</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Accounts</div>
               <div style="font-size:14px;font-weight:600;color:var(--blue);" id="sav-account-count">0</div>
             </div>
             <div>
-              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">of income saved</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">of income saved</div>
               <div style="font-size:14px;font-weight:600;color:var(--blue);" id="sav-income-pct">—</div>
             </div>
             <div>
-              <div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;">vs bills</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">vs bills</div>
               <div style="font-size:14px;font-weight:600;color:var(--blue);" id="sav-vs-bills">—</div>
             </div>
           </div>
@@ -1745,26 +1749,26 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         </div>
         <!-- Hero summary -->
         <div id="credit-hero" class="slide-up d2" style="background:linear-gradient(135deg,#12001A,#1E0028);border-radius:var(--r-lg);padding:18px;position:relative;overflow:hidden;">
-          <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total balance owed</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">Total balance owed</div>
           <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-1px;" id="cc-total-debt">—</div>
           <div style="margin-top:10px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;">
             <div id="cc-util-bar" style="height:100%;border-radius:3px;background:#6366F1;transition:width .6s;width:0%;"></div>
           </div>
           <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-size:11px;color:rgba(255,255,255,.35);" id="cc-util-lbl">0% utilisation</div>
-            <div style="font-size:11px;color:rgba(255,255,255,.35);" id="cc-available-lbl">— available</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.55);" id="cc-util-lbl">0% utilisation</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.55);" id="cc-available-lbl">— available</div>
           </div>
           <div style="margin-top:12px;display:flex;gap:12px;">
             <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Cards</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Cards</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="cc-count">0</div>
             </div>
             <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Total limit</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Total limit</div>
               <div style="font-size:13px;font-weight:600;color:#fff;" id="cc-total-limit">—</div>
             </div>
             <div style="flex:1;background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:8px 10px;">
-              <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:2px;">Due soon</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;">Due soon</div>
               <div style="font-size:13px;font-weight:600;color:#EF4444;" id="cc-due-soon">—</div>
             </div>
           </div>
@@ -1795,9 +1799,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <div class="advisor-header slide-up d1">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
             <div>
-              <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">AI Financial Advisor</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">AI Financial Advisor</div>
               <div style="font-size:18px;font-weight:600;color:var(--green);">Ask me anything</div>
-              <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">Powered by Claude · based on your real data</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:3px;">Powered by Claude · based on your real data</div>
             </div>
           </div>
         </div>
@@ -4079,7 +4083,7 @@ function buildMissionCard(g, i){
     // Status chip
     + '<div class="mission-chip" style="background:'+chipBg+';border-color:'+chipBorder+';color:'+chipColor+';">'+chipText+'</div>'
     // Delete button
-    + '<div onclick="event.stopPropagation();deleteGoal('+i+')" style="position:absolute;top:12px;right:14px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.45);font-size:14px;z-index:2;">&#10005;</div>'
+    + '<div onclick="event.stopPropagation();deleteGoal('+i+')" style="position:absolute;top:12px;right:14px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.55);font-size:14px;z-index:2;">&#10005;</div>'
     // Completion checkmark
     + (isComplete ? '<div class="mission-checkmark"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#4ADE80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4 4 8-8"/></svg></div>' : '')
     // Text block
@@ -4088,7 +4092,7 @@ function buildMissionCard(g, i){
       + '<div class="mission-name">'+g.name+'</div>'
       + '<div class="mission-amount">'
         + '<span style="color:'+col.accent+';font-weight:600;">'+fmt(prog.current)+' '+curSym()+'</span>'
-        + ' <span style="color:rgba(255,255,255,.4);">/ '+fmt(g.targetAmt)+' '+curSym()+'</span>'
+        + ' <span style="color:rgba(255,255,255,.55);">/ '+fmt(g.targetAmt)+' '+curSym()+'</span>'
       + '</div>'
     + '</div>'
     // Health bar
@@ -4109,7 +4113,7 @@ function buildNewMissionSlot(){
   slot.style.animationDelay = ((data.goals||[]).length * 0.07 + 0.05) + 's';
   slot.innerHTML =
     '<svg width="32" height="32" viewBox="0 0 20 20" fill="none" stroke="rgba(245,158,11,.5)" stroke-width="1.8" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>'
-    + '<div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.25);">New mission</div>';
+    + '<div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);">New mission</div>';
   slot.addEventListener('click', function(){ openSheet('add-goal'); });
   return slot;
 }
@@ -4996,12 +5000,12 @@ function renderActivity(){
     freeEl.innerHTML =
       '<div style="background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">'
         +'<div>'
-          +'<div style="font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;">Free to spend</div>'
-          +'<div style="font-size:18px;font-weight:700;color:'+freeColor+';letter-spacing:-.5px;">'+fmt(freePerDay)+'<span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.4);margin-left:3px;">/day</span></div>'
+          +'<div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;">Free to spend</div>'
+          +'<div style="font-size:18px;font-weight:700;color:'+freeColor+';letter-spacing:-.5px;">'+fmt(freePerDay)+'<span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.55);margin-left:3px;">/day</span></div>'
         +'</div>'
         +'<div style="text-align:right;">'
           +'<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.8);">'+fmt(freeTotal)+' '+curSym()+'</div>'
-          +'<div style="font-size:10px;color:rgba(255,255,255,.35);">'+daysLeft+' days left</div>'
+          +'<div style="font-size:10px;color:rgba(255,255,255,.55);">'+daysLeft+' days left</div>'
         +'</div>'
       +'</div>';
   })();
@@ -6103,7 +6107,7 @@ function showWrapped(){
       +'<div style="flex:1;font-size:15px;font-weight:700;color:rgba(255,255,255,.9);text-align:left;">'+cInfo.label+'</div>'
       +'<div style="text-align:right;flex-shrink:0;">'
         +'<div style="font-size:15px;font-weight:800;color:'+cInfo.color+';">'+fmt(ci2.amt)+' AED</div>'
-        +'<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;">'+pct2+'% of spend</div>'
+        +'<div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:1px;">'+pct2+'% of spend</div>'
       +'</div>'
     +'</div>';
   }
@@ -6208,7 +6212,7 @@ function wrappedGoTo(idx,fwd){
   content.style.transform=fwd?'translateX(32px)':'translateX(-32px)';
   var eyebrowHtml='<div style="font-size:11px;font-weight:700;letter-spacing:.10em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:20px;animation:wrapFadeUp .45s ease both;">'+sl.eyebrow+'</div>';
   var swipeHint = (idx===0)
-    ? '<div style="margin-top:32px;display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.35);font-size:12px;animation:wrapTapHint 2s ease 1.2s 3 both;"><span>Tap to continue</span><span style="font-size:14px;">&#8594;</span></div>'
+    ? '<div style="margin-top:32px;display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.55);font-size:12px;animation:wrapTapHint 2s ease 1.2s 3 both;"><span>Tap to continue</span><span style="font-size:14px;">&#8594;</span></div>'
     : '';
   if(sl.customContent){
     content.innerHTML=eyebrowHtml+sl.customContent;
@@ -9885,22 +9889,22 @@ function buildOnboarding(){
         +'<div style="background:rgba(4,12,10,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(16,185,129,.18);border-radius:18px;padding:14px;">'
           +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
-              +'<div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">INCOME</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.06em;margin-bottom:4px;">INCOME</div>'
               +'<div style="font-size:19px;font-weight:800;color:#fff;">12,500</div>'
               +'<div style="font-size:10px;color:#10B981;margin-top:2px;">&#8593; +5%</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
-              +'<div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">SPENT</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.06em;margin-bottom:4px;">SPENT</div>'
               +'<div style="font-size:19px;font-weight:800;color:#fff;">6,200</div>'
               +'<div style="font-size:9px;color:#EF4444;margin-top:2px;">&#8593; +12%</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
-              +'<div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">SAVED</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.06em;margin-bottom:4px;">SAVED</div>'
               +'<div style="font-size:19px;font-weight:800;color:#10B981;">50%</div>'
-              +'<div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">Great rate</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.55);margin-top:2px;">Great rate</div>'
             +'</div>'
             +'<div style="background:rgba(255,255,255,.05);border-radius:10px;padding:10px 8px;">'
-              +'<div style="font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;margin-bottom:4px;">STREAK</div>'
+              +'<div style="font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.06em;margin-bottom:4px;">STREAK</div>'
               +'<div style="font-size:19px;font-weight:800;color:#F59E0B;">7d</div>'
               +'<div style="font-size:10px;color:#F59E0B;margin-top:2px;">Keep going</div>'
             +'</div>'
