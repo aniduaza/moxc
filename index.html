@@ -2674,20 +2674,56 @@ function missionsAllDone(){
 }
 
 // Returns the first category at or over 90% of its monthly cap, or null.
+// Selection rule for budget-alert candidates: a realized overspend (reactive,
+// already at/over 90% of cap) always outranks an on-pace projection (predictive).
+// Within the same kind, the higher sortKey wins.
+function betterAlert(a, b){
+  if (a.kind !== b.kind){
+    return a.kind === 'reactive';
+  }
+  return a.sortKey > b.sortKey;
+}
+
 function bannerBudgetAlert(){
   var caps = data.categoryBudgets || {};
   var spend = spendByCat();
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth();
+  var daysInMonth = new Date(year, month + 1, 0).getDate();
+  var dayOfMonth = now.getDate();
+
+  var best = null;
   for (var i = 0; i < CAP_CATS.length; i++){
     var cat = CAP_CATS[i];
     var cap = caps[cat];
     if (!(cap > 0)) continue;
     var spent = spend[cat] || 0;
-    if ((spent / cap * 100) >= 90){
-      var meta = TXN_CATS[cat] || TXN_CATS.other;
-      return { cat: cat, label: meta.label, spent: spent, cap: cap };
+    var pct = spent / cap * 100;
+
+    var cand = null;
+    if (pct >= 90){
+      cand = { kind: 'reactive', sortKey: pct, projected: pct };
+    } else if (dayOfMonth >= 5 && pct >= 40){
+      var projected = pct * (daysInMonth / dayOfMonth);
+      if (projected >= 110){
+        cand = { kind: 'predictive', sortKey: projected, projected: projected };
+      }
+    }
+    if (!cand) continue;
+
+    var meta = TXN_CATS[cat] || TXN_CATS.other;
+    cand.cat = cat;
+    cand.label = meta.label;
+    cand.spent = spent;
+    cand.cap = cap;
+    cand.pct = pct;
+
+    if (best === null || betterAlert(cand, best)){
+      best = cand;
     }
   }
-  return null;
+  return best;
 }
 
 // Returns the most-funded goal between 90% and 100%, or null.
@@ -6601,7 +6637,9 @@ function renderPriorityBanner(){
   } else if (rung === 'budget'){
     var ba = bannerBudgetAlert();
     icon = '<span style="font-size:15px;">&#9888;&#65039;</span>';
-    msg = ba.label + ' is near its cap this month.';
+    msg = (ba.kind === 'predictive')
+      ? ba.label + ' is trending over its cap this month.'
+      : ba.label + ' is near its cap this month.';
     tint = 'rgba(239,68,68,.12)'; accent = '#EF4444';
     tap = 'openSheet(\'cat-budget\',0,{cat:\'' + ba.cat + '\'})';
   } else if (rung === 'missions'){
