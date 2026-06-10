@@ -5,7 +5,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="tvrn">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#110F0F">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,7 +35,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#110F0F;color:#fff;fo
   --surface3:#2A2826;
   --text:#fff;
   --text2:rgba(255,255,255,.65);
-  --text3:rgba(255,255,255,.35);
+  --text3:rgba(255,255,255,.6);
   --red:#EF4444;
   --blue:#3B82F6;
   /* category pops — Game Gold palette */
@@ -367,7 +367,7 @@ body.light{
   --stone2:#E0DDD5;
   --text:#1A1814;
   --text2:rgba(26,24,20,.65);
-  --text3:rgba(26,24,20,.45);
+  --text3:rgba(26,24,20,.62);
   --red:#DC2626;
   --blue:#2563EB;
   /* Light-mode accent: darker amber so it passes contrast as TEXT on light
@@ -1052,7 +1052,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
           <!-- left: avatar + greeting -->
           <div style="display:flex;align-items:center;gap:10px;">
-            <div id="home-avatar" onclick="editUserName()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer;letter-spacing:-.5px;"></div>
+            <div id="home-avatar" aria-label="Edit your name" onclick="editUserName()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#D97706,#F59E0B);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer;letter-spacing:-.5px;"></div>
             <div>
               <div id="home-timegreeting" style="font-size:11px;color:var(--text3);"></div>
               <div style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;min-width:0;">
@@ -1064,12 +1064,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <!-- right: actions -->
           <div style="display:flex;align-items:center;gap:4px;">
             <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(245,158,11,.1);padding:0 12px;border-radius:var(--r-md);cursor:pointer;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;">AED</div>
-            <div id="briefing-btn" onclick="onBriefingBtnTap()" style="min-width:44px;min-height:44px;border-radius:var(--r-md);background:rgba(245,158,11,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
+            <div id="briefing-btn" aria-label="Open weekly briefing" onclick="onBriefingBtnTap()" style="min-width:44px;min-height:44px;border-radius:var(--r-md);background:rgba(245,158,11,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
               <div id="briefing-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--green);"></div>
               <div id="alerts-home-dot" style="display:none;position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#E24B4A;border:1.5px solid var(--bg);"></div>
             </div>
-            <div id="theme-toggle" onclick="toggleTheme()" style="min-width:44px;min-height:44px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
+            <div id="theme-toggle" aria-label="Toggle light and dark theme" onclick="toggleTheme()" style="min-width:44px;min-height:44px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
           </div>
         </div>
 
@@ -1853,7 +1853,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <textarea class="chat-input" id="chat-input" placeholder="Ask about your finances..." rows="1"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"
           oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
-        <button class="chat-send" id="chat-send-btn" onclick="sendChat()">
+        <button class="chat-send" id="chat-send-btn" aria-label="Send message" onclick="sendChat()">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--green-dark)" stroke-width="2" stroke-linecap="round"><path d="M14 2L2 7l5 3 2 5 5-13z"/></svg>
         </button>
       </div>
@@ -1954,10 +1954,10 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
 <!-- ── Pager dots ── -->
   <div id="pager-dots">
-    <div class="pager-dot active" onclick="springToIndex(0)"></div>
-    <div class="pager-dot" onclick="springToIndex(1)"></div>
-    <div class="pager-dot" onclick="springToIndex(2)"></div>
-    <div class="pager-dot" onclick="springToIndex(3)"></div>
+    <div class="pager-dot active" aria-label="Go to page 1" onclick="springToIndex(0)"></div>
+    <div class="pager-dot" aria-label="Go to page 2" onclick="springToIndex(1)"></div>
+    <div class="pager-dot" aria-label="Go to page 3" onclick="springToIndex(2)"></div>
+    <div class="pager-dot" aria-label="Go to page 4" onclick="springToIndex(3)"></div>
   </div>
 
 <!-- ── Bottom Nav ── -->
@@ -1975,7 +1975,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
     <!-- FAB -->
     <div style="flex:1;display:flex;justify-content:center;align-items:center;padding-bottom:4px;">
-      <div id="fab-btn" onclick="openFAB()" style="width:52px;height:52px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(245,158,11,.3);transition:transform .15s;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(.92)'" ontouchend="this.style.transform='scale(1)'">
+      <div id="fab-btn" aria-label="Open quick add menu" onclick="openFAB()" style="width:52px;height:52px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(245,158,11,.3);transition:transform .15s;-webkit-tap-highlight-color:transparent;" ontouchstart="this.style.transform='scale(.92)'" ontouchend="this.style.transform='scale(1)'">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#1F0A0A" stroke-width="2.5" stroke-linecap="round"><path d="M11 4v14M4 11h14"/></svg>
       </div>
     </div>
@@ -2069,10 +2069,10 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
     <div id="wrapped-content" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 36px 140px;z-index:3;text-align:center;pointer-events:none;"></div>
   </div>
 
-  <div id="badge-fs-overlay" onclick="closeBadgeOverlay()" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;cursor:pointer;"></div>
+  <div id="badge-fs-overlay" aria-label="Close" onclick="closeBadgeOverlay()" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;cursor:pointer;"></div>
 
   <!-- ═══ MORE SCREEN BACKDROP ═══ -->
-  <div id="more-backdrop" onclick="closeMoreScreen()" style="display:none;pointer-events:none;position:absolute;top:0;left:0;right:0;z-index:45;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);transition:opacity .3s ease;opacity:0;"></div>
+  <div id="more-backdrop" aria-label="Close" onclick="closeMoreScreen()" style="display:none;pointer-events:none;position:absolute;top:0;left:0;right:0;z-index:45;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);transition:opacity .3s ease;opacity:0;"></div>
 
   <!-- ═══ DELETE CONFIRMATION ═══ -->
   <div id="del-overlay" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:9990;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;">
@@ -3523,6 +3523,69 @@ function renderTab(tab){
   else if(tab==='alerts')renderAlertsTab();
   else if(tab==='more')renderMore();
 }
+
+// ── Accessibility: make non-native click targets keyboard-operable ──────────
+// Any element with an onclick that is not a native control gets role=button,
+// tabindex=0, and Enter/Space activation. Idempotent via the data-a11y flag.
+function a11yKeyActivate(e){
+  var k = e.key;
+  var isEnter = (k === 'Enter' || e.keyCode === 13);
+  var isSpace = (k === ' ' || k === 'Spacebar' || e.keyCode === 32);
+  if (isEnter || isSpace){
+    if (isSpace) e.preventDefault();
+    if (e.currentTarget && e.currentTarget.click) e.currentTarget.click();
+  }
+}
+
+function applyA11y(root){
+  root = root || document;
+  if (!root.querySelectorAll) return;
+  var nodes = root.querySelectorAll('[onclick]');
+  for (var i = 0; i < nodes.length; i++){
+    var el = nodes[i];
+    if (el.getAttribute('data-a11y')) continue;
+    var tag = (el.tagName || '').toLowerCase();
+    if (tag === 'button' || tag === 'a' || tag === 'input' || tag === 'select' || tag === 'textarea'){
+      el.setAttribute('data-a11y', '1');
+      continue;
+    }
+    // Skip click-guards (onclick just stops propagation) and containers that
+    // wrap other interactive elements. Treating these as buttons is wrong and
+    // creates stray tab stops / mis-announced regions.
+    var oc = el.getAttribute('onclick') || '';
+    if (oc.indexOf('stopPropagation') !== -1){
+      el.setAttribute('data-a11y', '1');
+      continue;
+    }
+    if (el.querySelector('a, button, input, select, textarea, [onclick]')){
+      el.setAttribute('data-a11y', '1');
+      continue;
+    }
+    if (!el.getAttribute('role')) el.setAttribute('role', 'button');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    el.setAttribute('data-a11y', '1');
+    el.addEventListener('keydown', a11yKeyActivate, false);
+  }
+}
+
+var a11yPending = false;
+function startA11yObserver(){
+  if (!document.body){
+    document.addEventListener('DOMContentLoaded', startA11yObserver, false);
+    return;
+  }
+  applyA11y(document);
+  if (typeof MutationObserver === 'undefined') return;
+  var obs = new MutationObserver(function(){
+    if (a11yPending) return;
+    a11yPending = true;
+    setTimeout(function(){ a11yPending = false; applyA11y(document); }, 120);
+  });
+  // childList+subtree only (not attributes) so our own role/tabindex writes
+  // never re-trigger the observer.
+  obs.observe(document.body, { childList: true, subtree: true });
+}
+startA11yObserver();
 
 // ── Render All ──────────────────────────────────────────────────────────────
 function renderAll(){renderHome();updateCurrencyToggle();}
