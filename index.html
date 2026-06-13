@@ -195,8 +195,8 @@ body.light .pp-seg{ background:#F1EFE8; }
 /* Re-house panels: strip each renderer's own card chrome inside the hub */
 #progress-body > div{ margin:0; }
 #progress-body #home-missions > div{ background:transparent !important;border-radius:0 !important;padding:0 !important; }
-#progress-body #home-challenges > .card{ background:transparent !important;border:none !important;padding:0 !important;box-shadow:none !important; }
-#progress-body > #xp-widget{ background:transparent !important;border:none !important;padding:0 !important;box-shadow:none !important; }
+#progress-more #home-challenges > .card{ background:transparent !important;border:none !important;padding:0 !important;box-shadow:none !important; }
+#progress-more > #xp-widget{ background:transparent !important;border:none !important;padding:0 !important;box-shadow:none !important; }
 @media(prefers-reduced-motion:reduce){ .pp-seg-btn,#home-forecast .pp-fc-chev{ transition:none !important; } }
 
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:livePulse 1.8s ease-in-out infinite;flex-shrink:0;}
@@ -637,6 +637,10 @@ body.light .pager-dot.active{background:var(--green);}
 .pager-dot.active{width:16px;border-radius:3px;background:var(--green);}
 
 /* ── Spacing rhythm ──────────────────────────────────────────────────── */
+/* Conditional Home slots collapse out of the flex flow when empty, so they
+   don't consume the 12px column gap on both sides (which doubled the gap
+   below the stats card). */
+#home-monthly-review:empty{ display:none; }
 .sec-hdr{ margin-bottom:8px; }
 .holding-row{ margin-bottom:6px; }
 .stat-row{ gap:10px; }
@@ -1071,13 +1075,11 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           </div>
           <!-- right: actions -->
           <div style="display:flex;align-items:center;gap:4px;">
-            <div id="currency-toggle" style="font-size:12px;font-weight:600;color:var(--green);background:rgba(245,158,11,.1);padding:0 12px;border-radius:var(--r-md);cursor:pointer;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center;">AED</div>
             <div id="briefing-btn" aria-label="Open weekly briefing" onclick="onBriefingBtnTap()" style="min-width:44px;min-height:44px;border-radius:var(--r-md);background:rgba(245,158,11,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--green);flex-shrink:0;position:relative;">
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5L11.8 7.2L17 9L11.8 10.8L10 15.5L8.2 10.8L3 9L8.2 7.2L10 2.5Z"/><path d="M15.5 3.5L16.25 5.5L18.5 6.5L16.25 7.5L15.5 9.5L14.75 7.5L12.5 6.5L14.75 5.5L15.5 3.5Z" stroke-width="1.1"/></svg>
               <div id="briefing-dot" style="display:none;position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--green);"></div>
               <div id="alerts-home-dot" style="display:none;position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#E24B4A;border:1.5px solid var(--bg);"></div>
             </div>
-            <div id="theme-toggle" aria-label="Toggle light and dark theme" onclick="toggleTheme()" style="min-width:44px;min-height:44px;border-radius:var(--r-md);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;"></div>
           </div>
         </div>
 
@@ -1147,20 +1149,22 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
         <!-- Daily check-in card -->
         <div id="home-checkin" class="slide-up d3" style="display:none;"></div>
 
-        <!-- Progress hub: Missions / Challenge / Level -->
+        <!-- Progress hub: today's missions up top; streak/level + challenges under a disclosure -->
         <div class="pp-card slide-up d3" id="home-progress">
-          <div class="pp-seg">
-            <button type="button" class="pp-seg-btn active" id="pp-tab-missions" onclick="setProgressTab('missions')">Missions</button>
-            <button type="button" class="pp-seg-btn" id="pp-tab-challenge" onclick="setProgressTab('challenge')">Challenge</button>
-            <button type="button" class="pp-seg-btn" id="pp-tab-level" onclick="setProgressTab('level')">Level</button>
-          </div>
           <div id="progress-body">
             <!-- Daily missions -->
             <div id="home-missions"></div>
+          </div>
+          <!-- Demoted from tabs to an on-demand disclosure (keeps Home calm) -->
+          <div id="progress-more" style="display:none;margin-top:12px;">
             <!-- Spending challenges -->
             <div id="home-challenges"></div>
             <!-- XP widget -->
-            <div class="card" id="xp-widget" style="padding:16px 18px;"></div>
+            <div class="card" id="xp-widget" style="padding:16px 18px;margin-top:10px;"></div>
+          </div>
+          <div id="progress-more-toggle" onclick="toggleProgressMore()" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;padding:6px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);-webkit-tap-highlight-color:transparent;">
+            <span>Streak, level &amp; challenges</span>
+            <svg id="progress-more-chev" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .3s;flex-shrink:0;"><path d="M5 8l5 5 5-5"/></svg>
           </div>
           <!-- Collapsed summary shown when the day is fully handled -->
           <div id="progress-collapsed" style="display:none;cursor:pointer;align-items:center;gap:9px;padding:4px 2px;" onclick="expandProgress()">
@@ -1177,9 +1181,12 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
         <!-- daily movers -->
         <div class="card slide-up d5" style="padding:14px 16px;">
-          <div class="sec-hdr" style="margin-bottom:10px;">
+          <div class="sec-hdr" style="margin-bottom:10px;cursor:pointer;" onclick="toggleHomeCard('movers')">
             <span class="sec-title">Daily movers</span>
-            <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
+            <span style="display:flex;align-items:center;gap:8px;">
+              <span id="movers-updated" style="font-size:10px;color:var(--text3);"></span>
+              <svg id="movers-chevron" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .3s;flex-shrink:0;"><path d="M5 8l5 5 5-5"/></svg>
+            </span>
           </div>
           <div id="home-movers" style="display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px 2px;"></div>
         </div>
@@ -1525,7 +1532,7 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
             <div class="more-item-info"><div class="more-item-title">Focus mode</div><div class="more-item-sub" id="more-focus">Off</div></div>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3);flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>
           </div>
-          <div class="more-item item-in" onclick="document.getElementById('currency-toggle').click()">
+          <div class="more-item item-in" onclick="cycleCurrency()">
             <div class="more-item-icon" style="background:rgba(255,255,255,.06);color:var(--text2);">
               <svg width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 8C5.5 5 8.5 3.5 11.5 4A7 7 0 0 1 17 10"/><path d="M15.5 12C14.5 15 11.5 16.5 8.5 16A7 7 0 0 1 3 10"/><path d="M4.5 5V8H7.5"/><path d="M15.5 15V12H12.5"/></svg>
             </div>
@@ -6440,6 +6447,17 @@ function submitChallengeSheet(){
 }
 
 // ── Home screen top goal ──────────────────────────────────────────────────
+// Progressive disclosure for secondary Home cards (default collapsed).
+function homeCardExpanded(key){
+  try{ var s = JSON.parse(localStorage.getItem('moxcoin_home_collapse') || '{}'); return !!s[key]; }catch(e){ return false; }
+}
+function toggleHomeCard(key){
+  var s = {}; try{ s = JSON.parse(localStorage.getItem('moxcoin_home_collapse') || '{}'); }catch(e){}
+  s[key] = !s[key];
+  try{ localStorage.setItem('moxcoin_home_collapse', JSON.stringify(s)); }catch(e){}
+  renderHomeGoal(); renderMovers();
+}
+
 function renderHomeGoal(){
   var section = document.getElementById('home-goal-section');
   var card    = document.getElementById('home-goal-card');
@@ -6460,6 +6478,21 @@ function renderHomeGoal(){
   var prog = calcGoalProgress(best);
   var eta  = calcGoalETA(best, prog);
   var pct  = prog.pct.toFixed(1);
+
+  // Collapsed (default): a compact one-line summary; tap to expand.
+  if(!homeCardExpanded('goal')){
+    card.innerHTML = '<div class="card" onclick="toggleHomeCard(\'goal\')" style="padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;">'
+      + '<div style="display:flex;align-items:center;gap:10px;min-width:0;">'
+        + '<span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;">Top goal</span>'
+        + '<span style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+best.name+'</span>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:9px;flex-shrink:0;">'
+        + '<span style="font-size:13px;font-weight:800;color:'+col.accent+';">'+Math.round(prog.pct)+'%</span>'
+        + '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l5 5-5 5"/></svg>'
+      + '</div>'
+    + '</div>';
+    return;
+  }
 
   // SVG ring — r=32, size=80px
   var R = 32; var C = Math.round(2 * 3.14159 * R);
@@ -6488,7 +6521,8 @@ function renderHomeGoal(){
 
   var html = '<div class="card item-in" style="padding:14px 16px;cursor:pointer;" onclick="switchTab(\'goals\')">'
     + '<div class="sec-hdr" style="margin-bottom:10px;">'
-      + '<span class="sec-title">Top goal</span>'
+      + '<span onclick="event.stopPropagation();toggleHomeCard(\'goal\')" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;"><span class="sec-title">Top goal</span>'
+        + '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5-5 5 5"/></svg></span>'
       + '<span style="font-size:11px;color:var(--text3);">All goals &#8250;</span>'
     + '</div>'
     + '<div style="display:flex;align-items:center;gap:14px;">'
@@ -6711,19 +6745,27 @@ function applyProgressCollapse(){
   if (seg)     seg.style.display     = collapse ? 'none' : '';
   if (body)    body.style.display    = collapse ? 'none' : '';
   if (summary) summary.style.display = collapse ? 'flex' : 'none';
+  // The streak/level/challenges disclosure is part of the hub — hide it (and
+  // its toggle) when the day is fully handled and the hub is collapsed.
+  var moreToggle = document.getElementById('progress-more-toggle');
+  if (moreToggle) moreToggle.style.display = collapse ? 'none' : '';
+  if (collapse){ var more = document.getElementById('progress-more'); if(more) more.style.display='none'; var ch=document.getElementById('progress-more-chev'); if(ch) ch.style.transform='rotate(0deg)'; }
+}
+
+// The streak/level + challenges disclosure under today's missions.
+function toggleProgressMore(){
+  var more = document.getElementById('progress-more');
+  var chev = document.getElementById('progress-more-chev');
+  if(!more) return;
+  var show = (more.style.display === 'none' || more.style.display === '');
+  more.style.display = show ? 'block' : 'none';
+  if(chev) chev.style.transform = show ? 'rotate(180deg)' : 'rotate(0deg)';
 }
 
 function setProgressTab(tab){
-  if(tab !== 'missions' && tab !== 'challenge' && tab !== 'level'){ tab = 'missions'; }
-  try { localStorage.setItem('moxcoin_progress_tab', tab); } catch(e){}
-  var map = { missions:'home-missions', challenge:'home-challenges', level:'xp-widget' };
-  for(var k in map){
-    if(!map.hasOwnProperty(k)) continue;
-    var panel = document.getElementById(map[k]);
-    if(panel){ panel.style.display = (k === tab) ? '' : 'none'; }
-    var btn = document.getElementById('pp-tab-' + k);
-    if(btn){ btn.className = (k === tab) ? 'pp-seg-btn active' : 'pp-seg-btn'; }
-  }
+  // Missions is the only on-Home panel now; Level & Challenges live under the
+  // "Streak, level & challenges" disclosure. Kept for callers (e.g. goToMissions).
+  var m = document.getElementById('home-missions'); if(m) m.style.display = '';
 }
 
 function renderPriorityBanner(){
@@ -7085,6 +7127,27 @@ function renderMovers(){
     var bc=b.chg!=null?Math.abs(b.chg):0;
     return bc-ac;
   });
+
+  // Collapsed (default): a compact movers summary; tap the header to expand.
+  var _chev = document.getElementById('movers-chevron');
+  var _upd  = document.getElementById('movers-updated');
+  if(!homeCardExpanded('movers')){
+    if(_chev) _chev.style.transform = 'rotate(-90deg)';
+    if(_upd)  _upd.style.display = 'none';
+    var parts = assets.slice(0,3).map(function(a){
+      var up2 = a.chg==null ? true : a.chg>=0;
+      var arrow = a.chg==null ? '' : (up2?'&#8593;':'&#8595;');
+      var col2 = a.chg==null ? 'var(--text3)' : (up2?'#10B981':'var(--red)');
+      var pctS = a.chg==null ? '' : ' '+Math.abs(a.chg).toFixed(1)+'%';
+      return '<span style="white-space:nowrap;"><span style="color:var(--text2);font-weight:600;">'+a.sym+'</span> <span style="color:'+col2+';font-weight:700;">'+arrow+pctS+'</span></span>';
+    }).join('<span style="color:var(--text3);margin:0 8px;">&middot;</span>');
+    el.style.display = 'block';
+    el.innerHTML = '<div onclick="toggleHomeCard(\'movers\')" style="font-size:12px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+parts+'</div>';
+    return;
+  }
+  if(_chev) _chev.style.transform = 'rotate(0deg)';
+  if(_upd)  _upd.style.display = '';
+  el.style.display = 'flex';
 
   var html='';
   assets.forEach(function(asset){
@@ -8626,14 +8689,16 @@ function deleteTxn(id){
 }
 
 // ── Currency toggle ────────────────────────────────────────────────────────
-document.addEventListener('click',function(e){
-  if(e.target&&(e.target.id==='currency-toggle'||e.target.closest&&e.target.closest('#currency-toggle'))){
-
+// Cycles AED → USD → PHP. Lives in More → Settings (was also a header chip).
+function cycleCurrency(){
   var idx=CURRENCIES.indexOf(data.currency);
   data.currency=CURRENCIES[(idx+1)%CURRENCIES.length];
-  save();updateCurrencyToggle();renderAll();renderTab(currentTab);
-
-    renderMore();
+  save();updateCurrencyToggle();renderAll();renderTab(currentTab);renderMore();
+}
+// Back-compat: any legacy #currency-toggle element still cycles on click.
+document.addEventListener('click',function(e){
+  if(e.target&&(e.target.id==='currency-toggle'||e.target.closest&&e.target.closest('#currency-toggle'))){
+    cycleCurrency();
   }
 });
 
@@ -9478,21 +9543,20 @@ function generateWeekly(){
 function localWeeklyDigest(st){
   var sym = curSym();
   var parts = [];
-  if(st.net > 0){
-    parts.push('Tidy week. ' + fmt(st.income) + ' ' + sym + ' in, ' + fmt(st.spent) + ' ' + sym + ' out &mdash; ' + fmt(st.net) + ' ' + sym + ' stayed on the table.');
-  } else if(st.net < 0){
-    parts.push('Big rounds this week: ' + fmt(st.spent) + ' ' + sym + ' out against ' + fmt(st.income) + ' ' + sym + ' in.');
+  // Lead with behaviour — where the money went and the trend. Net/savings are
+  // already covered by the stats row and the forecast, so don't restate them.
+  if(st.topCat && st.topCatAmt > 0){
+    var meta = TXN_CATS[st.topCat] || TXN_CATS.other;
+    parts.push('Most of your spend went to ' + meta.label.toLowerCase() + ' this week &mdash; ' + fmt(st.topCatAmt) + ' ' + sym + '.');
+  } else if(st.spent > 0){
+    parts.push('A quiet week &mdash; ' + fmt(st.spent) + ' ' + sym + ' spent across the board.');
   } else {
-    parts.push('An even week &mdash; ' + fmt(st.spent) + ' ' + sym + ' out, matched coin for coin.');
+    parts.push('A still week at the tavern. No coin out yet.');
   }
   if(st.lastSpent > 0){
     var d = st.spent - st.lastSpent;
     var pct = Math.round(Math.abs(d) / st.lastSpent * 100);
-    if(pct >= 5){ parts.push(d < 0 ? 'Spending is down ' + pct + '% on last week.' : 'Spending is up ' + pct + '% on last week.'); }
-  }
-  if(st.topCat && st.topCatAmt > 0){
-    var meta = TXN_CATS[st.topCat] || TXN_CATS.other;
-    parts.push('Most of it went to ' + meta.label.toLowerCase() + ' (' + fmt(st.topCatAmt) + ' ' + sym + ').');
+    if(pct >= 5){ parts.push(d < 0 ? 'Down ' + pct + '% on last week.' : 'Up ' + pct + '% on last week.'); }
   }
   if(st.streak >= 2){ parts.push(st.streak + ' nights running &mdash; the regulars are noticing.'); }
   return '<span style="color:var(--text);">' + parts.join(' ') + '</span>'
