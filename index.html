@@ -101,7 +101,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#110F0F;color:#fff;fo
 /* ── Section header ── */
 .sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .sec-title{font-size:15px;font-weight:600;color:var(--text);}
-.sec-link{font-size:var(--t-sm);font-weight:500;color:var(--xp);padding:11px 4px;margin:-11px -4px;display:inline-flex;align-items:center;min-height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sec-link{font-size:var(--t-sm);font-weight:500;color:var(--green);padding:11px 4px;margin:-11px -4px;display:inline-flex;align-items:center;min-height:44px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 
 /* ── Screen pages ── */
 .screen{display:none;flex-direction:column;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;min-height:0;}.screen.swipeable{display:flex!important;position:absolute;top:0;width:100%;height:100%;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;}.screen.active{display:flex;}
@@ -305,7 +305,7 @@ body.light .pp-seg{ background:#F1EFE8; }
 /* ── Toggle ── */
 .toggle-row{display:flex;background:var(--surface2);border-radius:var(--r-sm);padding:3px;}
 .toggle-btn{flex:1;padding:8px;text-align:center;font-size:12px;font-weight:500;border-radius:9px;cursor:pointer;transition:all .15s;}
-.toggle-btn.active{background:var(--green);color:var(--green-dark);}
+.toggle-btn.active{background:var(--active);color:#fff;box-shadow:0 2px 8px rgba(99,102,241,.35);}
 .toggle-btn:not(.active){color:var(--text3);}
 
 /* ── Check-in card ── */
@@ -427,7 +427,7 @@ body{transition:background .3s,color .3s;}
 .card,.card-yellow,.card-green,.stat-pill,.holding-row,.sheet{transition:background .3s,color .3s,border-color .3s;}
 
 /* ── Advisor screen ─────────────────────────────────────────────────── */
-.advisor-header{background:linear-gradient(135deg,#1F0D0D,#1F0A0A);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;}
+.advisor-header{background:linear-gradient(135deg,#241A06,#1A1304);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;position:relative;}
 .chat-wrap{display:flex;flex-direction:column;gap:10px;}
 .chat-bubble{max-width:88%;padding:11px 14px;border-radius:var(--r-md);font-size:13px;line-height:1.55;word-break:break-word;}
 .chat-bubble.user{background:var(--green);color:var(--green-dark);align-self:flex-end;border-bottom-right-radius:4px;font-weight:500;}
@@ -439,7 +439,7 @@ body{transition:background .3s,color .3s;}
 .chat-send{width:38px;height:38px;border-radius:50%;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s;}
 .chat-send:active{transform:scale(.93);}
 .chat-send:disabled{background:var(--surface2);cursor:default;}
-.briefing-card{background:var(--surface);border-radius:var(--r-lg);padding:14px;border-left:3px solid var(--green);margin-bottom:4px;}
+.briefing-card{background:var(--surface);border-radius:var(--r-lg);padding:14px;border:0.5px solid rgba(245,158,11,.25);margin-bottom:4px;}
 .quick-btn{background:var(--surface2);border:0.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;transition:background .15s;}
 .quick-btn:active{background:var(--surface3);}
 body.light .advisor-header{background:linear-gradient(135deg,#D97706,#F59E0B);}
@@ -455,7 +455,7 @@ body.light .chat-input:focus{border-color:rgba(245,158,11,.5);}
 body.light .chat-input-row{background:#F5F4EF;border-top:0.5px solid rgba(0,0,0,.08);}
 body.light .quick-btn{background:#FFFFFF;border:0.5px solid rgba(0,0,0,.08);color:rgba(0,0,0,.6);}
 body.light #advisor-quick-row{background:#F5F4EF;}
-body.light .delete-btn{background:rgba(208,48,48,.08);color:var(--red);}
+body.light .delete-btn{background:rgba(0,0,0,.05);color:var(--red);}
 body.light #advisor-setup-form [style*="rgba(255,255,255,.06)"]{border-color:rgba(0,0,0,.08)!important;}
 body.light #advisor-setup-fields{border-color:rgba(0,0,0,.08)!important;background:var(--surface2)!important;}
 
@@ -466,7 +466,10 @@ body.light #bg-canvas{opacity:.25;}
 /* ── Transactions ────────────────────────────────────────────────────── */
 .txn-filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;-webkit-mask-image:linear-gradient(to right,black calc(100% - 32px),transparent 100%);mask-image:linear-gradient(to right,black calc(100% - 32px),transparent 100%);}
 .txn-filter-row::-webkit-scrollbar{display:none;}
-.delete-btn{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);margin-left:4px;border-radius:var(--r-sm);flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.delete-btn{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--red);background:var(--surface3);margin-left:4px;border-radius:var(--r-sm);flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+/* Edit shares the icon-button geometry but stays neutral — red is for delete only. */
+.edit-btn{min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);background:var(--surface3);border:none;border-radius:var(--r-sm);margin-left:4px;flex-shrink:0;-webkit-tap-highlight-color:transparent;font-family:'DM Sans',sans-serif;}
+body.light .edit-btn{background:rgba(0,0,0,.05);color:var(--text2);}
 .txn-filter-btn{padding:11px 16px;min-height:44px;border-radius:var(--r-md);font-size:var(--t-sm);font-weight:500;white-space:nowrap;flex-shrink:0;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;-webkit-tap-highlight-color:transparent;display:inline-flex;align-items:center;}
 .txn-filter-btn.active{background:var(--active);color:#fff;box-shadow:0 2px 8px rgba(99,102,241,.35);}
 .txn-filter-btn:not(.active){background:var(--surface);color:var(--text3);}
@@ -3471,6 +3474,14 @@ function getIcon(name, sz) {
       + '<path d="M10 6v4l2.5 2.5"/>';
   } else if(name === 'streak-none') {
     d = '<path d="M10 17.5c-2.8 0-5-1.9-5-4.5 0-2.5 2-4 2.5-6 0 0 .5 2 2 3 0-2 1-4.5 2.5-6 0 0 3 3.5 3 7 .5-.5 1-2 .5-3.5 0 0 2.5 2.5 2.5 5.5 0 2.6-2.2 4.5-5 4.5Z"/>';
+  } else if(name === 'warning') {
+    d = '<path d="M10 3.2L17.6 16.2H2.4L10 3.2Z"/>'
+      + '<path d="M10 8.5v3.2M10 14.2v.01"/>';
+  } else if(name === 'check-circle') {
+    d = '<circle cx="10" cy="10" r="7.5"/>'
+      + '<path d="M6.8 10.2l2.2 2.2 4.2-4.6"/>';
+  } else if(name === 'chart-bars') {
+    d = '<path d="M4.5 16.5V11M10 16.5V5.5M15.5 16.5V8.5"/>';
   }
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
 }
@@ -4588,7 +4599,7 @@ function showToast(iconName, iconColor, title, body, id){
   toast.style.cssText =
     'position:absolute;top:16px;left:12px;right:12px;z-index:200;' +
     'background:var(--surface);border-radius:var(--r-md);padding:13px 14px;' +
-    'border-left:3px solid ' + iconColor + ';' +
+    'border:0.5px solid ' + iconColor + '55;' +
     'box-shadow:0 8px 32px rgba(0,0,0,.35);' +
     'animation:slideDown .35s cubic-bezier(0.16,1,0.3,1) both;' +
     'display:flex;align-items:flex-start;gap:12px;cursor:pointer;';
@@ -5000,12 +5011,12 @@ function renderActivity(){
     freeEl.innerHTML =
       '<div style="background:rgba(0,0,0,.2);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">'
         +'<div>'
-          +'<div style="font-size:10px;color:rgba(255,255,255,.55);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;">Free to spend</div>'
-          +'<div style="font-size:18px;font-weight:700;color:'+freeColor+';letter-spacing:-.5px;">'+fmt(freePerDay)+'<span style="font-size:11px;font-weight:500;color:rgba(255,255,255,.55);margin-left:3px;">/day</span></div>'
+          +'<div style="font-size:10px;color:var(--text2);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em;">Free to spend</div>'
+          +'<div style="font-size:18px;font-weight:700;color:'+freeColor+';letter-spacing:-.5px;">'+fmt(freePerDay)+'<span style="font-size:11px;font-weight:500;color:var(--text2);margin-left:3px;">/day</span></div>'
         +'</div>'
         +'<div style="text-align:right;">'
-          +'<div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.8);">'+fmt(freeTotal)+' '+curSym()+'</div>'
-          +'<div style="font-size:10px;color:rgba(255,255,255,.55);">'+daysLeft+' days left</div>'
+          +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+fmt(freeTotal)+' '+curSym()+'</div>'
+          +'<div style="font-size:10px;color:var(--text2);">'+daysLeft+' days left</div>'
         +'</div>'
       +'</div>';
   })();
@@ -5051,15 +5062,15 @@ function renderActivity(){
       html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px;">'
         +'<div style="position:relative;width:44px;height:44px;">'
           +'<svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg);">'
-            +'<circle cx="22" cy="22" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/>'
+            +'<circle cx="22" cy="22" r="'+R+'" fill="none" stroke="var(--surface3)" stroke-width="4"/>'
             +'<circle cx="22" cy="22" r="'+R+'" fill="none" stroke="'+color+'" stroke-width="4"'
               +' stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"'
               +' style="transition:stroke-dashoffset .8s cubic-bezier(0.16,1,0.3,1);" class="cat-ring-arc"/>'
           +'</svg>'
           +'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:700;color:'+color+';">'+pct+'%</div>'
         +'</div>'
-        +'<div style="font-size:9px;color:rgba(255,255,255,.5);text-align:center;white-space:nowrap;">'+meta.label+'</div>'
-        +'<div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.7);">'+fmt(spent)+'</div>'
+        +'<div style="font-size:9px;color:var(--text2);text-align:center;white-space:nowrap;">'+meta.label+'</div>'
+        +'<div style="font-size:10px;font-weight:600;color:var(--text);">'+fmt(spent)+'</div>'
       +'</div>';
     });
     html += '</div>';
@@ -5543,7 +5554,7 @@ function renderDailyMissions(){
   el.innerHTML = '<div style="background:var(--surface);border-radius:var(--r-lg);padding:14px 16px;">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">'
       +'<div style="font-size:13px;font-weight:700;color:var(--text);">Daily missions</div>'
-      +'<div style="font-size:11px;font-weight:700;color:'+(allDone?'#10B981':'#F59E0B')+';">'
+      +'<div style="font-size:11px;font-weight:700;color:'+(allDone?'var(--pos)':'var(--green)')+';">'
         +(allDone?'All squared 🎉':earnedXP+' / '+totalXP+' XP')
       +'</div>'
     +'</div>'
@@ -6413,11 +6424,6 @@ function renderHomeGoal(){
   var prog = calcGoalProgress(best);
   var eta  = calcGoalETA(best, prog);
   var pct  = prog.pct.toFixed(1);
-  var iconName = best.icon || 'goal-target';
-  var iconIsEmoji = iconName.length <= 4 && iconName.charCodeAt(0) > 127;
-  var iconHtml = iconIsEmoji
-    ? '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+iconName+'</div>'
-    : '<div style="width:36px;height:36px;border-radius:var(--r-sm);background:'+col.bg+';color:'+col.accent+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon(iconName,18)+'</div>';
 
   // SVG ring — r=32, size=80px
   var R = 32; var C = Math.round(2 * 3.14159 * R);
@@ -6426,10 +6432,10 @@ function renderHomeGoal(){
   var milestones = [{pct:25,x:40,y:72},{pct:50,x:8,y:40},{pct:75,x:40,y:8}];
   var milestoneDots = milestones.map(function(ms){
     var passed = prog.pct >= ms.pct;
-    return '<circle cx="'+ms.x+'" cy="'+ms.y+'" r="3.5" fill="'+(passed ? col.accent : 'rgba(255,255,255,.12)')+'" stroke="var(--surface)" stroke-width="1.5"/>';
+    return '<circle cx="'+ms.x+'" cy="'+ms.y+'" r="3.5" fill="'+(passed ? col.accent : 'var(--surface3)')+'" stroke="var(--surface)" stroke-width="1.5"/>';
   }).join('');
   var ringHtml = '<svg width="80" height="80" viewBox="0 0 80 80" style="position:absolute;top:0;left:0;transform:rotate(-90deg);">'
-    + '<circle cx="40" cy="40" r="'+R+'" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="6"/>'
+    + '<circle cx="40" cy="40" r="'+R+'" fill="none" stroke="var(--surface3)" stroke-width="6"/>'
     + '<circle cx="40" cy="40" r="'+R+'" fill="none" stroke="'+col.accent+'" stroke-width="6"'
       + ' stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"'
       + ' id="home-goal-ring" style="transition:stroke-dashoffset .9s cubic-bezier(0.16,1,0.3,1);"/>'
@@ -6444,25 +6450,21 @@ function renderHomeGoal(){
   var etaDate = eta.indexOf('·') >= 0 ? eta.split('·')[0].trim() : eta;
   var etaMo   = eta.indexOf('·') >= 0 ? eta.split('·')[1].trim() : '';
 
-  var ghostHtml = iconIsEmoji
-    ? '<div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);font-size:44px;opacity:.08;pointer-events:none;line-height:1;">'+iconName+'</div>'
-    : '<div style="position:absolute;top:50%;right:10px;transform:translateY(-50%);color:'+col.accent+';opacity:.1;pointer-events:none;">'+getIcon(iconName,56)+'</div>';
-
-  var html = '<div class="goal-card item-in" style="'
-      + 'background:linear-gradient(135deg,'+col.accent+'12 0%,'+col.accent+'04 100%);'
-      + 'border:0.5px solid '+col.accent+'33;cursor:pointer;" onclick="switchTab(\'goals\')">'
-    + ghostHtml
-    // sec-hdr inside card
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-      + '<span style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;">Top goal</span>'
-      + '<span style="font-size:12px;color:'+col.accent+';cursor:pointer;" onclick="event.stopPropagation();switchTab(\'goals\')">All goals &#8250;</span>'
+  var html = '<div class="card item-in" style="padding:14px 16px;cursor:pointer;" onclick="switchTab(\'goals\')">'
+    + '<div class="sec-hdr" style="margin-bottom:10px;">'
+      + '<span class="sec-title">Top goal</span>'
+      + '<span style="font-size:11px;color:var(--text3);">All goals &#8250;</span>'
     + '</div>'
     + '<div style="display:flex;align-items:center;gap:14px;">'
       + '<div style="position:relative;width:80px;height:80px;flex-shrink:0;">' + ringHtml + '</div>'
-      + '<div style="flex:1;min-width:0;padding-right:52px;">'
-        + '<div class="goal-title" style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">'+best.name+'</div>'
+      + '<div style="flex:1;min-width:0;">'
+        + '<div class="goal-title" style="font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;">'+best.name+'</div>'
         + '<div style="font-size:13px;color:var(--text2);font-variant-numeric:tabular-nums;margin-bottom:4px;">'+fmt(prog.current)+' <span style="color:var(--text2);opacity:.75;">/ '+fmt(best.targetAmt)+' '+curSym()+'</span></div>'
-        + '<div style="font-size:11px;color:var(--text3);">'+etaMo+(etaDate ? ' &nbsp;&middot;&nbsp; <span style="color:'+col.accent+';opacity:.8;">'+etaDate+'</span>' : '')+'</div>'
+        + '<div style="font-size:11px;color:var(--text3);">'+etaMo+(etaDate ? ' &nbsp;&middot;&nbsp; '+etaDate : '')+'</div>'
+      + '</div>'
+      + '<div style="text-align:right;flex-shrink:0;">'
+        + '<div style="font-size:18px;font-weight:700;color:'+col.accent+';letter-spacing:-.5px;font-variant-numeric:tabular-nums;">'+fmt(Math.max(0, best.targetAmt - prog.current))+'</div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em;">to go</div>'
       + '</div>'
     + '</div>'
   + '</div>';
@@ -6703,25 +6705,25 @@ function renderPriorityBanner(){
     tap = 'openFAB()';
   } else if (rung === 'budget'){
     var ba = bannerBudgetAlert();
-    icon = '<span style="font-size:15px;">&#9888;&#65039;</span>';
+    icon = getIcon('warning', 16);
     msg = (ba.kind === 'predictive')
       ? ba.label + ' is trending over its cap this month.'
       : ba.label + ' is near its cap this month.';
     tint = 'rgba(239,68,68,.12)'; accent = '#EF4444';
     tap = 'openSheet(\'cat-budget\',0,{cat:\'' + ba.cat + '\'})';
   } else if (rung === 'missions'){
-    icon = '<span style="font-size:15px;">&#9989;</span>';
+    icon = getIcon('check-circle', 16);
     msg = 'A couple of missions still open today.';
     tint = 'rgba(99,102,241,.14)'; accent = '#6366F1';
     tap = 'goToMissions()';
   } else if (rung === 'goal'){
     var gn = bannerGoalNearly();
-    icon = '<span style="font-size:15px;">&#127919;</span>';
+    icon = getIcon('goal-target', 16);
     msg = gn.goal.name + ' is almost funded.';
     tint = 'rgba(16,163,74,.12)'; accent = '#16A34A';
     tap = 'switchTab(\'goals\')';
   } else { // monthly
-    icon = '<span style="font-size:15px;">&#128202;</span>';
+    icon = getIcon('chart-bars', 16);
     msg = 'Last month is ready to review.';
     tint = 'rgba(148,163,184,.14)'; accent = '#94A3B8';
     tap = 'scrollToEl(\'home-monthly-review\')';
@@ -6730,7 +6732,7 @@ function renderPriorityBanner(){
   el.style.display = 'block';
   el.innerHTML =
     '<div onclick="' + tap + '" style="display:flex;align-items:center;gap:9px;cursor:pointer;'
-      + 'background:' + tint + ';border:0.5px solid ' + accent + '40;border-radius:var(--r-lg);'
+      + 'background:' + tint + ';border:0.5px solid ' + accent + '40;border-radius:var(--r-md);'
       + 'padding:11px 14px;-webkit-tap-highlight-color:transparent;">'
       + '<span style="display:flex;align-items:center;color:' + accent + ';flex-shrink:0;">' + icon + '</span>'
       + '<span style="flex:1;min-width:0;font-size:12.5px;font-weight:600;color:var(--text);">' + msg + '</span>'
@@ -6781,7 +6783,9 @@ function renderHome(){
   if(greetName){
     if(data.userName && data.userName.trim()){
       greetName.textContent = data.userName.trim();
-      greetName.style.cssText = '';
+      // Restore the themed base style (blanking cssText dropped color:var(--text),
+      // which left the name inheriting white -> invisible in light mode).
+      greetName.style.cssText = 'font-size:16px;font-weight:600;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
     } else {
       greetName.innerHTML = '<span onclick="editUserName()" style="color:var(--text3);font-weight:500;cursor:pointer;font-size:14px;">Set your name &rsaquo;</span>';
     }
@@ -6810,8 +6814,8 @@ function renderHome(){
   var pillEl = document.getElementById('home-level-pill');
   if(pillEl){
     var lvl = getLevel(data.xp || 0);
-    pillEl.innerHTML = '<span style="display:inline-flex;align-items:center;color:#F59E0B;">' + getIcon(lvl.icon, 12) + '</span>'
-      + '<span style="font-size:11px;font-weight:700;color:#F59E0B;">Lv.' + lvl.level + '</span>';
+    pillEl.innerHTML = '<span style="display:inline-flex;align-items:center;color:var(--green);">' + getIcon(lvl.icon, 12) + '</span>'
+      + '<span style="font-size:11px;font-weight:700;color:var(--green);">Lv.' + lvl.level + '</span>';
   }
 
   // Date
@@ -7239,7 +7243,7 @@ function renderCryptoListTo(elId){
         +'<div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
         +chgBadge
       +'</div>'
-      +'<div onclick="openSheet(\'edit-crypto\','+i+')" class="delete-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
+      +'<div onclick="openSheet(\'edit-crypto\','+i+')" class="edit-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
@@ -7274,6 +7278,7 @@ function renderSavingsListTo(elId){
       +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
       +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
       +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
+      +'<div onclick="openSheet(\'edit-savings\','+i+')" class="edit-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
@@ -7521,7 +7526,7 @@ function renderCryptoList(){
         +'<div class="holding-val">'+(price?fmt(val):fmt(h.costBasis||0))+' '+curSym()+'</div>'
         +chgBadge
       +'</div>'
-      +'<div onclick="openSheet(\'edit-crypto\','+i+')" class="delete-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
+      +'<div onclick="openSheet(\'edit-crypto\','+i+')" class="edit-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(&quot;crypto&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
@@ -7659,7 +7664,7 @@ function renderGoldList(elId){
         +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
         +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
       +'</div>'
-      +'<div onclick="openSheet(\'edit-gold\','+i+')" class="delete-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
+      +'<div onclick="openSheet(\'edit-gold\','+i+')" class="edit-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(\'gold\','+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
@@ -7695,7 +7700,7 @@ function renderStocksList(elId){
         +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
         +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
       +'</div>'
-      +'<div onclick="openSheet(\'edit-stock\','+i+')" class="delete-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
+      +'<div onclick="openSheet(\'edit-stock\','+i+')" class="edit-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(\'stock\','+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   }).join('');
@@ -7714,6 +7719,7 @@ function renderSavingsPortfolio(){
       +'<div class="txn-avatar" style="background:#001A2A;color:var(--blue);display:flex;align-items:center;justify-content:center;">'+getIcon('savings',18)+'</div>'
       +'<div style="flex:1;"><div class="holding-name">'+a.name+'</div><div class="holding-qty">'+(a.bank||'Account')+'</div></div>'
       +'<div class="holding-val">'+fmt(a.balance)+' '+curSym()+'</div>'
+      +'<div onclick="openSheet(\'edit-savings\','+i+')" class="edit-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
       +'<div onclick="deleteItem(&quot;savings&quot;,'+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
   });
@@ -9344,6 +9350,32 @@ function generateWeekly(){
   });
 }
 
+// Host-voice recap built from local data — shown when there is no API key,
+// so the card carries value on its own instead of nagging for a key.
+function localWeeklyDigest(st){
+  var sym = curSym();
+  var parts = [];
+  if(st.net > 0){
+    parts.push('Tidy week. ' + fmt(st.income) + ' ' + sym + ' in, ' + fmt(st.spent) + ' ' + sym + ' out &mdash; ' + fmt(st.net) + ' ' + sym + ' stayed on the table.');
+  } else if(st.net < 0){
+    parts.push('Big rounds this week: ' + fmt(st.spent) + ' ' + sym + ' out against ' + fmt(st.income) + ' ' + sym + ' in.');
+  } else {
+    parts.push('An even week &mdash; ' + fmt(st.spent) + ' ' + sym + ' out, matched coin for coin.');
+  }
+  if(st.lastSpent > 0){
+    var d = st.spent - st.lastSpent;
+    var pct = Math.round(Math.abs(d) / st.lastSpent * 100);
+    if(pct >= 5){ parts.push(d < 0 ? 'Spending is down ' + pct + '% on last week.' : 'Spending is up ' + pct + '% on last week.'); }
+  }
+  if(st.topCat && st.topCatAmt > 0){
+    var meta = TXN_CATS[st.topCat] || TXN_CATS.other;
+    parts.push('Most of it went to ' + meta.label.toLowerCase() + ' (' + fmt(st.topCatAmt) + ' ' + sym + ').');
+  }
+  if(st.streak >= 2){ parts.push(st.streak + ' nights running &mdash; the regulars are noticing.'); }
+  return '<span style="color:var(--text);">' + parts.join(' ') + '</span>'
+    + '<div style="margin-top:10px;"><span onclick="event.stopPropagation();switchTab(&quot;advisor&quot;)" style="font-size:11px;font-weight:500;color:var(--green);cursor:pointer;">Connect AI Advisor for a deeper read &rsaquo;</span></div>';
+}
+
 function renderWeekly(){
   var el = document.getElementById('home-weekly');
   if(!el) return;
@@ -9378,7 +9410,7 @@ function renderWeekly(){
     return;
   }
   if(!apiKey){
-    el.innerHTML = shell('<span style="color:var(--text3);font-style:italic;">Add an API key in AI Advisor settings to hear your weekly review.</span>');
+    el.innerHTML = shell(localWeeklyDigest(st));
     el.setAttribute('data-open','0');
     return;
   }
@@ -9476,7 +9508,8 @@ function loadBriefingContent(){
   // Check API key before showing spinner
   var apiKey = getApiKey();
   if(!apiKey){
-    el.innerHTML = '<span style="color:var(--text3);font-style:italic;">Add an API key in AI Advisor settings to enable daily briefings.</span>';
+    el.innerHTML = '<span style="color:var(--text2);">Connect an AI key and the host will read your day for you each morning. '
+      + '<span onclick="closeBriefing();switchTab(&quot;advisor&quot;)" style="color:var(--green);font-weight:500;cursor:pointer;white-space:nowrap;">Connect &rsaquo;</span></span>';
     return;
   }
   el.innerHTML = '<div style="display:flex;align-items:center;gap:10px;color:var(--text3);font-style:italic;">'
