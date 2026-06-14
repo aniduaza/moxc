@@ -5063,73 +5063,8 @@ function renderActivity(){
       +'</div>';
   })();
 
-  // ── Feature 2: Category budget rings ────────────────────────────────────
-  (function(){
-    var ringsEl = document.getElementById('act-cat-rings');
-    if(!ringsEl) return;
-
-    // Compute spend per category this month (shared helper)
-    var catSpend = spendByCat();
-
-    // Top 5 spending categories with enough data. A single ring looks lonely/
-    // unfinished, so the ring viz only appears once 2+ categories have spend.
-    var cats = Object.keys(catSpend).sort(function(a,b){return catSpend[b]-catSpend[a];}).slice(0,5);
-    if(cats.length < 2){ ringsEl.style.display='none'; return; }
-
-    var CAT_META = {
-      food:         {label:'Food',         color:'#F97316'},
-      transport:    {label:'Transport',     color:'#3B82F6'},
-      ess:          {label:'Essential',     color:'#EF4444'},
-      shopping:     {label:'Shopping',      color:'#A855F7'},
-      entertainment:{label:'Fun',           color:'#EC4899'},
-      health:       {label:'Health',        color:'#EF4444'},
-      sub:          {label:'Subs',          color:'#6366F1'},
-      saving:       {label:'Saving',        color:'#3B82F6'},
-      other:        {label:'Other',         color:'#64748B'},
-    };
-
-    // Use income to set a soft "budget" per category — just for ring visualisation
-    var incBase2 = totalIncome() || txnIncome || 1;
-    var softBudget = incBase2 * 0.6 / Math.max(cats.length, 1); // spread 60% of income across categories
-
-    ringsEl.style.display = 'block';
-    var R = 16; var C = Math.round(2 * 3.14159 * R);
-    var html = '<div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;">';
-    cats.forEach(function(cat){
-      var spent = catSpend[cat]||0;
-      var meta  = CAT_META[cat]||{label:cat,color:'#64748B'};
-      var pct   = Math.min(100, Math.round(spent/softBudget*100));
-      var color = pct>=90?'#EF4444':pct>=70?'#F59E0B':meta.color;
-      var offset= Math.round(C*(1-pct/100));
-      html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px;">'
-        +'<div style="position:relative;width:44px;height:44px;">'
-          +'<svg width="44" height="44" viewBox="0 0 44 44" style="transform:rotate(-90deg);">'
-            +'<circle cx="22" cy="22" r="'+R+'" fill="none" stroke="var(--surface3)" stroke-width="4"/>'
-            +'<circle cx="22" cy="22" r="'+R+'" fill="none" stroke="'+color+'" stroke-width="4"'
-              +' stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"'
-              +' style="transition:stroke-dashoffset .8s cubic-bezier(0.16,1,0.3,1);" class="cat-ring-arc"/>'
-          +'</svg>'
-          +'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:700;color:'+color+';">'+pct+'%</div>'
-        +'</div>'
-        +'<div style="font-size:9px;color:var(--text2);text-align:center;white-space:nowrap;">'+meta.label+'</div>'
-        +'<div style="font-size:10px;font-weight:600;color:var(--text);">'+fmt(spent)+'</div>'
-      +'</div>';
-    });
-    html += '</div>';
-    ringsEl.innerHTML = html;
-
-    // Animate rings after render
-    setTimeout(function(){
-      var arcs = ringsEl.querySelectorAll('.cat-ring-arc');
-      cats.forEach(function(cat,i){
-        var arc = arcs[i];
-        if(!arc) return;
-        var spent2 = catSpend[cat]||0;
-        var pct2 = Math.min(100, Math.round(spent2/softBudget*100));
-        arc.style.strokeDashoffset = Math.round(C*(1-pct2/100));
-      });
-    }, 80);
-  })();
+  // ── Feature 2: Spending breakdown donut (range-aware) ───────────────────
+  renderSpendDonut();
 
   // vs last month
   var vsEl = document.getElementById('act-vs-last');
@@ -5452,6 +5387,18 @@ function renderAdvisor(){
   var msgs = document.getElementById('chat-messages');
   if(msgs && msgs.children.length === 0){
     appendMessage('assistant', 'Welcome back. I am the host here at tvrn — I can see your whole picture: income, expenses, crypto, gold, stocks, and your MTG and Pokemon cards. What can I help you with?');
+    var sugg = document.createElement('div');
+    sugg.id = 'chat-suggestions';
+    sugg.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-top:4px;';
+    var qs = ['How much did I save this month?', 'Where is most of my money going?', 'Am I on track for my goals?'];
+    var rows = qs.map(function(q){
+      return '<div onclick="sendQuick(\''+q+'\')" style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface2);border:0.5px solid rgba(128,128,128,.16);border-radius:var(--r-md);padding:11px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">'
+        + '<span style="font-size:13px;color:var(--text);">'+q+'</span>'
+        + '<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M7 5l5 5-5 5"/></svg>'
+      + '</div>';
+    }).join('');
+    sugg.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin:2px;">Popular questions</div>' + rows;
+    msgs.appendChild(sugg);
   }
 }
 
@@ -7180,21 +7127,115 @@ function renderMovers(){
 }
 
 // ── BUDGET ─────────────────────────────────────────────────────────────────
-function spendByCat(){
+// Spend per category. monthsBack omitted/1 = current month (default for all
+// existing callers); >1 = trailing window of that many months including now.
+function spendByCat(monthsBack){
   var now = new Date();
   var y = now.getFullYear(), m = now.getMonth();
+  var useRange = monthsBack && monthsBack > 1;
+  var startTime = useRange ? new Date(y, m - (monthsBack - 1), 1).getTime() : 0;
   var out = {};
   var txns = data.transactions || [];
   for(var i = 0; i < txns.length; i++){
     var t = txns[i];
     if(t.type !== 'expense') continue;
     var d = new Date(t.date);
-    if(d.getFullYear() === y && d.getMonth() === m){
+    var inRange = useRange ? (d.getTime() >= startTime) : (d.getFullYear() === y && d.getMonth() === m);
+    if(inRange){
       var c = t.cat || 'other';
       out[c] = (out[c] || 0) + (t.amt || 0);
     }
   }
   return out;
+}
+
+// Spending breakdown donut on Activity. Range persists within the session.
+var actDonutRange = 1;
+function renderSpendDonut(monthsBack){
+  if(monthsBack) actDonutRange = monthsBack;
+  monthsBack = actDonutRange;
+  var ringsEl = document.getElementById('act-cat-rings');
+  if(!ringsEl) return;
+  // Hide entirely only if there are no expenses at all (else show pills so the
+  // user can switch ranges even when the current one is empty).
+  var anyExpense = (data.transactions || []).some(function(t){ return t.type === 'expense'; });
+  if(!anyExpense){ ringsEl.style.display = 'none'; return; }
+
+  var catSpend = spendByCat(monthsBack);
+  var allCats = Object.keys(catSpend).filter(function(c){ return catSpend[c] > 0; })
+                  .sort(function(a,b){ return catSpend[b]-catSpend[a]; });
+
+  var CAT_META = {
+    food:         {label:'Food',         color:'#F97316'},
+    transport:    {label:'Transport',    color:'#3B82F6'},
+    ess:          {label:'Essential',    color:'#EF4444'},
+    shopping:     {label:'Shopping',     color:'#A855F7'},
+    entertainment:{label:'Fun',          color:'#EC4899'},
+    health:       {label:'Health',       color:'#22C55E'},
+    sub:          {label:'Subscriptions',color:'#6366F1'},
+    saving:       {label:'Saving',       color:'#14B8A6'},
+    other:        {label:'Other',        color:'#64748B'},
+  };
+  var FB_COLORS = ['#0EA5E9','#D946EF','#F59E0B','#84CC16','#E11D48','#64748B'];
+  var fbUsed = 0;
+  function metaFor(c){
+    if(CAT_META[c]) return CAT_META[c];
+    var col = FB_COLORS[fbUsed % FB_COLORS.length]; fbUsed++;
+    return {label:(c.charAt(0).toUpperCase()+c.slice(1)), color:col};
+  }
+
+  // Range pills (always shown when there is any spend history)
+  var ranges = [{m:1,l:'1M'},{m:3,l:'3M'},{m:6,l:'6M'}];
+  var pills = '<div style="display:flex;gap:6px;margin-bottom:12px;">' + ranges.map(function(r){
+    var on = r.m === monthsBack;
+    return '<button type="button" onclick="renderSpendDonut('+r.m+')" style="border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;padding:5px 12px;border-radius:var(--r-pill);-webkit-tap-highlight-color:transparent;'
+      + (on ? 'background:var(--active);color:#fff;' : 'background:var(--surface3);color:var(--text2);') + '">' + r.l + '</button>';
+  }).join('') + '</div>';
+
+  ringsEl.style.display = 'block';
+  if(allCats.length < 1){
+    ringsEl.innerHTML = pills + '<div style="font-size:12px;color:var(--text3);padding:6px 2px;">No spending logged in this range yet.</div>';
+    return;
+  }
+
+  var TOP = 5;
+  var shownCats = allCats.slice(0, TOP);
+  var restTotal = allCats.slice(TOP).reduce(function(s,c){ return s+catSpend[c]; }, 0);
+  var total = allCats.reduce(function(s,c){ return s+catSpend[c]; }, 0) || 1;
+  var segs = shownCats.map(function(c){ var m=metaFor(c); return {label:m.label, color:m.color, amt:catSpend[c]}; });
+  if(restTotal > 0) segs.push({label:'Other', color:'#64748B', amt:restTotal});
+
+  var SZ = 120, R = 46, CW = 15, CC = 2 * Math.PI * R, cx = SZ/2;
+  var acc = 0, segSvg = '';
+  for(var si = 0; si < segs.length; si++){
+    var frac = segs[si].amt / total;
+    var dash = Math.max(0, frac*CC - 2.5);
+    segSvg += '<circle cx="'+cx+'" cy="'+cx+'" r="'+R+'" fill="none" stroke="'+segs[si].color+'" stroke-width="'+CW+'"'
+      + ' stroke-dasharray="'+dash+' '+(CC-dash)+'" stroke-dashoffset="'+(-acc*CC)+'"'
+      + ' transform="rotate(-90 '+cx+' '+cx+')"/>';
+    acc += frac;
+  }
+  var legend = '';
+  for(var li = 0; li < segs.length; li++){
+    var p = Math.round(segs[li].amt/total*100);
+    legend += '<div style="display:flex;align-items:center;gap:9px;padding:4px 0;">'
+      + '<span style="width:9px;height:9px;border-radius:50%;background:'+segs[li].color+';flex-shrink:0;"></span>'
+      + '<span style="flex:1;min-width:0;font-size:13px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+segs[li].label+'</span>'
+      + '<span style="font-size:13px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;">'+fmt(segs[li].amt)+'</span>'
+      + '<span style="font-size:11px;color:var(--text3);width:34px;text-align:right;">'+p+'%</span>'
+    + '</div>';
+  }
+  ringsEl.innerHTML = pills
+    + '<div style="display:flex;align-items:center;gap:14px;">'
+      + '<div style="position:relative;width:'+SZ+'px;height:'+SZ+'px;flex-shrink:0;">'
+        + '<svg width="'+SZ+'" height="'+SZ+'" viewBox="0 0 '+SZ+' '+SZ+'">'+segSvg+'</svg>'
+        + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;line-height:1.15;">'
+          + '<div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Spent</div>'
+          + '<div style="font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.5px;">'+fmt(total)+'</div>'
+        + '</div>'
+      + '</div>'
+      + '<div style="flex:1;min-width:0;">'+legend+'</div>'
+    + '</div>';
 }
 
 // Order in which cappable categories render (income/saving excluded).
@@ -7851,7 +7892,7 @@ function renderIncome(){
   data.incomeSources.forEach(function(s,i){
     incHtml+='<div class="card item-in" style="margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="openSheet(\'edit-income\','+i+')">'
       +'<div class="txn-avatar" style="background:#1F0A0A;color:var(--green);display:flex;align-items:center;justify-content:center;">'+getIcon('income',18)+'</div>'
-      +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+s.name+'</div><div style="font-size:11px;color:var(--text3);">'+(s.freq||'monthly')+'</div></div>'
+      +'<div style="flex:1;"><div style="font-size:13px;font-weight:500;">'+s.name+'</div><div style="font-size:11px;color:var(--text3);">'+(s.freq?s.freq.charAt(0).toUpperCase()+s.freq.slice(1):'Monthly')+'</div></div>'
       +'<div style="font-size:14px;font-weight:600;color:var(--green);">+'+fmt(s.amt)+'</div>'
       +'<div onclick="event.stopPropagation();deleteItem(\'income\','+i+')" class="delete-btn">&#10005;</div>'
     +'</div>';
@@ -9382,6 +9423,8 @@ function promptApiKey(){
 function appendMessage(role, text){
   var msgs = document.getElementById('chat-messages');
   if(!msgs) return;
+  // Once the user engages, drop the suggested-questions block.
+  if(role === 'user'){ var sg = document.getElementById('chat-suggestions'); if(sg) sg.remove(); }
   var div = document.createElement('div');
   div.className = 'chat-bubble ' + role;
   div.innerHTML = text.replace(/\n/g,'<br>');
@@ -9417,6 +9460,13 @@ function sendChat(){
     appendMessage('assistant', 'Error: ' + err.message);
     if(btn) btn.disabled = false;
   });
+}
+
+// Suggested-prompt entry point (advisor chips + Popular questions). Routes
+// through the input + sendChat so it shares one send path.
+function sendQuick(msg){
+  var input = document.getElementById('chat-input');
+  if(input){ input.value = msg; sendChat(); }
 }
 
 function toggleAdvisorBriefing(){
@@ -10159,7 +10209,7 @@ function buildOnboarding(){
       +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 50% 58%,rgba(8,5,16,.84) 0%,transparent 70%);pointer-events:none;"></div>'
       // ── Slide 2 mockup: Level 2 → 3 animation ──
       +'<div id="ob-s2-mockup" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;">'
-        +'<div style="font-family:\'DM Mono\',monospace;font-size:10px;font-weight:500;letter-spacing:.18em;color:rgba(168,85,247,.75);text-transform:uppercase;margin-bottom:2px;">Finance Strategist</div>'
+        +'<div style="font-family:\'DM Mono\',monospace;font-size:10px;font-weight:500;letter-spacing:.18em;color:#C084FC;text-transform:uppercase;margin-bottom:2px;">Finance Strategist</div>'
         +'<div style="position:relative;">'
           +'<svg width="128" height="128" viewBox="0 0 128 128">'
             // track
