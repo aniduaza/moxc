@@ -170,10 +170,10 @@ body.light .greeting-card #home-bal-cur{ color:rgba(40,28,4,.7) !important; }
 .port-hero #port-total,
 body.light .port-hero #port-total{ color:#231804 !important; }
 .port-hero #port-pl-line,
-.port-hero #port-pl-line span,
+.port-hero #port-pl-line span{ color:rgba(35,24,4,.82) !important; }
 .port-hero #port-date-start,
-.port-hero #port-date-end{ color:rgba(40,28,4,.6) !important; }
-.port-hero .toggle-btn:not(.active){ color:rgba(40,28,4,.55) !important; }
+.port-hero #port-date-end{ color:rgba(35,24,4,.7) !important; }
+.port-hero .toggle-btn:not(.active){ color:rgba(35,24,4,.68) !important; }
 .port-hero .toggle-btn.active{ background:#231804 !important;color:var(--xp-bright) !important; }
 
 /* Playful Pop card surface */
@@ -4707,7 +4707,7 @@ function drawRealSparkline(canvasId, range, options){
 
   // Y-axis labels (min / max) if requested
   if(opts.labels){
-    ctx.fillStyle   = 'rgba(255,255,255,.3)';
+    ctx.fillStyle   = opts.labelColor || 'rgba(255,255,255,.3)';
     ctx.font        = '10px DM Sans,sans-serif';
     ctx.textAlign   = 'left';
     ctx.fillText(fmt(mx, 0), 4, 12);
@@ -8048,7 +8048,9 @@ function renderPortfolio(){
 }
 
 function drawSparkline(){
-  drawRealSparkline('sparkline-canvas', currentRange, {lineWidth:2, labels:true});
+  // Portfolio hero is an amber card — draw the line/labels in dark so they
+  // read against amber (the default amber line was invisible).
+  drawRealSparkline('sparkline-canvas', currentRange, {lineWidth:2, labels:true, color:'#231804', fillAlphaTop:0.16, labelColor:'rgba(35,24,4,.5)'});
 }
 
 function renderCryptoList(){
