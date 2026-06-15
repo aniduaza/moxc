@@ -1888,7 +1888,10 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 
         <div style="display:flex;justify-content:space-between;align-items:center;" class="slide-up d1">
           <div style="font-size:18px;font-weight:600;">Transactions</div>
-          <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-transaction')">+ Add</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div id="txn-select-toggle" style="cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);" onclick="toggleTxnSelectMode()">Select</div>
+            <div class="badge-green" style="cursor:pointer;" onclick="openSheet('add-transaction')">+ Add</div>
+          </div>
         </div>
 
         <!-- search -->
@@ -3837,6 +3840,8 @@ function submitTxnSheet(){
 }
 
 var txnFilter = 'all';
+var txnSelectMode = false;
+var txnSelected = {};
 var TXN_CATS = {
   income:        {label:'Income',        icon:'income',        bg:'rgba(16,185,129,.12)',  color:'#10B981'},
   food:          {label:'Food',          icon:'food',          bg:'rgba(249,115,22,.12)',  color:'#F97316'},
@@ -3879,6 +3884,12 @@ function renderTransactions(){
   var outEl = document.getElementById('txn-total-out');
   if(!el) return;
 
+  var selToggle = document.getElementById('txn-select-toggle');
+  if(selToggle){
+    selToggle.textContent = txnSelectMode ? 'Cancel' : 'Select';
+    selToggle.style.color = txnSelectMode ? 'var(--xp-bright)' : 'var(--text2)';
+  }
+
   var q = (document.getElementById('txn-search')||{}).value||'';
   q = q.toLowerCase();
 
@@ -3903,6 +3914,7 @@ function renderTransactions(){
     el.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;">'
       + (data.transactions.length ? 'No results for this filter' : 'No transactions yet. Tap + Add to log one.')
       + '</div>';
+    renderTxnSelectBar();
     return;
   }
 
@@ -3925,14 +3937,20 @@ function renderTransactions(){
       var isIncome = t.type === 'income';
       var cat  = TXN_CATS[t.cat] || TXN_CATS.other;
       var d    = new Date(t.date);
-      var time = d.toLocaleDateString('en', {day:'numeric', month:'short'}) + ' · ' + d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false});
+      var time = d.toLocaleDateString('en', {day:'numeric', month:'short'});
       var amtColor = isIncome ? '#10B981' : 'var(--text)';
       var amtSign  = isIncome ? '+' : '&#8722;';
       var chip = '<span style="display:inline-flex;align-items:center;gap:3px;background:'+cat.bg
         +';color:'+cat.color+';font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;">'
         +cat.label+'</span>';
-      html += '<div class="txn-item item-in">'
-        + '<div class="txn-icon" style="background:'+cat.bg+';font-size:18px;display:flex;align-items:center;justify-content:center;">'+cat.emoji+'</div>'
+      var isSel = !!txnSelected[t.id];
+      html += '<div class="txn-item item-in"'
+        + (txnSelectMode ? ' onclick="toggleTxnSelected('+t.id+')" style="cursor:pointer;'+(isSel?'background:rgba(245,158,11,.07);':'')+'"' : '')
+        + '>'
+        + (txnSelectMode
+            ? '<div style="width:22px;height:22px;flex:none;border-radius:50%;border:1.5px solid '+(isSel?'var(--xp-bright)':'var(--text3)')+';background:'+(isSel?'var(--xp-bright)':'transparent')+';color:#231804;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-right:10px;">'+(isSel?'&#10003;':'')+'</div>'
+            : '')
+        + '<div class="txn-icon" style="background:'+cat.bg+';color:'+cat.color+';display:flex;align-items:center;justify-content:center;">'+getIcon(cat.icon,18)+'</div>'
         + '<div class="txn-detail">'
           + '<div class="txn-detail-name">' + t.name + '</div>'
           + '<div class="txn-detail-sub" style="display:flex;align-items:center;gap:5px;margin-top:3px;">'
@@ -3944,17 +3962,190 @@ function renderTransactions(){
           + '<div class="txn-amount-val" style="color:' + amtColor + ';font-weight:600;">' + amtSign + fmt(t.amt) + ' ' + curSym() + '</div>'
           + '<div class="txn-amount-time">' + time + '</div>'
         + '</div>'
-        + '<div onclick="deleteTxn(' + t.id + ')" class="delete-btn">&#10005;</div>'
+        + (txnSelectMode ? '' : '<div onclick="deleteTxn(' + t.id + ')" class="delete-btn">&#10005;</div>')
       + '</div>';
     });
   });
   el.innerHTML = html;
+  renderTxnSelectBar();
 }
 
 
 
 function renderTransactionsTab(){
   renderTransactions();
+}
+
+// ── Bulk transaction operations ───────────────────────────────────────────
+function toggleTxnSelectMode(){
+  txnSelectMode = !txnSelectMode;
+  txnSelected = {};
+  renderTransactions();
+}
+
+function exitTxnSelect(){
+  if(!txnSelectMode){ var ex=document.getElementById('txn-select-bar'); if(ex) ex.remove(); return; }
+  txnSelectMode = false;
+  txnSelected = {};
+  var bar = document.getElementById('txn-select-bar'); if(bar) bar.remove();
+  renderTransactions();
+}
+
+function toggleTxnSelected(id){
+  if(txnSelected[id]) delete txnSelected[id];
+  else txnSelected[id] = true;
+  renderTransactions();
+}
+
+function txnSelectedIds(){
+  var ids = [];
+  for(var k in txnSelected){ if(txnSelected.hasOwnProperty(k)) ids.push(parseInt(k,10)); }
+  return ids;
+}
+
+// Mirrors the filter logic in renderTransactions so "Select all" matches what's on screen.
+function visibleTxnIds(){
+  var q = (document.getElementById('txn-search')||{}).value||''; q = q.toLowerCase();
+  var out = [];
+  (data.transactions||[]).forEach(function(t){
+    if(txnFilter === 'income'  && t.type !== 'income')  return;
+    if(txnFilter === 'expense' && t.type !== 'expense') return;
+    if(txnFilter === 'ess'     && t.cat  !== 'ess')     return;
+    if(txnFilter === 'sub'     && t.cat  !== 'sub')     return;
+    if(q && t.name.toLowerCase().indexOf(q) < 0 && (t.note||'').toLowerCase().indexOf(q) < 0) return;
+    out.push(t.id);
+  });
+  return out;
+}
+
+function allVisibleSelected(){
+  var vis = visibleTxnIds();
+  if(!vis.length) return false;
+  for(var i=0;i<vis.length;i++){ if(!txnSelected[vis[i]]) return false; }
+  return true;
+}
+
+function txnSelectAllVisible(){
+  var vis = visibleTxnIds();
+  if(allVisibleSelected()){
+    for(var i=0;i<vis.length;i++){ delete txnSelected[vis[i]]; }
+  } else {
+    for(var j=0;j<vis.length;j++){ txnSelected[vis[j]] = true; }
+  }
+  renderTransactions();
+}
+
+function renderTxnSelectBar(){
+  var bar = document.getElementById('txn-select-bar');
+  if(!txnSelectMode){ if(bar) bar.remove(); return; }
+  if(!bar){
+    bar = document.createElement('div');
+    bar.id = 'txn-select-bar';
+    bar.style.cssText = 'position:fixed;bottom:78px;left:50%;transform:translateX(-50%);width:calc(100% - 28px);max-width:440px;background:var(--surface);border:0.5px solid rgba(245,158,11,.3);border-radius:var(--r-md);z-index:9990;box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:2px;padding:8px 8px;animation:slideUpToast .25s ease both;';
+    document.body.appendChild(bar);
+  }
+  var n = txnSelectedIds().length;
+  var allSel = allVisibleSelected();
+  bar.innerHTML =
+      '<div style="flex:1;font-size:13px;font-weight:600;color:var(--text);padding-left:8px;white-space:nowrap;">' + (n ? n + ' selected' : 'Select items') + '</div>'
+    + '<button type="button" onclick="txnSelectAllVisible()" style="background:none;border:none;color:var(--text2);font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;padding:8px 8px;min-height:36px;">' + (allSel ? 'None' : 'All') + '</button>'
+    + '<button type="button"' + (n ? ' onclick="openBulkRecat()"' : ' disabled') + ' style="background:none;border:none;color:' + (n ? 'var(--xp-bright)' : 'var(--text3)') + ';font-weight:700;font-size:13px;cursor:' + (n ? 'pointer' : 'default') + ';font-family:inherit;padding:8px 8px;min-height:36px;">Recategorize</button>'
+    + '<button type="button"' + (n ? ' onclick="bulkDeleteTxns()"' : ' disabled') + ' style="background:none;border:none;color:' + (n ? 'var(--red)' : 'var(--text3)') + ';font-weight:700;font-size:13px;cursor:' + (n ? 'pointer' : 'default') + ';font-family:inherit;padding:8px 8px;min-height:36px;">Delete</button>';
+}
+
+function bulkDeleteTxns(){
+  var ids = txnSelectedIds();
+  if(!ids.length) return;
+  var n = ids.length;
+  confirmDelete('_txnbulk', 0, 'Delete ' + n + ' transaction' + (n>1?'s':'') + '?', 'You can restore them from the undo toast.');
+  var btn = document.getElementById('del-confirm-btn');
+  if(btn) btn.onclick = function(){
+    hideDel();
+    setTimeout(function(){
+      var arr = data.transactions;
+      var removed = []; // {pos, item} captured high-to-low so positions stay valid while splicing
+      for(var i = arr.length - 1; i >= 0; i--){
+        if(txnSelected[arr[i].id]){ removed.push({pos:i, item:arr[i]}); arr.splice(i,1); }
+      }
+      exitTxnSelect();
+      save(); renderTab(currentTab); renderHome();
+      if(removed.length){
+        showUndoToast(removed.length + ' transaction' + (removed.length>1?'s':''), function(){
+          removed.sort(function(a,b){ return a.pos - b.pos; }); // re-insert low-to-high
+          for(var j = 0; j < removed.length; j++){ arr.splice(removed[j].pos, 0, removed[j].item); }
+          save(); renderTab(currentTab); renderHome();
+        });
+      }
+    }, 340);
+  };
+}
+
+function openBulkRecat(){
+  var n = txnSelectedIds().length;
+  if(!n) return;
+  var ex = document.getElementById('bulk-recat-overlay'); if(ex) ex.remove();
+  var cats = ['food','transport','ess','shopping','entertainment','health','sub','saving','other'];
+  var chips = '';
+  for(var i=0;i<cats.length;i++){
+    var m = TXN_CATS[cats[i]] || TXN_CATS.other;
+    chips += '<button type="button" onclick="applyBulkRecat(\''+cats[i]+'\')" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--surface2);border:0.5px solid rgba(255,255,255,.08);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;cursor:pointer;font-family:inherit;">'
+      + '<span style="width:11px;height:11px;border-radius:50%;background:'+m.color+';flex:none;"></span>'
+      + '<span style="font-size:14px;font-weight:600;color:var(--text);">'+m.label+'</span>'
+      + '</button>';
+  }
+  var ov = document.createElement('div');
+  ov.id = 'bulk-recat-overlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9995;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease both;';
+  ov.onclick = function(e){ if(e.target === ov) closeBulkRecat(); };
+  ov.innerHTML = '<div style="width:100%;max-width:440px;background:var(--surface);border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:80%;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.5);">'
+    + '<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;">Recategorize</div>'
+    + '<div style="font-size:13px;color:var(--text2);margin-bottom:16px;">Set a new category for ' + n + ' transaction' + (n>1?'s':'') + '.</div>'
+    + chips + '</div>';
+  document.body.appendChild(ov);
+}
+
+function closeBulkRecat(){
+  var ov = document.getElementById('bulk-recat-overlay'); if(ov) ov.remove();
+}
+
+function applyBulkRecat(cat){
+  var ids = txnSelectedIds();
+  if(!ids.length){ closeBulkRecat(); return; }
+  var arr = data.transactions;
+  var prev = []; // {id, cat} for undo
+  for(var i=0;i<arr.length;i++){
+    if(txnSelected[arr[i].id]){
+      prev.push({id:arr[i].id, cat:arr[i].cat});
+      arr[i].cat = cat;
+    }
+  }
+  closeBulkRecat();
+  exitTxnSelect();
+  save(); renderTab(currentTab); renderHome();
+  if(prev.length){
+    var label = (TXN_CATS[cat]||TXN_CATS.other).label;
+    showActionToast(prev.length + ' moved to ' + label, function(){
+      for(var j=0;j<prev.length;j++){
+        for(var m=0;m<arr.length;m++){ if(arr[m].id === prev[j].id){ arr[m].cat = prev[j].cat; break; } }
+      }
+      save(); renderTab(currentTab); renderHome();
+    });
+  }
+}
+
+// Generic undo toast (showUndoToast always appends " deleted"; this takes a full message).
+function showActionToast(message, undoFn){
+  var ex = document.getElementById('mox-undo-toast'); if(ex) ex.remove();
+  if(_undoTimer){ clearTimeout(_undoTimer); _undoTimer = null; }
+  var t = document.createElement('div'); t.id = 'mox-undo-toast';
+  t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface);border:0.5px solid rgba(245,158,11,.3);color:var(--text);font-size:13px;font-weight:500;padding:8px 8px 8px 18px;border-radius:var(--r-md);z-index:9991;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);display:flex;align-items:center;gap:16px;animation:slideUpToast .25s ease both;';
+  var msg = document.createElement('span'); msg.textContent = message;
+  var btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 'Undo';
+  btn.style.cssText = 'background:none;border:none;color:var(--green);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;padding:6px 10px;margin:-2px 0;min-height:36px;';
+  btn.onclick = function(){ if(_undoTimer){ clearTimeout(_undoTimer); _undoTimer = null; } if(t.parentNode) t.remove(); undoFn(); };
+  t.appendChild(msg); t.appendChild(btn);
+  document.body.appendChild(t);
+  _undoTimer = setTimeout(function(){ t.style.transition = 'opacity .3s'; t.style.opacity = '0'; setTimeout(function(){ if(t.parentNode) t.remove(); }, 300); _undoTimer = null; }, 5000);
 }
 
 
@@ -5132,8 +5323,6 @@ function renderActivity(){
     g.items.forEach(function(t){
       var isIncome = t.type==='income';
       var cat      = TXN_CATS[t.cat]||TXN_CATS.other;
-      var d        = new Date(t.date);
-      var time     = d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',hour12:false});
       var amtColor = isIncome?'#10B981':'var(--text)';
       var amtSign  = isIncome?'+':'&#8722;';
       var chip = '<span style="display:inline-flex;align-items:center;gap:3px;background:'+cat.bg
@@ -5150,7 +5339,6 @@ function renderActivity(){
         +'</div>'
         +'<div class="txn-amount-col">'
           +'<div class="txn-amount-val" style="color:'+amtColor+';font-weight:600;">'+amtSign+fmt(t.amt)+' '+curSym()+'</div>'
-          +'<div class="txn-amount-time">'+time+'</div>'
         +'</div>'
         +'<div onclick="deleteTxn('+t.id+')" style="margin-left:6px;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;">&#10005;</div>'
       +'</div>';
@@ -7806,7 +7994,7 @@ function renderGoldList(elId){
       +'<div style="width:36px;height:36px;border-radius:var(--r-sm);background:#F59E0B22;color:#F59E0B;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+getIcon('gold',18)+'</div>'
       +'<div style="flex:1;min-width:0;">'
         +'<div class="holding-name">'+(g.label||'Gold')+' <span style="font-size:10px;color:var(--text3);">('+g.form+')</span></div>'
-        +'<div class="holding-qty">'+g.weight+' '+unitLabel+' · '+grams.toFixed(2)+'g'+(priceLine?' · '+priceLine:'')+'</div>'
+        +'<div class="holding-qty">'+g.weight+' '+unitLabel+(unitLabel==='g'?'':' · '+grams.toFixed(2)+'g')+(priceLine?' · '+priceLine:'')+'</div>'
       +'</div>'
       +'<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'
         +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
@@ -7832,6 +8020,7 @@ function renderStocksList(elId){
     var cached = stocksCache[s.ticker];
     var priceUSD = cached ? cached.price : (s.costBasis||0);
     var valAED  = s.shares * priceUSD * 3.6725;
+    var hasPrice = !!cached || (s.costBasis > 0);
     var chgNum  = cached ? cached.change : 0;
     var up      = chgNum >= 0;
     var chgStr  = cached ? ((up?'+':'')+chgNum.toFixed(2)+'%') : '—';
@@ -7845,7 +8034,7 @@ function renderStocksList(elId){
         +'<div class="holding-qty">'+s.shares+' shares'+(cached?' · $'+cached.price.toFixed(2):'')+'</div>'
       +'</div>'
       +'<div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'
-        +'<div class="holding-val">'+fmt(valAED)+' '+curSym()+'</div>'
+        +'<div class="holding-val">'+(hasPrice?fmt(valAED)+' '+curSym():'<span style="color:var(--text3);">—</span>')+'</div>'
         +'<span style="padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700;background:'+(up?'rgba(16,185,129,.15)':'rgba(239,68,68,.12)')+';color:'+chgColor+';">'+chgStr+'</span>'
       +'</div>'
       +'<div onclick="openSheet(\'edit-stock\','+i+')" class="edit-btn"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z"/></svg></div>'
@@ -9979,6 +10168,7 @@ function hideMoreBackdrop(animate){
 }
 
 function hideMoreScreens(){
+  if(txnSelectMode) exitTxnSelect();
   document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
     sc.classList.remove('non-swipe-screen');
     sc.style.cssText = 'display:none;';
@@ -9988,6 +10178,7 @@ function hideMoreScreens(){
 }
 
 function closeMoreScreen(){
+  if(txnSelectMode) exitTxnSelect();
   document.querySelectorAll('.non-swipe-screen').forEach(function(sc){
     sc.style.transition = 'transform .32s cubic-bezier(0.32,0.72,0,1)';
     sc.style.transform  = 'translateX(100%)';
