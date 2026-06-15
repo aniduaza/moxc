@@ -931,6 +931,11 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
 .item-in:nth-child(5){animation-delay:152ms}.item-in:nth-child(6){animation-delay:190ms}
 .item-in:nth-child(7){animation-delay:228ms}.item-in:nth-child(8){animation-delay:266ms}
 
+/* ── Consolidated Home layout toggle (data.homeLayout === 'consolidated') ── */
+#screen-home.home-consol #home-money,#screen-home.home-consol #home-weekly,#screen-home.home-consol #home-checkin,#screen-home.home-consol #home-progress{display:none!important;}
+#screen-home.home-consol #home-consolidated{display:block!important;}
+#screen-home:not(.home-consol) #home-consolidated{display:none!important;}
+
 /* ── FAB grid entrance ───────────────────────────────────────────────────── */
 @keyframes fabIn{from{opacity:0;transform:scale(.86) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .fab-in{animation:fabIn .26s cubic-bezier(0.16,1,0.3,1) both;}
@@ -1112,6 +1117,9 @@ body.light #snap-date,body.light #snap-amount{background:#EFEFEB;border-color:rg
           <div id="asset-legend" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:7px;"></div>
 
         </div>
+
+        <!-- Consolidated motivational layer (shown only when data.homeLayout === 'consolidated') -->
+        <div id="home-consolidated" class="slide-up d2" style="display:none;"></div>
 
         <!-- Smart priority banner (one actionable nudge, ladder-ranked) -->
         <div id="home-priority" class="slide-up d2" style="display:none;"></div>
@@ -2767,10 +2775,13 @@ function bannerGoalNearly(){
 
 // Single source of truth for the Home priority banner. Evaluates the ladder
 // top-down and returns the active rung id, or null when Home is calm.
-function getActivePriority(){
+function getActivePriority(consolidated){
+  // In consolidated Home the momentum card already lists open missions, so skip
+  // the missions rung (it would duplicate). The monthly-review card IS shown in
+  // consolidated mode, so its rung stays active.
   if (getStreakRiskPhase() === 'pm') return 'streak';
   if (bannerBudgetAlert()) return 'budget';
-  if ((getTodayMissions() || []).length > 0 && !missionsAllDone()) return 'missions';
+  if (!consolidated && (getTodayMissions() || []).length > 0 && !missionsAllDone()) return 'missions';
   if (bannerGoalNearly()) return 'goal';
   var mr = document.getElementById('home-monthly-review');
   if (mr && mr.innerHTML.replace(/\s/g, '') !== '') return 'monthly';
@@ -3930,6 +3941,7 @@ function renderTransactions(){
   });
 
   var html = '';
+  var _si=0; // running item index — interleaved month headers break CSS nth-child stagger
   groupOrder.forEach(function(key){
     var g = groups[key];
     html += '<div class="txn-month-hdr">' + g.label + '</div>';
@@ -3940,12 +3952,15 @@ function renderTransactions(){
       var time = d.toLocaleDateString('en', {day:'numeric', month:'short'});
       var amtColor = isIncome ? '#10B981' : 'var(--text)';
       var amtSign  = isIncome ? '+' : '&#8722;';
+      var sDelay   = Math.min(_si*30,150); _si++;
       var chip = '<span style="display:inline-flex;align-items:center;gap:3px;background:'+cat.bg
         +';color:'+cat.color+';font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;">'
         +cat.label+'</span>';
       var isSel = !!txnSelected[t.id];
+      var rowStyle = 'animation-delay:'+sDelay+'ms;'+(txnSelectMode?'cursor:pointer;'+(isSel?'background:rgba(245,158,11,.07);':''):'');
       html += '<div class="txn-item item-in"'
-        + (txnSelectMode ? ' onclick="toggleTxnSelected('+t.id+')" style="cursor:pointer;'+(isSel?'background:rgba(245,158,11,.07);':'')+'"' : '')
+        + (txnSelectMode ? ' onclick="toggleTxnSelected('+t.id+')"' : '')
+        + ' style="'+rowStyle+'"'
         + '>'
         + (txnSelectMode
             ? '<div style="width:22px;height:22px;flex:none;border-radius:50%;border:1.5px solid '+(isSel?'var(--xp-bright)':'var(--text3)')+';background:'+(isSel?'var(--xp-bright)':'transparent')+';color:#231804;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-right:10px;">'+(isSel?'&#10003;':'')+'</div>'
@@ -5317,6 +5332,7 @@ function renderActivity(){
   });
 
   var html='';
+  var _si=0; // running item index — interleaved group headers break CSS nth-child stagger
   groupOrder.forEach(function(key){
     var g = groups[key];
     html+='<div class="txn-group-hdr">'+g.label+'</div>';
@@ -5325,10 +5341,11 @@ function renderActivity(){
       var cat      = TXN_CATS[t.cat]||TXN_CATS.other;
       var amtColor = isIncome?'#10B981':'var(--text)';
       var amtSign  = isIncome?'+':'&#8722;';
+      var sDelay   = Math.min(_si*30,150); _si++;
       var chip = '<span style="display:inline-flex;align-items:center;gap:3px;background:'+cat.bg
         +';color:'+cat.color+';font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;">'
         +cat.label+'</span>';
-      html+='<div class="txn-item item-in">'
+      html+='<div class="txn-item item-in" style="animation-delay:'+sDelay+'ms;">'
         +'<div class="txn-icon" style="background:'+cat.bg+';color:'+cat.color+';display:flex;align-items:center;justify-content:center;">'+getIcon(cat.icon,18)+'</div>'
         +'<div class="txn-detail">'
           +'<div class="txn-detail-name">'+t.name+'</div>'
@@ -5406,6 +5423,7 @@ function renderActivityTxns(){
   });
 
   var html = '';
+  var _si=0; // running item index — interleaved month headers break CSS nth-child stagger
   groupOrder.forEach(function(key){
     var g = groups[key];
     // Month header with subtotals
@@ -5427,11 +5445,12 @@ function renderActivityTxns(){
       var time = d.toLocaleDateString('en',{day:'numeric',month:'short'});
       var amtColor = isIncome ? '#10B981' : 'var(--text)';
       var sign = isIncome ? '+' : '&#8722;';
+      var sDelay = Math.min(_si*30,150); _si++;
       // Category chip
       var chip = '<span style="display:inline-flex;align-items:center;gap:3px;background:'+cat.bg
         +';color:'+cat.color+';font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap;">'
         +cat.label+'</span>';
-      html += '<div class="txn-item item-in">'
+      html += '<div class="txn-item item-in" style="animation-delay:'+sDelay+'ms;">'
         +'<div class="txn-icon" style="background:'+cat.bg+';color:'+cat.color+';display:flex;align-items:center;justify-content:center;">'+getIcon(cat.icon,18)+'</div>'
         +'<div class="txn-detail">'
           +'<div class="txn-detail-name">'+t.name+'</div>'
@@ -6906,7 +6925,7 @@ function setProgressTab(tab){
 function renderPriorityBanner(){
   var el = document.getElementById('home-priority');
   if (!el) return;
-  var rung = getActivePriority();
+  var rung = getActivePriority(isConsolidatedHome());
   if (!rung){ el.style.display = 'none'; el.innerHTML = ''; return; }
 
   var icon, msg, tint, accent, tap;
@@ -6961,6 +6980,110 @@ function goToMissions(){
 function scrollToEl(id){
   var t = document.getElementById(id);
   if (t && t.scrollIntoView) t.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── Consolidated Home layout (validation behind data.homeLayout flag) ──────
+// Lane accent A/B: 'violet' (amber=money, violet=progress) vs 'amber' (single palette).
+var MOX_HOME_LANE = 'violet';
+
+// Consolidated is the default Home. Opt out with data.homeLayout === 'classic'.
+function isConsolidatedHome(){ return data.homeLayout !== 'classic'; }
+
+function applyHomeLayout(){
+  var scr = document.getElementById('screen-home');
+  if(!scr) return;
+  var on = isConsolidatedHome();
+  scr.classList.toggle('home-consol', on);
+  if(on) renderHomeConsolidated();
+}
+
+function renderHomeConsolidated(){
+  var el = document.getElementById('home-consolidated');
+  if(!el) return;
+
+  var isLight = document.body.classList.contains('light');
+  var hair    = isLight ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.08)';
+  var checkBd = isLight ? 'rgba(0,0,0,.28)' : 'rgba(255,255,255,.25)';
+  var lane = (MOX_HOME_LANE === 'amber')
+    ? {bg:'var(--surface)', accent:(isLight?'#B45309':'#F4B43C'), barFill:'#F59E0B', barTrack:hair}
+    : {bg:(isLight?'#F1EEFA':'#1b1822'), accent:(isLight?'#6D5BB0':'#9981d6'), barFill:'#8b5cf6', barTrack:(isLight?'rgba(109,91,176,.18)':'rgba(255,255,255,.08)')};
+
+  var b = calcBudget();
+  var overBudget = b.inc > 0 && b.actual > b.inc;
+  var savedRate  = overBudget ? 0 : b.rate;
+  var savedColor = overBudget ? 'var(--red)' : (savedRate > 0 ? 'var(--green)' : 'var(--text2)');
+
+  // ── Money card (tier 2): "This month" + three large stats + weekly insight ──
+  var html = '<div style="background:var(--surface);border-radius:14px;padding:14px 14px 0;margin-bottom:12px;">'
+    + '<div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:12px;">This month</div>'
+    + '<div style="display:flex;padding-bottom:14px;">'
+      + '<div style="flex:1;"><div style="font-size:11px;color:var(--text3);margin-bottom:4px;">Income</div>'
+        + '<div style="font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.3px;">'+fmt(b.inc)+'</div></div>'
+      + '<div style="flex:1;"><div style="font-size:11px;color:var(--text3);margin-bottom:4px;">Spent</div>'
+        + '<div style="font-size:22px;font-weight:700;color:'+(overBudget?'var(--red)':'var(--text)')+';letter-spacing:-.3px;">'+fmt(b.actual)+'</div></div>'
+      + '<div style="flex:1;"><div style="font-size:11px;color:var(--text3);margin-bottom:4px;">Saved</div>'
+        + '<div style="font-size:22px;font-weight:700;color:'+savedColor+';letter-spacing:-.3px;">'+savedRate+'%</div></div>'
+    + '</div>';
+
+  var wk = weekStats();
+  if(wk.topCat && wk.topCatAmt > 0){
+    var wkInfo = TXN_CATS[wk.topCat] || TXN_CATS.other;
+    html += '<div onclick="switchTab(\'transactions\')" style="display:flex;align-items:center;gap:9px;border-top:0.5px solid '+hair+';padding:11px 4px;cursor:pointer;">'
+      + '<span style="width:9px;height:9px;border-radius:50%;background:'+wkInfo.color+';flex:none;"></span>'
+      + '<span style="font-size:12px;color:var(--text);">'+wkInfo.label+' led this week</span>'
+      + '<span style="font-size:12px;color:var(--text3);">'+fmt(wk.topCatAmt)+' '+curSym()+'</span>'
+      + '<span style="flex:1;"></span>'
+      + '<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5l5 5-5 5"/></svg>'
+    + '</div>';
+  } else {
+    html += '<div style="height:14px;"></div>';
+  }
+  html += '</div>';
+
+  // ── Momentum card (tier 3): level + streak + today's missions ──
+  var lvl    = getLevel(data.xp || 0);
+  var streak = data.streak || 0;
+
+  html += '<div style="background:'+lane.bg+';border-radius:14px;padding:13px 14px;margin-bottom:12px;">';
+  html += '<div style="display:flex;align-items:center;gap:7px;margin-bottom:12px;">'
+    + '<span style="font-size:11px;font-weight:600;color:'+lane.accent+';flex:1;">Tonight at the tavern</span>'
+    + (streak > 0
+        ? '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text2);">'
+            + '<span style="display:flex;color:'+lane.accent+';">'+getIcon('streak-fire',13)+'</span>'+streak+'-day streak</span>'
+        : '')
+  + '</div>';
+  html += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">'
+    + '<span style="font-size:12px;color:var(--text);">Level '+lvl.level+'</span>'
+    + '<span style="font-size:11px;color:var(--text3);">'+(lvl.maxed?'Max level':lvl.xpToNext+' XP to level '+(lvl.level+1))+'</span>'
+  + '</div>';
+  html += '<div style="height:5px;border-radius:5px;background:'+lane.barTrack+';overflow:hidden;margin-bottom:14px;">'
+    + '<div style="height:100%;background:'+lane.barFill+';width:'+lvl.pct+'%;"></div>'
+  + '</div>';
+
+  var missions = getTodayMissions();
+  var open = [];
+  for(var i=0;i<missions.length;i++){
+    var p = missions[i].prog();
+    if(!(p.c >= p.t)) open.push(missions[i]);
+  }
+  if(open.length){
+    html += '<div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:9px;">Today\'s missions</div>';
+    open.forEach(function(m,idx){
+      html += '<div style="display:flex;align-items:center;gap:10px;'+(idx<open.length-1?'margin-bottom:9px;':'')+'">'
+        + '<span style="width:18px;height:18px;border-radius:50%;border:1.5px solid '+checkBd+';flex:none;"></span>'
+        + '<span style="flex:1;font-size:13px;color:var(--text);">'+m.label+'</span>'
+        + '<span style="font-size:11px;font-weight:700;color:'+lane.accent+';">+'+m.xp+' XP</span>'
+      + '</div>';
+    });
+  } else {
+    html += '<div style="display:flex;align-items:center;gap:9px;">'
+      + '<span style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:'+lane.accent+'28;color:'+lane.accent+';font-weight:800;flex:none;">&#10003;</span>'
+      + '<span style="font-size:13px;font-weight:600;color:var(--text);">All squared today</span>'
+    + '</div>';
+  }
+  html += '</div>';
+
+  el.innerHTML = html;
 }
 
 function renderHome(){
@@ -7177,6 +7300,8 @@ function renderHome(){
   setProgressTab(pTab);
 
   applyProgressCollapse();
+
+  applyHomeLayout();
 }
 
 
